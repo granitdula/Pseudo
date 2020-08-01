@@ -1,0 +1,12 @@
+.navigation-bar {
+  background-color: black;
+}
+
+.pseudo-title {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 85px;
+  width: 10%;
+  height: 10%;
+}
