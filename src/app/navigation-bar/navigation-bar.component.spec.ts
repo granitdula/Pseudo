@@ -60,6 +60,13 @@ describe('NavigationBarComponent', () => {
 
         expect(imgClasses[0]).toBe('pseudo-title');
       });
+
+      it('should contain navbar-brand class in img', () => {
+        const navbarElement: HTMLElement = fixture.nativeElement;
+        const imgClasses = navbarElement.querySelector('nav img').classList;
+
+        expect(imgClasses[1]).toBe('navbar-brand');
+      });
     });
   });
 });
