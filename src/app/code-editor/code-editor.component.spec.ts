@@ -26,20 +26,29 @@ describe('CodeEditorComponent', () => {
       });
     });
 
-    describe('Code editor tests', () => {
-      it('should create div of class code-editor', () => {
+    describe('Editor heading tests', () => {
+      it('should create div with class editor-heading', () => {
 
         const codeEditorElement: HTMLElement = fixture.nativeElement;
-        const codeEditorClasses = codeEditorElement.getElementsByClassName('code-editor');
+        const editorHeadingClasses = codeEditorElement.getElementsByClassName('editor-heading');
 
-        expect(codeEditorClasses.length).toBe(1);
+        expect(editorHeadingClasses.length).toBe(1);
       });
 
-      it('should create div within code-editor div called input-region', () => {
+      it(`should have editor-heading with text 'Code'`, () => {
 
         const codeEditorElement: HTMLElement = fixture.nativeElement;
-        const codeEditorClasses = codeEditorElement.getElementsByClassName('code-editor');
-        const inputRegionClasses = codeEditorClasses[0].getElementsByClassName('input-region');
+        const editorHeading = codeEditorElement.getElementsByClassName('editor-heading')[0];
+
+        expect(editorHeading.textContent).toBe('Code');
+      });
+    });
+
+    describe('Input region tests', () => {
+      it('should create div with class input-region', () => {
+
+        const codeEditorElement: HTMLElement = fixture.nativeElement;
+        const inputRegionClasses = codeEditorElement.getElementsByClassName('input-region');
 
         expect(inputRegionClasses.length).toBe(1);
       });
