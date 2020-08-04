@@ -1,8 +1,11 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -14,6 +17,12 @@ describe('AppComponent', () => {
     }).compileComponents();
   }));
 
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
@@ -24,5 +33,21 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.title).toEqual('pseudo');
+  });
+
+  it('should contain navbar component', () => {
+
+    const appElement: HTMLElement = fixture.nativeElement;
+    const navbar = appElement.querySelector('app-navigation-bar');
+
+    expect(navbar).toBeTruthy();
+  });
+
+  it('should contain code editor component', () => {
+
+    const appElement: HTMLElement = fixture.nativeElement;
+    const codeEditor = appElement.querySelector('app-code-editor');
+
+    expect(codeEditor).toBeTruthy();
   });
 });
