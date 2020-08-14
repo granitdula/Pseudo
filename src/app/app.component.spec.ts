@@ -58,14 +58,4 @@ describe('AppComponent', () => {
 
     expect(mainSectionClass.length).toBe(1);
   });
-
-  it('should have code-editor-container div in main-section div', () => {
-
-    const appElement: HTMLElement = fixture.nativeElement;
-    const mainSectionClasses = appElement.getElementsByClassName('main-section');
-    // Index 0 is the code editor div.
-    const codeEditor = mainSectionClasses[0].getElementsByClassName('code-editor-container');
-
-    expect(codeEditor.length).toBe(1);
-  });
 });
