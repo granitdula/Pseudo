@@ -44,6 +44,16 @@ describe('CodeEditorComponent', () => {
       });
     });
 
+    describe('Line bar separator tests', () => {
+      it('should create div with class line-bar-separator', () => {
+
+        const codeEditorElement: HTMLElement = fixture.nativeElement;
+        const lineBarClasses = codeEditorElement.getElementsByClassName('line-bar-separator');
+
+        expect(lineBarClasses.length).toBe(1);
+      });
+    });
+
     describe('Input region tests', () => {
       it('should create div with class input-region', () => {
 
