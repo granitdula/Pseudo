@@ -51,6 +51,14 @@ describe('AppComponent', () => {
     expect(codeEditor).toBeTruthy();
   });
 
+  it('should have a col-5 class in the code editor component', () => {
+
+    const appElement: HTMLElement = fixture.nativeElement;
+    const codeEditorClasses = appElement.querySelector('app-code-editor').classList;
+
+    expect(codeEditorClasses[0]).toBe('col-5');
+  });
+
   it('should have main-section div', () => {
 
     const appElement: HTMLElement = fixture.nativeElement;
