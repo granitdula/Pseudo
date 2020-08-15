@@ -23,47 +23,57 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+  describe('HTML tests', () => {
+    describe('Main component test', () => {
+      it('should create the app', () => {
+        const fixture = TestBed.createComponent(AppComponent);
+        const app = fixture.componentInstance;
+        expect(app).toBeTruthy();
+      });
+    });
 
-  it(`should have as title 'pseudo'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('pseudo');
-  });
+    describe('Navigation bar tests', () => {
+      it(`should have as title 'pseudo'`, () => {
+        const fixture = TestBed.createComponent(AppComponent);
+        const app = fixture.componentInstance;
+        expect(app.title).toEqual('pseudo');
+      });
 
-  it('should contain navbar component', () => {
+      it('should contain navbar component', () => {
 
-    const appElement: HTMLElement = fixture.nativeElement;
-    const navbar = appElement.querySelector('app-navigation-bar');
+        const appElement: HTMLElement = fixture.nativeElement;
+        const navbar = appElement.querySelector('app-navigation-bar');
 
-    expect(navbar).toBeTruthy();
-  });
+        expect(navbar).toBeTruthy();
+      });
+    });
 
-  it('should contain code editor component', () => {
+    describe('App body tests', () => {
+      it('should have main-section div', () => {
 
-    const appElement: HTMLElement = fixture.nativeElement;
-    const codeEditor = appElement.querySelector('app-code-editor');
+        const appElement: HTMLElement = fixture.nativeElement;
+        const mainSectionClass = appElement.getElementsByClassName('main-section');
 
-    expect(codeEditor).toBeTruthy();
-  });
+        expect(mainSectionClass.length).toBe(1);
+      });
+    });
 
-  it('should have a col-5 class in the code editor component', () => {
+    describe('Code editor tests', () => {
+      it('should contain code editor component', () => {
 
-    const appElement: HTMLElement = fixture.nativeElement;
-    const codeEditorClasses = appElement.querySelector('app-code-editor').classList;
+        const appElement: HTMLElement = fixture.nativeElement;
+        const codeEditor = appElement.querySelector('app-code-editor');
 
-    expect(codeEditorClasses[0]).toBe('col-5');
-  });
+        expect(codeEditor).toBeTruthy();
+      });
 
-  it('should have main-section div', () => {
+      it('should have a col-5 class in the code editor component', () => {
 
-    const appElement: HTMLElement = fixture.nativeElement;
-    const mainSectionClass = appElement.getElementsByClassName('main-section');
+        const appElement: HTMLElement = fixture.nativeElement;
+        const codeEditorClasses = appElement.querySelector('app-code-editor').classList;
 
-    expect(mainSectionClass.length).toBe(1);
+        expect(codeEditorClasses[0]).toBe('col-5');
+      });
+    });
   });
 });
