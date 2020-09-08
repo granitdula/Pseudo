@@ -29,7 +29,6 @@ export class CodeEditorComponent {
     // innerText double counts newlines, so need to remove to compensate.
     this.lineNumber =  linesArr.length - newLineDoubleCounts;
     this.updateLineNumArray();
-    console.log(this.getScrollTop());
   }
 
   private updateLineNumArray(): void {
