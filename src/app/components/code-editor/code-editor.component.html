@@ -1,0 +1,9 @@
+<div class="editor-heading">Code</div>
+<div class="line-bar-separator"></div>
+<div #lineNumberContainer [scrollTop]="getScrollTop()" class="line-number-container">
+  <div *ngFor="let number of getLineNumberArray()" class="line-number">{{number}}</div>
+</div>
+<div #inputRegion (input)="updateLineNumber()" 
+(scroll)="syncEditorAndLineNumScrolling()" class="input-region" contenteditable="true">
+
+</div>

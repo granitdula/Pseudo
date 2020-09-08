@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  background-color: black;
+  margin: 0.5em 0 0 0.5em;
+  padding: 1em 0 1em 0;
+  border: 1px solid rgb(63, 63, 63);
+  border-radius: 10px;
+  box-shadow: 0 5px 10px 0 black;
+}
+
+.editor-heading {
+  color: rgb(255, 255, 255);
+  margin: 0 0 0 1em;
+  font-weight: bold;
+}
+
+.line-bar-separator {
+  background-color: rgb(159, 159, 159);
+  height: 2px;
+  margin: 0.8em 0.75em 1em 0.5em;
+}
+
+[contenteditable="true"]:active,
+[contenteditable="true"]:focus {
+  border: none;
+  outline: none;
+}
+
+.line-number-container {
+  min-height: 33.3em;
+  max-height: 33.3em;
+  overflow-y: hidden;
+  float: left;
+}
+
+.line-number {
+  display: block;
+  background-color: rgb(41, 41, 41);
+  color: rgb(82, 81, 81);
+  margin: 0 0 0 0.5em;
+  padding: 0 0.3em 0 0.3em;
+  box-shadow:inset 3px 0 0 0 rgb(31, 31, 31);
+  text-align: center;
+}
+
+.input-region {
+  background-color: rgb(13, 13, 13);
+  color: rgb(255, 255, 255);
+  margin: 0em 0.75em 0em 0.5em;
+  min-height: 33.3em;
+  max-height: 33.3em;
+  overflow: auto;
+  white-space: nowrap;
+  font-family: 'Courier New', Courier, monospace;
+}
