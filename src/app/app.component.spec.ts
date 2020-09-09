@@ -57,11 +57,20 @@ describe('AppComponent', () => {
         expect(mainSectionClass.length).toBe(1);
       });
 
-      it('should have div with class col-2 within main-section', () => {
+      it('should have div with class col-1 within main-section', () => {
 
         const appElement: HTMLElement = fixture.nativeElement;
         const mainSectionClass = appElement.getElementsByClassName('main-section');
-        const divMidSection = mainSectionClass[0].getElementsByClassName('col-2');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('col-1');
+
+        expect(divMidSection.length).toBe(1);
+      });
+
+      it('should have div with class mid-section within main-section', () => {
+
+        const appElement: HTMLElement = fixture.nativeElement;
+        const mainSectionClass = appElement.getElementsByClassName('main-section');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('mid-section');
 
         expect(divMidSection.length).toBe(1);
       });
@@ -104,11 +113,11 @@ describe('AppComponent', () => {
     });
 
     describe('Drag bar tests', () => {
-      it('should contain drag bar component within col-2 div', () => {
+      it('should contain drag bar component within mid-section div', () => {
 
         const appElement: HTMLElement = fixture.nativeElement;
         const mainSectionClass = appElement.getElementsByClassName('main-section');
-        const divMidSection = mainSectionClass[0].getElementsByClassName('col-2');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('mid-section');
         const dragBar = divMidSection[0].querySelector('app-drag-bar');
 
         expect(dragBar).toBeTruthy();
