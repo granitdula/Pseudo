@@ -7,7 +7,6 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 })
 export class OutputConsoleComponent {
 
-  // @ViewChild('outputRegion') outputRegion: ElementRef<HTMLElement>;
   private output: string = '';
 
   public outputText(htmlText: string): void {
