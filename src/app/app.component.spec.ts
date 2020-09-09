@@ -56,6 +56,15 @@ describe('AppComponent', () => {
 
         expect(mainSectionClass.length).toBe(1);
       });
+
+      it('should have div with class col-2 within main-section', () => {
+
+        const appElement: HTMLElement = fixture.nativeElement;
+        const mainSectionClass = appElement.getElementsByClassName('main-section');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('col-2');
+
+        expect(divMidSection.length).toBe(1);
+      });
     });
 
     describe('Code editor tests', () => {
@@ -91,6 +100,18 @@ describe('AppComponent', () => {
         const outputConsoleClasses = appElement.querySelector('app-output-console').classList;
 
         expect(outputConsoleClasses[0]).toBe('col-5');
+      });
+    });
+
+    describe('Drag bar tests', () => {
+      it('should contain drag bar component within col-2 div', () => {
+
+        const appElement: HTMLElement = fixture.nativeElement;
+        const mainSectionClass = appElement.getElementsByClassName('main-section');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('col-2');
+        const dragBar = divMidSection[0].querySelector('app-drag-bar');
+
+        expect(dragBar).toBeTruthy();
       });
     });
   });

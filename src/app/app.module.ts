@@ -6,13 +6,15 @@ import { AppComponent } from './app.component';
 import { NavigationBarComponent } from './components/navigation-bar/navigation-bar.component';
 import { CodeEditorComponent } from './components/code-editor/code-editor.component';
 import { OutputConsoleComponent } from './components/output-console/output-console.component';
+import { DragBarComponent } from './components/drag-bar/drag-bar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavigationBarComponent,
     CodeEditorComponent,
-    OutputConsoleComponent
+    OutputConsoleComponent,
+    DragBarComponent
   ],
   imports: [
     BrowserModule,
