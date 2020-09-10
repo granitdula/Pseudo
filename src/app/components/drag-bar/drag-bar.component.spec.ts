@@ -19,7 +19,21 @@ describe('DragBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('HTML tests', () => {
+    describe('Main component', () => {
+      it('should create', () => {
+        expect(component).toBeTruthy();
+      });
+    });
+
+    describe('Line bar tests.', () => {
+      it('should create a div with class line-bar.', () => {
+
+        const dragBarElement: HTMLElement = fixture.nativeElement;
+        const lineBarClasses = dragBarElement.getElementsByClassName('line-bar');
+
+        expect(lineBarClasses.length).toBe(1);
+      });
+    });
   });
 });
