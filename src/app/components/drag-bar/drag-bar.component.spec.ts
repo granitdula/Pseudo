@@ -34,6 +34,22 @@ describe('DragBarComponent', () => {
 
         expect(lineBarClasses.length).toBe(1);
       });
+
+      it('should create a div with class arrow-left.', () => {
+
+        const dragBarElement: HTMLElement = fixture.nativeElement;
+        const arrowLeftClasses = dragBarElement.getElementsByClassName('arrow-left');
+
+        expect(arrowLeftClasses.length).toBe(1);
+      });
+
+      it('should create a div with class arrow-right.', () => {
+
+        const dragBarElement: HTMLElement = fixture.nativeElement;
+        const arrowRightClasses = dragBarElement.getElementsByClassName('arrow-right');
+
+        expect(arrowRightClasses.length).toBe(1);
+      });
     });
   });
 });

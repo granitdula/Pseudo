@@ -1,6 +1,32 @@
+:host {
+  margin: 0 25% 0 25%;
+}
+
 .line-bar {
+  display: inline-block;
   background-color: rgb(159, 159, 159);
   width: 2px;
   height: 34em;
-  margin: 0 0 0 50%;
+}
+
+.arrow-right {
+  display: inline-block;
+  width: 0; 
+  height: 0; 
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid rgb(159, 159, 159);
+  margin-left: 4px;
+  margin-bottom: 17em;
+}
+
+.arrow-left {
+  display: inline-block;
+  width: 0; 
+  height: 0; 
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent; 
+  border-right:10px solid rgb(159, 159, 159);
+  margin-right: 4px;
+  margin-bottom: 17em;
 }
