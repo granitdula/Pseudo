@@ -1,4 +1,7 @@
 .mid-section {
   display: inline-block;
-  width: 4em;
+  text-align: center;
+  margin-top: 4em;
+  width: 4%;
+  min-width: 28px;
 }

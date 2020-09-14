@@ -57,15 +57,6 @@ describe('AppComponent', () => {
         expect(mainSectionClass.length).toBe(1);
       });
 
-      it('should have div with class col-1 within main-section', () => {
-
-        const appElement: HTMLElement = fixture.nativeElement;
-        const mainSectionClass = appElement.getElementsByClassName('main-section');
-        const divMidSection = mainSectionClass[0].getElementsByClassName('col-1');
-
-        expect(divMidSection.length).toBe(1);
-      });
-
       it('should have div with class mid-section within main-section', () => {
 
         const appElement: HTMLElement = fixture.nativeElement;
@@ -84,14 +75,6 @@ describe('AppComponent', () => {
 
         expect(codeEditor).toBeTruthy();
       });
-
-      it('should have a col-5 class in the code editor component', () => {
-
-        const appElement: HTMLElement = fixture.nativeElement;
-        const outputConsoleClasses = appElement.querySelector('app-code-editor').classList;
-
-        expect(outputConsoleClasses[0]).toBe('col-5');
-      });
     });
 
     describe('Output console tests', () => {
@@ -101,14 +84,6 @@ describe('AppComponent', () => {
         const outputConsole = appElement.querySelector('app-output-console');
 
         expect(outputConsole).toBeTruthy();
-      });
-
-      it('should have a col-5 class in the output console component', () => {
-
-        const appElement: HTMLElement = fixture.nativeElement;
-        const outputConsoleClasses = appElement.querySelector('app-output-console').classList;
-
-        expect(outputConsoleClasses[0]).toBe('col-5');
       });
     });
 
