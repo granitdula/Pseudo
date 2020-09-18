@@ -1,16 +1,24 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { WindowSizeService } from './../../services/window-size.service';
+import { Component, ElementRef, ViewChild, OnInit, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'app-code-editor',
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.css']
 })
-export class CodeEditorComponent {
+export class CodeEditorComponent implements OnInit {
 
   private lineNumArray: number[] = [1];
   private lineNumber: number = 1;
   private scrollTop: number;
   @ViewChild('inputRegion') inputRegion: ElementRef<HTMLElement>;
+  @HostBinding('style.width.%') private width: number;
+
+  constructor(private windowSizeService: WindowSizeService) {}
+
+  ngOnInit() {
+    this.windowSizeService.editorCast.subscribe(editorWidth => this.width = editorWidth);
+  }
 
   public updateLineNumber(): void {
 
