@@ -1,16 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CodeEditorComponent } from './code-editor.component';
+import { WindowSizeService } from 'src/app/services/window-size.service';
 
 describe('CodeEditorComponent', () => {
   let component: CodeEditorComponent;
   let fixture: ComponentFixture<CodeEditorComponent>;
+  let service: WindowSizeService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ CodeEditorComponent ]
     })
     .compileComponents();
+
+    service = TestBed.inject(WindowSizeService);
   }));
 
   beforeEach(() => {
@@ -100,6 +104,73 @@ describe('CodeEditorComponent', () => {
   });
 
   describe('Typescript Tests', () => {
+    describe('windowSizeService width update tests', () => {
+      it(`should start with width style value of "47.2%"`, () => {
+
+        const codeEditorElement: HTMLElement = fixture.nativeElement;
+
+        const expected: string = '47.2%';
+
+        expect(codeEditorElement.style.width).toEqual(expected);
+      });
+
+      it('should have correct width style value when adjustWindowWidths is called with argument 10 pixels', () => {
+
+        const codeEditorElement: HTMLElement = fixture.nativeElement;
+        const helper: WindowSizeHelper = new WindowSizeHelper();
+
+        helper.adjustWindowWidths(10);
+        service.adjustWindowWidths(10);
+
+        fixture.detectChanges();
+
+        const expected: string = helper.expectedEditorWidth.toString() + '%';
+
+        expect(codeEditorElement.style.width).toEqual(expected);
+      });
+
+      it('should have correct width style value when adjustWindowWidths is called with argument -10 pixels', () => {
+
+        const codeEditorElement: HTMLElement = fixture.nativeElement;
+        const helper: WindowSizeHelper = new WindowSizeHelper();
+
+        helper.adjustWindowWidths(-20);
+        service.adjustWindowWidths(-20);
+
+        fixture.detectChanges();
+
+        const expected: string = helper.expectedEditorWidth.toString() + '%';
+
+        expect(codeEditorElement.style.width).toEqual(expected);
+      });
+
+      it(`should have width style value of "64.2%" when adjustWindowWidths is called with argument 10000 pixels`, () => {
+
+        const codeEditorElement: HTMLElement = fixture.nativeElement;
+
+        service.adjustWindowWidths(10000);
+
+        fixture.detectChanges();
+
+        const expected: string = '64.2%';
+
+        expect(codeEditorElement.style.width).toEqual(expected);
+      });
+
+      it(`should have width style value of "30%" when adjustWindowWidths is called with argument -10000 pixels`, () => {
+
+        const codeEditorElement: HTMLElement = fixture.nativeElement;
+
+        service.adjustWindowWidths(-10000);
+
+        fixture.detectChanges();
+
+        const expected: string = '30%';
+
+        expect(codeEditorElement.style.width).toEqual(expected);
+      });
+    });
+
     // TODO: Consider testing the actual KeyBoardEvent of typing which triggers a
     // call to updateLineNumber.
     describe('getLineNumberArray and updateLineNumber tests', () => {
@@ -207,3 +278,25 @@ describe('CodeEditorComponent', () => {
     });
   });
 });
+
+class WindowSizeHelper {
+
+  private changeSensitivity: number = 0.8;
+  private sensitivityDenom: number = 10;
+  private minWidth: number = 30;
+  private maxWidth: number = 64.2;
+  private startWidth: number = 47.2;
+
+  public expectedEditorWidth: number;
+  public expectedOutputWidth: number;
+
+  constructor() {}
+
+  public adjustWindowWidths(deltaXPixels: number) {
+
+    const percentChange: number = deltaXPixels * (this.changeSensitivity / this.sensitivityDenom);
+
+    this.expectedEditorWidth = Math.max(Math.min(this.startWidth + percentChange, this.maxWidth), this.minWidth);
+    this.expectedOutputWidth = Math.max(Math.min(this.startWidth - percentChange, this.maxWidth), this.minWidth);
+  }
+}

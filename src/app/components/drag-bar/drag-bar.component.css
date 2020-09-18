@@ -1,0 +1,32 @@
+:host {
+  cursor: ew-resize;
+}
+
+.line-bar {
+  display: inline-block;
+  background-color: rgb(159, 159, 159);
+  width: 2px;
+  height: 34em;
+}
+
+.arrow-right {
+  display: inline-block;
+  width: 0; 
+  height: 0; 
+  border-top: 0.5em solid transparent;
+  border-bottom: 0.5em solid transparent;
+  border-left: 0.5em solid rgb(159, 159, 159);
+  margin-left: 4px;
+  margin-bottom: 17em;
+}
+
+.arrow-left {
+  display: inline-block;
+  width: 0; 
+  height: 0; 
+  border-top: 0.5em solid transparent;
+  border-bottom: 0.5em solid transparent; 
+  border-right: 0.5em solid rgb(159, 159, 159);
+  margin-right: 4px;
+  margin-bottom: 17em;
+}

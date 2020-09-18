@@ -56,6 +56,15 @@ describe('AppComponent', () => {
 
         expect(mainSectionClass.length).toBe(1);
       });
+
+      it('should have div with class mid-section within main-section', () => {
+
+        const appElement: HTMLElement = fixture.nativeElement;
+        const mainSectionClass = appElement.getElementsByClassName('main-section');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('mid-section');
+
+        expect(divMidSection.length).toBe(1);
+      });
     });
 
     describe('Code editor tests', () => {
@@ -65,14 +74,6 @@ describe('AppComponent', () => {
         const codeEditor = appElement.querySelector('app-code-editor');
 
         expect(codeEditor).toBeTruthy();
-      });
-
-      it('should have a col-5 class in the code editor component', () => {
-
-        const appElement: HTMLElement = fixture.nativeElement;
-        const outputConsoleClasses = appElement.querySelector('app-code-editor').classList;
-
-        expect(outputConsoleClasses[0]).toBe('col-5');
       });
     });
 
@@ -84,13 +85,17 @@ describe('AppComponent', () => {
 
         expect(outputConsole).toBeTruthy();
       });
+    });
 
-      it('should have a col-5 class in the output console component', () => {
+    describe('Drag bar tests', () => {
+      it('should contain drag bar component within mid-section div', () => {
 
         const appElement: HTMLElement = fixture.nativeElement;
-        const outputConsoleClasses = appElement.querySelector('app-output-console').classList;
+        const mainSectionClass = appElement.getElementsByClassName('main-section');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('mid-section');
+        const dragBar = divMidSection[0].querySelector('app-drag-bar');
 
-        expect(outputConsoleClasses[0]).toBe('col-5');
+        expect(dragBar).toBeTruthy();
       });
     });
   });
