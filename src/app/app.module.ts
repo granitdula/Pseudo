@@ -7,6 +7,7 @@ import { NavigationBarComponent } from './components/navigation-bar/navigation-b
 import { CodeEditorComponent } from './components/code-editor/code-editor.component';
 import { OutputConsoleComponent } from './components/output-console/output-console.component';
 import { DragBarComponent } from './components/drag-bar/drag-bar.component';
+import { RunButtonComponent } from './components/run-button/run-button.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { DragBarComponent } from './components/drag-bar/drag-bar.component';
     NavigationBarComponent,
     CodeEditorComponent,
     OutputConsoleComponent,
-    DragBarComponent
+    DragBarComponent,
+    RunButtonComponent
   ],
   imports: [
     BrowserModule,
