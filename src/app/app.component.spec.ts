@@ -98,5 +98,17 @@ describe('AppComponent', () => {
         expect(dragBar).toBeTruthy();
       });
     });
+
+    describe('Run button tests', () => {
+      it('should contain run button component within mid-section div', () => {
+
+        const appElement: HTMLElement = fixture.nativeElement;
+        const mainSectionClass = appElement.getElementsByClassName('main-section');
+        const divMidSection = mainSectionClass[0].getElementsByClassName('mid-section');
+        const runButton = divMidSection[0].querySelector('app-run-button');
+
+        expect(runButton).toBeTruthy();
+      });
+    });
   });
 });
