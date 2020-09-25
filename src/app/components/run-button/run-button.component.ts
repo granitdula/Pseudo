@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-run-button',
   templateUrl: './run-button.component.html',
   styleUrls: ['./run-button.component.css']
 })
-export class RunButtonComponent implements OnInit {
+export class RunButtonComponent {
 
-  constructor() { }
-
-  ngOnInit(): void {
+  @HostListener('click')
+  onClick() {
+    console.log('CLICKED!');
   }
-
 }

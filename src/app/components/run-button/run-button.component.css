@@ -1,3 +1,11 @@
+:host:hover {
+  opacity: 80%;
+}
+
+:host:active {
+  opacity: 60%;
+}
+
 .run-btn-img {
   max-width: 80%;
 }
