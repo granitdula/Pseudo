@@ -17,124 +17,27 @@ export class Lexer {
 
     while (source.length !== 0 && this.charIndex < source.length) {
       let char: string = source.charAt(this.charIndex);
+      let singleCharTokenType: string | null = this.getSingleCharacterTokenType(char);
+      let compTokenType: string | Error | null = this.getComparatorTokenType(source);
 
       if (char === ' ') {
-        this.charIndex++;
-      }
-      else if (char === '\n') {
-        const token: Token = this.createToken(TokenTypes.NEWLINE);
-        tokens.push(token);
         this.charIndex++;
       }
       else if (char === '\t') {
         const error: InvalidCharacterError = new InvalidCharacterError('contains tabs.');
         return error;
       }
-      else if (char === '+') {
-        const token: Token = this.createToken(TokenTypes.PLUS);
+      else if (singleCharTokenType !== null) {
+        const token: Token = this.createToken(singleCharTokenType);
         tokens.push(token);
         this.charIndex++;
       }
-      else if (char === '-') {
-        const token: Token = this.createToken(TokenTypes.MINUS);
-        tokens.push(token);
+      else if (compTokenType instanceof Error) {
+        return compTokenType;
+      }
+      else if (typeof compTokenType === 'string') {
+        tokens.push(this.createToken(compTokenType));
         this.charIndex++;
-      }
-      else if (char === '*') {
-        const token: Token = this.createToken(TokenTypes.MULTIPLY);
-        tokens.push(token);
-        this.charIndex++;
-      }
-      else if (char === '/') {
-        const token: Token = this.createToken(TokenTypes.DIVIDE);
-        tokens.push(token);
-        this.charIndex++;
-      }
-      else if (char === '^') {
-        const token: Token = this.createToken(TokenTypes.POWER);
-        tokens.push(token);
-        this.charIndex++;
-      }
-      else if (char === '(') {
-        const token: Token = this.createToken(TokenTypes.L_BRACKET);
-        tokens.push(token);
-        this.charIndex++;
-      }
-      else if (char === ')') {
-        const token: Token = this.createToken(TokenTypes.R_BRACKET);
-        tokens.push(token);
-        this.charIndex++;
-      }
-      else if (char === ',') {
-        const token: Token = this.createToken(TokenTypes.COMMA);
-        tokens.push(token);
-        this.charIndex++;
-      }
-      else if (char === '=') {
-        if (this.charIndex + 1 >= source.length) {
-          const errorMessage: string = `can not end line statement with '='.`;
-          const error: InvalidCharacterError = new InvalidCharacterError(errorMessage);
-          return error;
-        }
-        else {
-          const nextChar: string = source.charAt(this.charIndex + 1);
-          let token: Token
-
-          if (nextChar === '=') {
-            token = this.createToken(TokenTypes.EQUALITY);
-            this.charIndex++;
-          }
-          else{
-            token = this.createToken(TokenTypes.EQUALS);
-          }
-
-          tokens.push(token);
-          this.charIndex++;
-        }
-      }
-      else if (char === '>') {
-        if (this.charIndex + 1 >= source.length) {
-          const errorMessage: string = `can not end line statement with '>'.`;
-          const error: InvalidCharacterError = new InvalidCharacterError(errorMessage);
-          return error;
-        }
-        else {
-          const nextChar: string = source.charAt(this.charIndex + 1);
-          let token: Token
-
-          if (nextChar === '=') {
-            token = this.createToken(TokenTypes.G_THAN_EQ);
-            this.charIndex++;
-          }
-          else{
-            token = this.createToken(TokenTypes.G_THAN);
-          }
-
-          tokens.push(token);
-          this.charIndex++;
-        }
-      }
-      else if (char === '<') {
-        if (this.charIndex + 1 >= source.length) {
-          const errorMessage: string = `can not end line statement with '<'.`;
-          const error: InvalidCharacterError = new InvalidCharacterError(errorMessage);
-          return error;
-        }
-        else {
-          const nextChar: string = source.charAt(this.charIndex + 1);
-          let token: Token
-
-          if (nextChar === '=') {
-            token = this.createToken(TokenTypes.L_THAN_EQ);
-            this.charIndex++;
-          }
-          else{
-            token = this.createToken(TokenTypes.L_THAN);
-          }
-
-          tokens.push(token);
-          this.charIndex++;
-        }
       }
       else if (this.isDigit(char)) {
         const result: number | Error = this.scanNumber(source);
@@ -154,12 +57,111 @@ export class Lexer {
       }
       else {
         const errorMessage = `the character '${char}' is not valid.`;
-        const error: InvalidCharacterError = new InvalidCharacterError(errorMessage);
-        return error;
+        return new InvalidCharacterError(errorMessage);
       }
     }
 
     return tokens;
+  }
+
+  private getSingleCharacterTokenType(char: string): string | null {
+
+    let tokenType: string | null;
+
+    switch (char) {
+      case '\n':
+        tokenType = TokenTypes.NEWLINE;
+        break;
+      case '+':
+        tokenType = TokenTypes.PLUS;
+        break;
+      case '-':
+        tokenType = TokenTypes.MINUS;
+        break;
+      case '*':
+        tokenType = TokenTypes.MULTIPLY;
+        break;
+      case '/':
+        tokenType = TokenTypes.DIVIDE;
+        break;
+      case '^':
+        tokenType = TokenTypes.POWER;
+        break;
+      case '(':
+        tokenType = TokenTypes.L_BRACKET;
+        break;
+      case ')':
+        tokenType = TokenTypes.R_BRACKET;
+        break;
+      case ',':
+        tokenType = TokenTypes.COMMA;
+        break;
+      default:
+        tokenType = null;
+        break;
+    }
+
+    return tokenType;
+  }
+
+  private getComparatorTokenType(source: string): string | Error | null {
+
+    const char = source.charAt(this.charIndex);
+
+    if (this.charIndex + 1 >= source.length) {
+      if (char === '=') {
+        const errorMessage: string = `can not end line statement with '='.`;
+        return new InvalidCharacterError(errorMessage);
+      }
+      else if (char === '>') {
+        const errorMessage: string = `can not end line statement with '>'.`;
+        return new InvalidCharacterError(errorMessage);
+      }
+      else if (char === '<') {
+        const errorMessage: string = `can not end line statement with '<'.`;
+        return new InvalidCharacterError(errorMessage);
+      }
+      else {
+        return null;
+      }
+    }
+    else {
+      if (char === '=' || char === '>' || char === '<') {
+        const nextChar: string = source.charAt(this.charIndex + 1);
+        return this.getSpecificComparatorTokenType(char, nextChar);
+      }
+      else {
+        return null;
+      }
+    }
+  }
+
+  private getSpecificComparatorTokenType(char: string, nextChar: string): string {
+
+    if (nextChar === '=') {
+      this.charIndex++;
+
+      if (char === '=') {
+        return TokenTypes.EQUALITY;
+      }
+      else if (char === '>') {
+        return TokenTypes.G_THAN_EQ;
+      }
+      else {
+        return TokenTypes.L_THAN_EQ;
+      }
+    }
+    else {
+      if (char === '=') {
+        return TokenTypes.EQUALS;
+      }
+      else if (char === '>') {
+        return TokenTypes.G_THAN;
+      }
+      else {
+        return TokenTypes.L_THAN;
+      }
+    }
   }
 
   private createToken(type: string, value?: any): Token {
