@@ -1,6 +1,9 @@
+import { ASTNode } from './../models/ast-node';
+import { Error } from './../logic/error';
 import { Parser } from './../logic/parser';
 import { Injectable } from '@angular/core';
-import { Lexer } from '@angular/compiler';
+import { Token } from '../models/token';
+import { Lexer } from '../logic/lexer';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +15,23 @@ export class InterpreterService {
 
   constructor() {
     this.lexer = new Lexer();
-    this.parser = new Parser();
+  }
+
+  public evaluate(source: string): string {
+
+    let output = '';
+
+    let lexerOutput: Array<Token> | Error = this.lexer.lex(source);
+
+    if (lexerOutput instanceof Error) {
+      output = lexerOutput.getErrorMessage();
+    }
+    else {
+      this.parser = new Parser(lexerOutput);
+      let ast: ASTNode = this.parser.parse();
+      // TODO: Create visitor functionality to traverse AST and execute program.
+    }
+
+    return output;
   }
 }
