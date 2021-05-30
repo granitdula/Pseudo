@@ -1,3 +1,4 @@
+import { InvalidSyntaxError } from './../logic/invalid-syntax-error';
 import { ASTNode } from './../models/ast-node';
 import { Error } from './../logic/error';
 import { Parser } from './../logic/parser';
@@ -28,7 +29,7 @@ export class InterpreterService {
     }
     else {
       this.parser = new Parser(lexerOutput);
-      let ast: ASTNode = this.parser.parse();
+      let ast: ASTNode | InvalidSyntaxError = this.parser.parse();
       // TODO: Create visitor functionality to traverse AST and execute program.
     }
 

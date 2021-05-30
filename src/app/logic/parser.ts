@@ -1,8 +1,10 @@
+import { InvalidSyntaxError } from './invalid-syntax-error';
 import { BinaryOpNode } from './../models/binary-op-node';
 import { NumberNode } from './../models/number-node';
 import { ASTNode } from '../models/ast-node';
 import { Token } from '../models/token';
-import { NUMBER, MULTIPLY, DIVIDE, PLUS, MINUS } from './token-type.constants';
+import { NUMBER, MULTIPLY, DIVIDE, PLUS, MINUS, L_BRACKET, R_BRACKET } from './token-type.constants';
+import { UnaryOpNode } from '../models/unary-op-node';
 
 /**
  * This Parser implements a recursive descent parser.
@@ -26,9 +28,9 @@ export class Parser {
     }
   }
 
-  private binaryOperators(grammerFunc: string, ops: Set<string>): BinaryOpNode | NumberNode {
-    let leftNode: BinaryOpNode | NumberNode;
-    let rightNode: BinaryOpNode | NumberNode;
+  private binaryOperators(grammerFunc: string, ops: Set<string>): ASTNode | InvalidSyntaxError {
+    let leftNode: ASTNode | InvalidSyntaxError;
+    let rightNode: ASTNode | InvalidSyntaxError;
 
     if (grammerFunc === 'term') { leftNode = this.term(); }
     else { leftNode = this.factor(); }
@@ -50,29 +52,51 @@ export class Parser {
     return leftNode;
   }
 
-  private factor(): NumberNode {
+  private factor(): ASTNode | InvalidSyntaxError {
 
     let tok = this.currentToken;
 
-    if (tok.type === NUMBER) {
+    if (tok.type === PLUS || tok.type === MINUS) {
+      this.advance();
+      let factor = this.factor();
+
+      if (!(factor instanceof InvalidSyntaxError)) {
+        const unaryOpNode: UnaryOpNode = {token: tok, node: factor};
+        return unaryOpNode;
+      }
+    }
+    else if (tok.type === NUMBER) {
       this.advance();
       let numberNode: NumberNode = {token: tok};
       return numberNode;
     }
+    else if (tok.type === L_BRACKET) {
+      this.advance();
+      let expr = this.expr();
+
+      if (this.currentToken.type === R_BRACKET) {
+        this.advance();
+        return expr;
+      }
+      else {
+        const syntaxError = new InvalidSyntaxError(`missing ')'`);
+        return syntaxError;
+      }
+    }
   }
 
-  private term(): BinaryOpNode | NumberNode {
+  private term(): ASTNode | InvalidSyntaxError {
     let operators: Set<string> = new Set([MULTIPLY, DIVIDE]);
     return this.binaryOperators('factor', operators);
   }
 
-  private expr(): BinaryOpNode | NumberNode {
+  private expr(): ASTNode | InvalidSyntaxError {
     let operators: Set<string> = new Set([PLUS, MINUS]);
     return this.binaryOperators('term', operators);
   }
 
-  public parse(): ASTNode {
-    let astNode: ASTNode = this.expr();
+  public parse(): ASTNode | InvalidSyntaxError {
+    let astNode: ASTNode | InvalidSyntaxError = this.expr();
     return astNode;
   }
 }
