@@ -13,7 +13,8 @@ describe('Lexer tests', () => {
         const lexer: Lexer = new Lexer();
 
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
-        const expected: Array<Token> = [];
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
+        const expected: Array<Token> = [eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -26,8 +27,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 2, 1));
         const expectedToken: Token = createToken(TokenTypes.NEWLINE, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -59,8 +61,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.PLUS, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -73,8 +76,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.MINUS, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -87,8 +91,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.MULTIPLY, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -101,8 +106,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.DIVIDE, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -115,8 +121,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.POWER, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -129,8 +136,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.L_BRACKET, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -143,8 +151,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.R_BRACKET, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -157,8 +166,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.COMMA, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -171,8 +181,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.NUMBER, posTracker, 5);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -185,8 +196,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
         const expectedToken: Token = createToken(TokenTypes.IDENTIFIER, posTracker, 'g');
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -201,10 +213,11 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(2, 2, 1));
         const expectedToken1: Token = createToken(TokenTypes.EQUALS, posTracker);
         posTracker.advance();
         const expectedToken2: Token = createToken(TokenTypes.NEWLINE, posTracker);
-        const expected: Array<Token> = [expectedToken1, expectedToken2];
+        const expected: Array<Token> = [expectedToken1, expectedToken2, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -217,8 +230,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(2, 1, 3));
         const expectedToken: Token = createToken(TokenTypes.EQUALITY, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -231,10 +245,11 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(2, 2, 1));
         const expectedToken1: Token = createToken(TokenTypes.G_THAN, posTracker);
         posTracker.advance();
         const expectedToken2: Token = createToken(TokenTypes.NEWLINE, posTracker);
-        const expected: Array<Token> = [expectedToken1, expectedToken2];
+        const expected: Array<Token> = [expectedToken1, expectedToken2, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -247,8 +262,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(2, 1, 3));
         const expectedToken: Token = createToken(TokenTypes.G_THAN_EQ, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -261,10 +277,11 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(2, 2, 1));
         const expectedToken1: Token = createToken(TokenTypes.L_THAN, posTracker);
         posTracker.advance();
         const expectedToken2: Token = createToken(TokenTypes.NEWLINE, posTracker);
-        const expected: Array<Token> = [expectedToken1, expectedToken2];
+        const expected: Array<Token> = [expectedToken1, expectedToken2, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -277,8 +294,9 @@ describe('Lexer tests', () => {
         const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
         const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(2, 1, 3));
         const expectedToken: Token = createToken(TokenTypes.L_THAN_EQ, posTracker);
-        const expected: Array<Token> = [expectedToken];
+        const expected: Array<Token> = [expectedToken, eofToken];
 
         expect(tokens).toEqual(expected);
       });
@@ -294,6 +312,7 @@ describe('Lexer tests', () => {
           const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
           const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(10, 2, 1));
           const expectedToken1: Token = createToken(TokenTypes.IDENTIFIER, posTracker, 'x');
           posTracker.advance();
           posTracker.advance();
@@ -310,9 +329,9 @@ describe('Lexer tests', () => {
           posTracker.advance();
           const expectedToken6: Token = createToken(TokenTypes.NEWLINE, posTracker);
 
-          const expected: Array<Token> = [expectedToken1, expectedToken2,
-                                          expectedToken3, expectedToken4,
-                                          expectedToken5, expectedToken6];
+          const expected: Array<Token> = [expectedToken1, expectedToken2, expectedToken3,
+                                          expectedToken4, expectedToken5, expectedToken6,
+                                          eofToken];
 
           expect(tokens).toEqual(expected);
         });
@@ -325,6 +344,7 @@ describe('Lexer tests', () => {
           const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
           const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(11, 2, 1));
           const expectedToken1: Token = createToken(TokenTypes.IDENTIFIER, posTracker, 'x');
           posTracker.advance();
           posTracker.advance();
@@ -335,8 +355,8 @@ describe('Lexer tests', () => {
           for (let i = 0; i < 6; i++) { posTracker.advance(); }
           const expectedToken4: Token = createToken(TokenTypes.NEWLINE, posTracker);
 
-          const expected: Array<Token> = [expectedToken1, expectedToken2,
-                                          expectedToken3, expectedToken4];
+          const expected: Array<Token> = [expectedToken1, expectedToken2, expectedToken3,
+                                          expectedToken4, eofToken];
 
           expect(tokens).toEqual(expected);
         });
@@ -369,6 +389,7 @@ describe('Lexer tests', () => {
           const posTracker19 = new PositionTracker(47, 1, 48);
           const posTracker20 = new PositionTracker(48, 1, 49);
           const posTracker21 = new PositionTracker(49, 1, 50);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(50, 2, 1));
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
             [TokenTypes.IDENTIFIER, posTracker1, 'variable'], [TokenTypes.EQUALS, posTracker2],
@@ -385,6 +406,7 @@ describe('Lexer tests', () => {
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
+          expected.push(eofToken);
 
           expect(tokens).toEqual(expected);
         });
@@ -420,6 +442,7 @@ describe('Lexer tests', () => {
           const posTracker20 = new PositionTracker(42, 4, 6); // \n
           const posTracker21 = new PositionTracker(43, 5, 1); // end
           const posTracker22 = new PositionTracker(46, 5, 4); // \n
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(47, 6, 1));
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
             [TokenTypes.IDENTIFIER, posTracker1, 'if'], [TokenTypes.L_BRACKET, posTracker2],
@@ -436,6 +459,7 @@ describe('Lexer tests', () => {
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
+          expected.push(eofToken);
 
           expect(tokens).toEqual(expected);
         });
@@ -471,6 +495,7 @@ describe('Lexer tests', () => {
           const posTracker20 = new PositionTracker(38, 3, 10);
           const posTracker21 = new PositionTracker(39, 4, 1);
           const posTracker22 = new PositionTracker(42, 4, 4);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(43, 5, 1));
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
             [TokenTypes.IDENTIFIER, posTracker1, 'x'], [TokenTypes.EQUALS, posTracker2],
@@ -487,6 +512,7 @@ describe('Lexer tests', () => {
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
+          expected.push(eofToken);
 
           expect(tokens).toEqual(expected);
         });
@@ -522,6 +548,7 @@ describe('Lexer tests', () => {
           const posTracker22 = new PositionTracker(41, 4, 10);
           const posTracker23 = new PositionTracker(42, 5, 1);
           const posTracker24 = new PositionTracker(45, 5, 4);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(46, 6, 1));
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
             [TokenTypes.IDENTIFIER, posTracker1, 'x'], [TokenTypes.EQUALS, posTracker2],
@@ -539,6 +566,7 @@ describe('Lexer tests', () => {
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
+          expected.push(eofToken);
 
           expect(tokens).toEqual(expected);
         });
@@ -568,6 +596,7 @@ describe('Lexer tests', () => {
           const posTracker14 = new PositionTracker(37, 2, 13);
           const posTracker15 = new PositionTracker(38, 3, 1);
           const posTracker16 = new PositionTracker(41, 3, 4);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(42, 4, 1));
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
             [TokenTypes.IDENTIFIER, posTracker1, 'function'],
@@ -582,6 +611,7 @@ describe('Lexer tests', () => {
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
+          expected.push(eofToken);
 
           expect(tokens).toEqual(expected);
         });
@@ -594,6 +624,7 @@ describe('Lexer tests', () => {
           const tokens: Array<Token> | Error = lexer.lex(sourceCode);
 
           const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(11, 2, 1));
           const expectedToken1: Token = createToken(TokenTypes.IDENTIFIER, posTracker, 'output');
           for (let i = 0; i < 6; i++) { posTracker.advance(); }
           const expectedToken2: Token = createToken(TokenTypes.L_BRACKET, posTracker);
@@ -605,9 +636,8 @@ describe('Lexer tests', () => {
           posTracker.advance();
           const expectedToken5: Token = createToken(TokenTypes.NEWLINE, posTracker);
 
-          const expected: Array<Token> = [expectedToken1, expectedToken2,
-                                          expectedToken3, expectedToken4,
-                                          expectedToken5];
+          const expected: Array<Token> = [expectedToken1, expectedToken2, expectedToken3,
+                                          expectedToken4, expectedToken5, eofToken];
 
           expect(tokens).toEqual(expected);
         });

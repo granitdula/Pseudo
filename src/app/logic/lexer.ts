@@ -63,6 +63,9 @@ export class Lexer {
       }
     }
 
+    const eofToken: Token = this.createToken(TokenTypes.EOF, this.positionTracker);
+    tokens.push(eofToken);
+
     return tokens;
   }
 
