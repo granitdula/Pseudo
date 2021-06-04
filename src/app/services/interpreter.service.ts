@@ -5,6 +5,7 @@ import { Parser } from './../logic/parser';
 import { Injectable } from '@angular/core';
 import { Token } from '../models/token';
 import { Lexer } from '../logic/lexer';
+import { ParseResult } from '../logic/parse-result';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,7 @@ export class InterpreterService {
     }
     else {
       this.parser = new Parser(lexerOutput);
-      let ast: ASTNode | InvalidSyntaxError = this.parser.parse();
+      let parseResult: ParseResult = this.parser.parse();
       // TODO: Create visitor functionality to traverse AST and execute program.
     }
 
