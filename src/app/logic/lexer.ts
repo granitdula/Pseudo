@@ -18,6 +18,8 @@ export class Lexer {
 
     while (source.length !== 0 && this.positionTracker.getIndex() < source.length) {
       let startOfTokenPosTracker = this.positionTracker.copy();
+      let startOfTokenPosEnd: PositionTracker = startOfTokenPosTracker.copy();
+      startOfTokenPosEnd.advance();
       let char: string = source.charAt(this.positionTracker.getIndex());
       let singleCharTokenType: string | null = this.getSingleCharacterTokenType(char);
       let compTokenType: string | Error | null = this.getComparatorTokenType(source);
@@ -26,7 +28,9 @@ export class Lexer {
         this.positionTracker.advance();
       }
       else if (char === '\t') {
-        const error: InvalidCharacterError = new InvalidCharacterError('contains tabs.');
+        const error: InvalidCharacterError = new InvalidCharacterError('contains tabs.',
+                                                                       startOfTokenPosTracker,
+                                                                       startOfTokenPosEnd);
         return error;
       }
       else if (singleCharTokenType !== null) {
@@ -59,7 +63,8 @@ export class Lexer {
       }
       else {
         const errorMessage = `the character '${char}' is not valid.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startOfTokenPosTracker,
+                                                            startOfTokenPosEnd);
       }
     }
 
@@ -111,21 +116,24 @@ export class Lexer {
 
   private getComparatorTokenType(source: string): string | Error | null {
 
+    const startPos: PositionTracker = this.positionTracker.copy();
+    let endPos: PositionTracker = this.positionTracker.copy();
+    endPos.advance();
     const charIndex = this.positionTracker.getIndex();
     const char = source.charAt(charIndex);
 
     if (charIndex + 1 >= source.length) {
       if (char === '=') {
         const errorMessage: string = `can not end line statement with '='.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startPos, endPos);
       }
       else if (char === '>') {
         const errorMessage: string = `can not end line statement with '>'.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startPos, endPos);
       }
       else if (char === '<') {
         const errorMessage: string = `can not end line statement with '<'.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startPos, endPos);
       }
       else {
         return null;
@@ -206,6 +214,9 @@ export class Lexer {
 
   private scanNumber(source: string): number | Error {
 
+    const initialStartPos: PositionTracker = this.positionTracker.copy();
+    const initialEndPos: PositionTracker = this.positionTracker.copy();
+    initialEndPos.advance();
     let char: string = source.charAt(this.positionTracker.getIndex());
     let value: string = '';
     let numberOfDots = 0;
@@ -224,7 +235,9 @@ export class Lexer {
 
     if (numberOfDots > 1) {
       const errorMessage = 'number has more than one decimal point.';
-      const error: InvalidCharacterError = new InvalidCharacterError(errorMessage);
+      const error: InvalidCharacterError = new InvalidCharacterError(errorMessage,
+                                                                     initialStartPos,
+                                                                     initialEndPos);
 
       return error;
     }

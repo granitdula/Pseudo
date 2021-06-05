@@ -88,12 +88,14 @@ export class Parser {
         return parseResult.success(expr);
       }
       else {
-        const syntaxError = new InvalidSyntaxError(`missing ')'`);
+        const syntaxError = new InvalidSyntaxError(`missing ')'`, this.currentToken.positionStart,
+                                                                  this.currentToken.positionEnd);
         return parseResult.failure(syntaxError);
       }
     }
 
-    const syntaxError = new InvalidSyntaxError('Expected a number');
+    const syntaxError = new InvalidSyntaxError('Expected a number', this.currentToken.positionStart,
+                                                                    this.currentToken.positionEnd);
     return parseResult.failure(syntaxError);
   }
 
@@ -111,7 +113,10 @@ export class Parser {
     let parseResult: ParseResult = this.expr();
 
     if (parseResult.getError() === null && this.currentToken.type !== EOF) {
-      const syntaxError = new InvalidSyntaxError(`Expected '+', '-', '*' or '/'`);
+      const node: ASTNode = parseResult.getNode();
+      const syntaxError = new InvalidSyntaxError(`Expected '+', '-', '*' or '/'`,
+                                                  node.token.positionStart,
+                                                  node.token.positionEnd);
       return parseResult.failure(syntaxError);
     }
 

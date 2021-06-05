@@ -41,9 +41,11 @@ describe('Lexer tests', () => {
 
         const error: Array<Token> | Error = lexer.lex(sourceCode);
 
+        const posStart = new PositionTracker(0, 1, 1);
+        const posEnd = new PositionTracker(1, 1, 2);
         const expectErrorType = 'InvalidCharacterError';
         const expectErrorDetails = 'contains tabs.';
-        const expected: Error = new Error(expectErrorType, expectErrorDetails);
+        const expected: Error = new Error(expectErrorType, posStart, posEnd, expectErrorDetails);
 
         if (error instanceof Error) {
           expect(error.getErrorMessage()).toEqual(expected.getErrorMessage());
@@ -652,9 +654,11 @@ describe('Lexer tests', () => {
 
         const error: Array<Token> | Error = lexer.lex(sourceCode);
 
+        const posStart = new PositionTracker(4, 1, 5);
+        const posEnd = new PositionTracker(5, 1, 6);
         const expectErrorType = 'InvalidCharacterError';
         const expectErrorDetails = 'number has more than one decimal point.';
-        const expected: Error = new Error(expectErrorType, expectErrorDetails);
+        const expected: Error = new Error(expectErrorType, posStart, posEnd, expectErrorDetails);
 
         if (error instanceof Error) {
           expect(error.getErrorMessage()).toEqual(expected.getErrorMessage());
@@ -671,9 +675,11 @@ describe('Lexer tests', () => {
 
         const error: Array<Token> | Error = lexer.lex(sourceCode);
 
+        const posStart = new PositionTracker(2, 1, 3);
+        const posEnd = new PositionTracker(3, 1, 4);
         const expectErrorType = 'InvalidCharacterError';
         const expectErrorDetails = `can not end line statement with '='.`;
-        const expected: Error = new Error(expectErrorType, expectErrorDetails);
+        const expected: Error = new Error(expectErrorType, posStart, posEnd, expectErrorDetails);
 
         if (error instanceof Error) {
           expect(error.getErrorMessage()).toEqual(expected.getErrorMessage());
@@ -690,9 +696,11 @@ describe('Lexer tests', () => {
 
         const error: Array<Token> | Error = lexer.lex(sourceCode);
 
+        const posStart = new PositionTracker(2, 1, 3);
+        const posEnd = new PositionTracker(3, 1, 4);
         const expectErrorType = 'InvalidCharacterError';
         const expectErrorDetails = `can not end line statement with '>'.`;
-        const expected: Error = new Error(expectErrorType, expectErrorDetails);
+        const expected: Error = new Error(expectErrorType, posStart, posEnd, expectErrorDetails);
 
         if (error instanceof Error) {
           expect(error.getErrorMessage()).toEqual(expected.getErrorMessage());
@@ -709,9 +717,11 @@ describe('Lexer tests', () => {
 
         const error: Array<Token> | Error = lexer.lex(sourceCode);
 
+        const posStart = new PositionTracker(2, 1, 3);
+        const posEnd = new PositionTracker(3, 1, 4);
         const expectErrorType = 'InvalidCharacterError';
         const expectErrorDetails = `can not end line statement with '<'.`;
-        const expected: Error = new Error(expectErrorType, expectErrorDetails);
+        const expected: Error = new Error(expectErrorType, posStart, posEnd, expectErrorDetails);
 
         if (error instanceof Error) {
           expect(error.getErrorMessage()).toEqual(expected.getErrorMessage());
@@ -728,9 +738,11 @@ describe('Lexer tests', () => {
 
         const error: Array<Token> | Error = lexer.lex(sourceCode);
 
+        const posStart = new PositionTracker(1, 1, 2);
+        const posEnd = new PositionTracker(2, 1, 3);
         const expectErrorType = 'InvalidCharacterError';
         const expectErrorDetails = `the character '@' is not valid.`;
-        const expected: Error = new Error(expectErrorType, expectErrorDetails);
+        const expected: Error = new Error(expectErrorType, posStart, posEnd, expectErrorDetails);
 
         if (error instanceof Error) {
           expect(error.getErrorMessage()).toEqual(expected.getErrorMessage());

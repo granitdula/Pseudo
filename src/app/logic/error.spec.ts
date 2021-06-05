@@ -1,19 +1,26 @@
+import { PositionTracker } from './position-tracker';
 import { Error } from './error';
 
 describe('Error tests', () => {
   describe('getErrorMessage tests', () => {
-    it(`should return 'Error' for type='Error' and no details passed`, () => {
+    it(`should return 'Error' with line and column numbers for type='Error' and no details passed`, () => {
 
-      const error: Error = new Error('Error');
-      const expected = 'Error';
+      const posStart = new PositionTracker(0, 1, 1);
+      const posEnd = new PositionTracker(1, 1, 2);
+      const error: Error = new Error('Error', posStart, posEnd);
+      const expected = `Error\nAt line: ${posStart.getLine()} column: ${posStart.getColumn()}` +
+                       ` and ends at line: ${posEnd.getLine()} column: ${posEnd.getColumn()}`;
 
       expect(error.getErrorMessage()).toEqual(expected);
     });
 
-    it(`should return 'Error: details' for type='Error' and details='details'`, () => {
+    it(`should return 'Error: details' with line and column numbers for type='Error' and details='details'`, () => {
 
-      const error: Error = new Error('Error', 'details');
-      const expected = 'Error: details';
+      const posStart = new PositionTracker(0, 1, 1);
+      const posEnd = new PositionTracker(1, 1, 2);
+      const error: Error = new Error('Error', posStart, posEnd, 'details');
+      const expected = `Error: details\nAt line: ${posStart.getLine()} column: ${posStart.getColumn()}` +
+                       ` and ends at line: ${posEnd.getLine()} column: ${posEnd.getColumn()}`;
 
       expect(error.getErrorMessage()).toEqual(expected);
     });

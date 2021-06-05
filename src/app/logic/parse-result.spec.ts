@@ -27,7 +27,9 @@ describe('ParseResult tests', () => {
 
   describe('failure tests', () => {
     it('should return an error instance and null node when using getter, after calling failure', () => {
-      const syntaxError = new InvalidSyntaxError(`missing ')'`);
+      const posStart = new PositionTracker(4, 1, 5);
+      const posEnd = new PositionTracker(5, 1, 6);
+      const syntaxError = new InvalidSyntaxError(`missing ')'`, posStart, posEnd);
       const parseResult = new ParseResult();
 
       parseResult.failure(syntaxError);
@@ -50,7 +52,9 @@ describe('ParseResult tests', () => {
     });
 
     it('should return node in passed in parse result and assign error if error exists in passed parse result', () => {
-      const syntaxError = new InvalidSyntaxError(`missing ')'`);
+      const posStart = new PositionTracker(4, 1, 5);
+      const posEnd = new PositionTracker(5, 1, 6);
+      const syntaxError = new InvalidSyntaxError(`missing ')'`, posStart, posEnd);
       const errorParseResult = new ParseResult();
       errorParseResult.failure(syntaxError);
 
