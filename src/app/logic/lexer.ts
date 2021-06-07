@@ -1,3 +1,4 @@
+import { PositionTracker } from './position-tracker';
 import { Error } from './error';
 import { InvalidCharacterError } from './invalid-character-error';
 import { Token } from '../models/token';
@@ -5,39 +6,44 @@ import * as TokenTypes from './token-type.constants';
 
 export class Lexer {
 
-  private charIndex: number;
+  private positionTracker: PositionTracker;
 
   constructor() {
-    this.charIndex = 0;
+    this.positionTracker = new PositionTracker(0, 1, 1);
   }
 
   public lex(source: string): Array<Token> | Error {
 
     let tokens: Array<Token> = [];
 
-    while (source.length !== 0 && this.charIndex < source.length) {
-      let char: string = source.charAt(this.charIndex);
+    while (source.length !== 0 && this.positionTracker.getIndex() < source.length) {
+      let startOfTokenPosTracker = this.positionTracker.copy();
+      let startOfTokenPosEnd: PositionTracker = startOfTokenPosTracker.copy();
+      startOfTokenPosEnd.advance();
+      let char: string = source.charAt(this.positionTracker.getIndex());
       let singleCharTokenType: string | null = this.getSingleCharacterTokenType(char);
       let compTokenType: string | Error | null = this.getComparatorTokenType(source);
 
       if (char === ' ') {
-        this.charIndex++;
+        this.positionTracker.advance();
       }
       else if (char === '\t') {
-        const error: InvalidCharacterError = new InvalidCharacterError('contains tabs.');
+        const error: InvalidCharacterError = new InvalidCharacterError('contains tabs.',
+                                                                       startOfTokenPosTracker,
+                                                                       startOfTokenPosEnd);
         return error;
       }
       else if (singleCharTokenType !== null) {
-        const token: Token = this.createToken(singleCharTokenType);
+        const token: Token = this.createToken(singleCharTokenType, startOfTokenPosTracker);
         tokens.push(token);
-        this.charIndex++;
+        this.positionTracker.advance(char); // Passed arg to check for newline char.
       }
       else if (compTokenType instanceof Error) {
         return compTokenType;
       }
       else if (typeof compTokenType === 'string') {
-        tokens.push(this.createToken(compTokenType));
-        this.charIndex++;
+        tokens.push(this.createToken(compTokenType, startOfTokenPosTracker));
+        this.positionTracker.advance();
       }
       else if (this.isDigit(char)) {
         const result: number | Error = this.scanNumber(source);
@@ -46,20 +52,24 @@ export class Lexer {
           return result;
         }
         else{
-          const token: Token = this.createToken(TokenTypes.NUMBER, result);
+          const token: Token = this.createToken(TokenTypes.NUMBER, startOfTokenPosTracker, result);
           tokens.push(token);
         }
       }
       else if (this.isAlphabeticalCharacter(char)) {
         const result: string = this.scanString(source);
-        const token: Token = this.createToken(TokenTypes.IDENTIFIER, result);
+        const token: Token = this.createToken(TokenTypes.IDENTIFIER, startOfTokenPosTracker, result);
         tokens.push(token);
       }
       else {
         const errorMessage = `the character '${char}' is not valid.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startOfTokenPosTracker,
+                                                            startOfTokenPosEnd);
       }
     }
+
+    const eofToken: Token = this.createToken(TokenTypes.EOF, this.positionTracker);
+    tokens.push(eofToken);
 
     return tokens;
   }
@@ -106,20 +116,24 @@ export class Lexer {
 
   private getComparatorTokenType(source: string): string | Error | null {
 
-    const char = source.charAt(this.charIndex);
+    const startPos: PositionTracker = this.positionTracker.copy();
+    let endPos: PositionTracker = this.positionTracker.copy();
+    endPos.advance();
+    const charIndex = this.positionTracker.getIndex();
+    const char = source.charAt(charIndex);
 
-    if (this.charIndex + 1 >= source.length) {
+    if (charIndex + 1 >= source.length) {
       if (char === '=') {
         const errorMessage: string = `can not end line statement with '='.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startPos, endPos);
       }
       else if (char === '>') {
         const errorMessage: string = `can not end line statement with '>'.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startPos, endPos);
       }
       else if (char === '<') {
         const errorMessage: string = `can not end line statement with '<'.`;
-        return new InvalidCharacterError(errorMessage);
+        return new InvalidCharacterError(errorMessage, startPos, endPos);
       }
       else {
         return null;
@@ -127,7 +141,7 @@ export class Lexer {
     }
     else {
       if (char === '=' || char === '>' || char === '<') {
-        const nextChar: string = source.charAt(this.charIndex + 1);
+        const nextChar: string = source.charAt(charIndex + 1);
         return this.getSpecificComparatorTokenType(char, nextChar);
       }
       else {
@@ -139,7 +153,7 @@ export class Lexer {
   private getSpecificComparatorTokenType(char: string, nextChar: string): string {
 
     if (nextChar === '=') {
-      this.charIndex++;
+      this.positionTracker.advance();
 
       if (char === '=') {
         return TokenTypes.EQUALITY;
@@ -164,16 +178,26 @@ export class Lexer {
     }
   }
 
-  private createToken(type: string, value?: any): Token {
+  private createToken(type: string, posStart: PositionTracker, value?: any): Token {
 
     let token: Token;
 
+    const posStartNew = posStart.copy();
+    let posEnd = posStart.copy();
+    posEnd.advance();
+
     if (value === undefined) {
-      token = { type: type };
+      token = {
+        type: type,
+        positionStart: posStartNew,
+        positionEnd: posEnd
+      };
     }
     else {
       token = {
         type: type,
+        positionStart: posStartNew,
+        positionEnd: posEnd,
         value: value
       };
     }
@@ -190,24 +214,30 @@ export class Lexer {
 
   private scanNumber(source: string): number | Error {
 
-    let char: string = source.charAt(this.charIndex);
+    const initialStartPos: PositionTracker = this.positionTracker.copy();
+    const initialEndPos: PositionTracker = this.positionTracker.copy();
+    initialEndPos.advance();
+    let char: string = source.charAt(this.positionTracker.getIndex());
     let value: string = '';
     let numberOfDots = 0;
 
-    while ((char === '.' || this.isDigit(char)) && this.charIndex < source.length) {
+    while ((char === '.' || this.isDigit(char)) &&
+           this.positionTracker.getIndex() < source.length) {
       if (char === '.') {
         numberOfDots++;
       }
 
       value = value + char;
 
-      this.charIndex++;
-      char = source.charAt(this.charIndex);
+      this.positionTracker.advance();
+      char = source.charAt(this.positionTracker.getIndex());
     }
 
     if (numberOfDots > 1) {
       const errorMessage = 'number has more than one decimal point.';
-      const error: InvalidCharacterError = new InvalidCharacterError(errorMessage);
+      const error: InvalidCharacterError = new InvalidCharacterError(errorMessage,
+                                                                     initialStartPos,
+                                                                     initialEndPos);
 
       return error;
     }
@@ -227,14 +257,15 @@ export class Lexer {
 
   private scanString(source: string): string {
 
-    let char: string = source.charAt(this.charIndex);
+    let char: string = source.charAt(this.positionTracker.getIndex());
     let value: string = '';
 
-    while (this.isAlphabeticalCharacter(char) && this.charIndex < source.length) {
+    while (this.isAlphabeticalCharacter(char) &&
+           this.positionTracker.getIndex() < source.length) {
       value = value + char
 
-      this.charIndex++;
-      char = source.charAt(this.charIndex);
+      this.positionTracker.advance();
+      char = source.charAt(this.positionTracker.getIndex());
     }
 
     return value;

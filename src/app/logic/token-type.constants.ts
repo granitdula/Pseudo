@@ -15,3 +15,4 @@ export const G_THAN = 'G_THAN';
 export const L_THAN = 'L_THAN';
 export const G_THAN_EQ = 'G_THAN_EQ';
 export const L_THAN_EQ = 'L_THAN_EQ';
+export const EOF = 'EOF';
