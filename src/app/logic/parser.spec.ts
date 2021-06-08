@@ -3,7 +3,7 @@ import { ASTNode } from '../models/ast-node';
 import { Parser } from './parser';
 import { PositionTracker } from './position-tracker';
 import { Token } from '../models/token';
-import { NUMBER, EOF, MINUS, PLUS, MULTIPLY, DIVIDE, L_BRACKET, R_BRACKET } from './token-type.constants';
+import { NUMBER, EOF, MINUS, PLUS, MULTIPLY, DIVIDE, L_BRACKET, R_BRACKET, POWER } from './token-type.constants';
 import { ParseResult } from './parse-result';
 
 describe('Parser tests', () => {
@@ -197,6 +197,34 @@ describe('Parser tests', () => {
         expect(parseResult).toEqual(expected);
       });
 
+      it('should return correct AST for binary operation expression: 3 ^ 2', () => {
+        const posStartNum1 = new PositionTracker(0, 1, 1);
+        const posStartPower = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(4, 1, 5);
+        const posStartEof = new PositionTracker(5, 1, 6);
+
+        const tokenList: Array<Token> = [
+          createToken(NUMBER, posStartNum1, 3), createToken(POWER, posStartPower),
+          createToken(NUMBER, posStartNum2, 2), createToken(EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 3) };
+        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const binaryNode: ASTNode = {
+          token: createToken(POWER, posStartPower),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(binaryNode);
+
+        expect(parseResult).toEqual(expected);
+      });
+
       it('should return correct AST for expression: ((1 + 2) * (4 - 1))', () => {
         const posStartOuterLeftBrack = new PositionTracker(0, 1, 1);
         const posStartInnerLeftBrack1 = new PositionTracker(1, 1, 2);
@@ -289,6 +317,140 @@ describe('Parser tests', () => {
           token: createToken(DIVIDE, posStartDivide),
           leftChild: binaryExp,
           rightChild: numberNode3
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for expression: 1 + 2 ^ 3 - 4', () => {
+        const posStartNum1 = new PositionTracker(0, 1, 1);
+        const posStartPlus = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(4, 1, 5);
+        const posStartPower = new PositionTracker(6, 1, 7);
+        const posStartNum3 = new PositionTracker(8, 1, 9);
+        const posStartMinus = new PositionTracker(10, 1, 11);
+        const posStartNum4 = new PositionTracker(12, 1, 13);
+        const posStartEof = new PositionTracker(13, 1, 14);
+
+        const tokenList: Array<Token> = [
+          createToken(NUMBER, posStartNum1, 1), createToken(PLUS, posStartPlus),
+          createToken(NUMBER, posStartNum2, 2), createToken(POWER, posStartPower),
+          createToken(NUMBER, posStartNum3, 3), createToken(MINUS, posStartMinus),
+          createToken(NUMBER, posStartNum4, 4), createToken(EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 3) };
+        const powerBinaryExp: ASTNode = {
+          token: createToken(POWER, posStartPower),
+          leftChild: numberNode2,
+          rightChild: numberNode3
+        };
+
+        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
+        const plusBinaryExp: ASTNode = {
+          token: createToken(PLUS, posStartPlus),
+          leftChild: numberNode1,
+          rightChild: powerBinaryExp
+        };
+
+        const numberNode4: ASTNode = { token: createToken(NUMBER, posStartNum4, 4) };
+        const ast: ASTNode = {
+          token: createToken(MINUS, posStartMinus),
+          leftChild: plusBinaryExp,
+          rightChild: numberNode4
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for expression: -2 ^ 3', () => {
+        const posStartMinus = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(1, 1, 2);
+        const posStartPower = new PositionTracker(3, 1, 4);
+        const posStartNum2 = new PositionTracker(5, 1, 6);
+        const posStartEof = new PositionTracker(6, 1, 7);
+
+        const tokenList: Array<Token> = [
+          createToken(MINUS, posStartMinus), createToken(NUMBER, posStartNum1, 2),
+          createToken(POWER, posStartPower), createToken(NUMBER, posStartNum2, 3),
+          createToken(EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 2) };
+        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 3) };
+        const powerBinaryExp: ASTNode = {
+          token: createToken(POWER, posStartPower),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        const ast: ASTNode = {
+          token: createToken(MINUS, posStartMinus),
+          node: powerBinaryExp
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for expression: (1 + 2) ^ 3 - 4', () => {
+        const posStartLeftBrack = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(1, 1, 2);
+        const posStartPlus = new PositionTracker(3, 1, 4);
+        const posStartNum2 = new PositionTracker(5, 1, 6);
+        const posStartRightBrack = new PositionTracker(6, 1, 7);
+        const posStartPower = new PositionTracker(7, 1, 8);
+        const posStartNum3 = new PositionTracker(9, 1, 10);
+        const posStartMinus = new PositionTracker(11, 1, 12);
+        const posStartNum4 = new PositionTracker(13, 1, 14);
+        const posStartEof = new PositionTracker(14, 1, 15);
+
+        const tokenList: Array<Token> = [
+          createToken(L_BRACKET, posStartLeftBrack), createToken(NUMBER, posStartNum1, 1),
+          createToken(PLUS, posStartPlus), createToken(NUMBER, posStartNum2, 2),
+          createToken(R_BRACKET, posStartRightBrack), createToken(POWER, posStartPower),
+          createToken(NUMBER, posStartNum3, 3), createToken(MINUS, posStartMinus),
+          createToken(NUMBER, posStartNum4, 4), createToken(EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const plusBinaryExp: ASTNode = {
+          token: createToken(PLUS, posStartPlus),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 3) };
+        const powerBinaryExp: ASTNode = {
+          token: createToken(POWER, posStartPower),
+          leftChild: plusBinaryExp,
+          rightChild: numberNode3
+        };
+
+        const numberNode4: ASTNode = { token: createToken(NUMBER, posStartNum4, 4) };
+        const ast: ASTNode = {
+          token: createToken(MINUS, posStartMinus),
+          leftChild: powerBinaryExp,
+          rightChild: numberNode4
         };
 
         let expected = new ParseResult();

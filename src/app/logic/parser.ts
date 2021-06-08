@@ -4,7 +4,7 @@ import { BinaryOpNode } from './../models/binary-op-node';
 import { NumberNode } from './../models/number-node';
 import { ASTNode } from '../models/ast-node';
 import { Token } from '../models/token';
-import { NUMBER, MULTIPLY, DIVIDE, PLUS, MINUS, L_BRACKET, R_BRACKET, EOF } from './token-type.constants';
+import { NUMBER, MULTIPLY, DIVIDE, PLUS, MINUS, L_BRACKET, R_BRACKET, EOF, POWER } from './token-type.constants';
 import { UnaryOpNode } from '../models/unary-op-node';
 
 /**
@@ -31,13 +31,17 @@ export class Parser {
     return this.currentToken;
   }
 
-  private binaryOperators(grammerFunc: string, ops: Set<string>): ParseResult {
+  private binaryOperators(grammerFunc: string, ops: Set<string>,
+                          otherGrammarFunc?: string): ParseResult {
     let parseResult = new ParseResult();
     let leftNode: ASTNode;
     let rightNode: ASTNode;
 
+    if (otherGrammarFunc === undefined) { otherGrammarFunc = grammerFunc; }
+
     if (grammerFunc === 'term') { leftNode = parseResult.register(this.term()); }
-    else { leftNode = parseResult.register(this.factor()); }
+    else if (grammerFunc === 'factor') { leftNode = parseResult.register(this.factor()); }
+    else { leftNode = parseResult.register(this.atom()); }
 
     if (parseResult.getError() !== null) { return parseResult; }
 
@@ -45,7 +49,7 @@ export class Parser {
       let opToken = this.currentToken;
       parseResult.register(this.advance());
 
-      if (grammerFunc === 'term') { rightNode = parseResult.register(this.term()); }
+      if (otherGrammarFunc === 'term') { rightNode = parseResult.register(this.term()); }
       else { rightNode = parseResult.register(this.factor()); }
 
       leftNode = {
@@ -58,21 +62,12 @@ export class Parser {
     return parseResult.success(leftNode);
   }
 
-  private factor(): ParseResult {
+  private atom(): ParseResult {
 
     let parseResult = new ParseResult();
     let tok = this.currentToken;
 
-    if (tok.type === PLUS || tok.type === MINUS) {
-      parseResult.register(this.advance());
-      let factor = parseResult.register(this.factor());
-
-      if (parseResult.getError() !== null) { return parseResult; }
-
-      const unaryOpNode: UnaryOpNode = {token: tok, node: factor};
-      return parseResult.success(unaryOpNode);
-    }
-    else if (tok.type === NUMBER) {
+    if (tok.type === NUMBER) {
       parseResult.register(this.advance());
       let numberNode: NumberNode = {token: tok};
       return parseResult.success(numberNode);
@@ -94,9 +89,34 @@ export class Parser {
       }
     }
 
-    const syntaxError = new InvalidSyntaxError('Expected a number', this.currentToken.positionStart,
-                                                                    this.currentToken.positionEnd);
+    const syntaxError = new InvalidSyntaxError(`Expected a number, '+', '-' or '('`,
+                                                this.currentToken.positionStart,
+                                                this.currentToken.positionEnd);
+
     return parseResult.failure(syntaxError);
+  }
+
+  private power(): ParseResult {
+    const operators: Set<string> = new Set([POWER]);
+    return this.binaryOperators('atom', operators, 'factor');
+  }
+
+  private factor(): ParseResult {
+
+    let parseResult = new ParseResult();
+    let tok = this.currentToken;
+
+    if (tok.type === PLUS || tok.type === MINUS) {
+      parseResult.register(this.advance());
+      let factor = parseResult.register(this.factor());
+
+      if (parseResult.getError() !== null) { return parseResult; }
+
+      const unaryOpNode: UnaryOpNode = {token: tok, node: factor};
+      return parseResult.success(unaryOpNode);
+    }
+
+    return this.power();
   }
 
   private term(): ParseResult {
