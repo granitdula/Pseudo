@@ -56,7 +56,7 @@ export class Lexer {
           tokens.push(token);
         }
       }
-      else if (this.isAlphabeticalCharacter(char)) {
+      else if (this.isAlphabeticalCharacter(char) || char === '_') {
         const result: string = this.scanString(source);
         const token: Token = this.createToken(TokenTypes.IDENTIFIER, startOfTokenPosTracker, result);
         tokens.push(token);
@@ -260,13 +260,16 @@ export class Lexer {
 
     let char: string = source.charAt(this.positionTracker.getIndex());
     let value: string = '';
+    let considerNumbers = false;
 
-    while (this.isAlphabeticalCharacter(char) &&
+    while ((this.isAlphabeticalCharacter(char) || char === '_' ||
+           (considerNumbers && this.isDigit(char))) &&
            this.positionTracker.getIndex() < source.length) {
       value = value + char
 
       this.positionTracker.advance();
       char = source.charAt(this.positionTracker.getIndex());
+      considerNumbers = true;
     }
 
     return value;
