@@ -255,6 +255,7 @@ export class Lexer {
     return char.toUpperCase() != char.toLowerCase();
   }
 
+  // TODO: Change so that underscore variables can be used or variable names with numbers.
   private scanString(source: string): string {
 
     let char: string = source.charAt(this.positionTracker.getIndex());
