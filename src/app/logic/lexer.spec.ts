@@ -204,6 +204,83 @@ describe('Lexer tests', () => {
 
         expect(tokens).toEqual(expected);
       });
+
+      it('should return list with correct token if string is: variable_name', () => {
+
+        const sourceCode: string = 'variable_name';
+        const lexer: Lexer = new Lexer();
+
+        const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(13, 1, 14));
+        const expectedToken: Token = createToken(TokenTypes.IDENTIFIER, posTracker, 'variable_name');
+        const expected: Array<Token> = [expectedToken, eofToken];
+
+        expect(tokens).toEqual(expected);
+      });
+
+      it('should return list with correct token if string is: _variable', () => {
+
+        const sourceCode: string = '_variable';
+        const lexer: Lexer = new Lexer();
+
+        const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(9, 1, 10));
+        const expectedToken: Token = createToken(TokenTypes.IDENTIFIER, posTracker, '_variable');
+        const expected: Array<Token> = [expectedToken, eofToken];
+
+        expect(tokens).toEqual(expected);
+      });
+
+      it('should return list with correct token if string is: variable1', () => {
+
+        const sourceCode: string = 'variable1';
+        const lexer: Lexer = new Lexer();
+
+        const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(9, 1, 10));
+        const expectedToken: Token = createToken(TokenTypes.IDENTIFIER, posTracker, 'variable1');
+        const expected: Array<Token> = [expectedToken, eofToken];
+
+        expect(tokens).toEqual(expected);
+      });
+
+      it('should return list with correct token if string is: variable123', () => {
+
+        const sourceCode: string = 'variable123';
+        const lexer: Lexer = new Lexer();
+
+        const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(11, 1, 12));
+        const expectedToken: Token = createToken(TokenTypes.IDENTIFIER, posTracker, 'variable123');
+        const expected: Array<Token> = [expectedToken, eofToken];
+
+        expect(tokens).toEqual(expected);
+      });
+
+      it('should return list with correct token if string is: 1variable', () => {
+
+        const sourceCode: string = '1variable';
+        const lexer: Lexer = new Lexer();
+
+        const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posTrackerNum = new PositionTracker(0, 1, 1);
+        const posTrackerVar = new PositionTracker(1, 1, 2);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(9, 1, 10));
+        const expectedNumToken: Token = createToken(TokenTypes.NUMBER, posTrackerNum, 1);
+        const expectedVarToken: Token = createToken(TokenTypes.IDENTIFIER, posTrackerVar, 'variable');
+        const expected: Array<Token> = [expectedNumToken, expectedVarToken, eofToken];
+
+        expect(tokens).toEqual(expected);
+      });
     });
 
     describe('Comparator and equal symbol tokens tests', () => {

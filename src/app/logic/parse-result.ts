@@ -9,10 +9,16 @@ export class ParseResult {
 
   private error: InvalidSyntaxError;
   private node: ASTNode;
+  private advanceCount: number;
 
   constructor() {
     this.error = null;
     this.node = null;
+    this.advanceCount = 0;
+  }
+
+  public registerAdvancement(): void {
+    this.advanceCount++;
   }
 
   /**
@@ -21,16 +27,10 @@ export class ParseResult {
    * @param result The result of a parse step to be checked for errors.
    * @returns Returns the node of the AST at that parse step.
    */
-  public register(result: ParseResult | ASTNode | Token): ASTNode {
-    if (result instanceof ParseResult) {
-      if (result.getError() !== null) { this.error = result.getError(); }
-      return result.getNode();
-    }
-
-    // if result is an ASTNode (based on if it has a token)
-    if ((<ASTNode>result).token) { return <ASTNode>result; }
-
-    return null; // Tokens should return null;
+  public register(result: ParseResult): ASTNode {
+    this.advanceCount += result.advanceCount;
+    if (result.getError() !== null) { this.error = result.getError(); }
+    return result.getNode();
   }
 
   public success(node: ASTNode): ParseResult {
@@ -39,11 +39,14 @@ export class ParseResult {
   }
 
   public failure(error: InvalidSyntaxError): ParseResult {
-    this.error = error;
+    // Prevents overwritting errors whilst traversing up AST.
+    if (this.error === null || this.advanceCount === 0) { this.error = error; }
     return this;
   }
 
   public getError(): InvalidSyntaxError { return this.error; }
 
   public getNode(): ASTNode { return this.node; }
+
+  public getAdvanceCount(): number { return this.advanceCount; }
 }
