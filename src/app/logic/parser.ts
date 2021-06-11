@@ -6,7 +6,7 @@ import { BinaryOpNode } from './../models/binary-op-node';
 import { NumberNode } from './../models/number-node';
 import { ASTNode } from '../models/ast-node';
 import { Token } from '../models/token';
-import { NUMBER, MULTIPLY, DIVIDE, PLUS, MINUS, L_BRACKET, R_BRACKET, EOF, POWER, IDENTIFIER, EQUALS } from './token-type.constants';
+import * as TokenTypes from '../constants/token-type.constants';
 import { UnaryOpNode } from '../models/unary-op-node';
 
 /**
@@ -70,26 +70,26 @@ export class Parser {
     let parseResult = new ParseResult();
     let tok = this.currentToken;
 
-    if (tok.type === NUMBER) {
+    if (tok.type === TokenTypes.NUMBER) {
       parseResult.registerAdvancement();
       this.advance();
       let numberNode: NumberNode = {token: tok};
       return parseResult.success(numberNode);
     }
-    else if (tok.type === IDENTIFIER) {
+    else if (tok.type === TokenTypes.IDENTIFIER) {
       parseResult.registerAdvancement();
       this.advance();
       const varAccessNode: VarAccessNode = { token: tok };
       return parseResult.success(varAccessNode);
     }
-    else if (tok.type === L_BRACKET) {
+    else if (tok.type === TokenTypes.L_BRACKET) {
       parseResult.registerAdvancement();
       this.advance();
       let expr = parseResult.register(this.expr());
 
       if (parseResult.getError() !== null) { return parseResult; }
 
-      if (this.currentToken.type === R_BRACKET) {
+      if (this.currentToken.type === TokenTypes.R_BRACKET) {
         parseResult.registerAdvancement();
         this.advance();
         return parseResult.success(expr);
@@ -109,7 +109,7 @@ export class Parser {
   }
 
   private power(): ParseResult {
-    const operators: Set<string> = new Set([POWER]);
+    const operators: Set<string> = new Set([TokenTypes.POWER]);
     return this.binaryOperators('atom', operators, 'factor');
   }
 
@@ -118,7 +118,7 @@ export class Parser {
     let parseResult = new ParseResult();
     let tok = this.currentToken;
 
-    if (tok.type === PLUS || tok.type === MINUS) {
+    if (tok.type === TokenTypes.PLUS || tok.type === TokenTypes.MINUS) {
       parseResult.registerAdvancement();
       this.advance();
       let factor = parseResult.register(this.factor());
@@ -133,18 +133,18 @@ export class Parser {
   }
 
   private term(): ParseResult {
-    let operators: Set<string> = new Set([MULTIPLY, DIVIDE]);
+    let operators: Set<string> = new Set([TokenTypes.MULTIPLY, TokenTypes.DIVIDE]);
     return this.binaryOperators('factor', operators);
   }
 
   private expr(): ParseResult {
     let parseResult = new ParseResult();
-    let operators: Set<string> = new Set([PLUS, MINUS]);
+    let operators: Set<string> = new Set([TokenTypes.PLUS, TokenTypes.MINUS]);
 
     if (this.tokenIdx + 1 < this.tokens.length) {
       const nextToken: Token = this.tokens[this.tokenIdx+1];
 
-      if (this.currentToken.type === IDENTIFIER && nextToken.type === EQUALS) {
+      if (this.currentToken.type === TokenTypes.IDENTIFIER && nextToken.type === TokenTypes.EQUALS) {
         const tok = this.currentToken;
 
         parseResult.registerAdvancement();
@@ -175,7 +175,7 @@ export class Parser {
   public parse(): ParseResult {
     let parseResult: ParseResult = this.expr();
 
-    if (parseResult.getError() === null && this.currentToken.type !== EOF) {
+    if (parseResult.getError() === null && this.currentToken.type !== TokenTypes.EOF) {
       const syntaxError = new InvalidSyntaxError(`Expected '+', '-', '*', '/' or '^'`,
                                                   this.currentToken.positionStart,
                                                   this.currentToken.positionEnd);

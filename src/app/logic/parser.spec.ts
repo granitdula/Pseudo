@@ -3,7 +3,7 @@ import { ASTNode } from '../models/ast-node';
 import { Parser } from './parser';
 import { PositionTracker } from './position-tracker';
 import { Token } from '../models/token';
-import { NUMBER, EOF, MINUS, PLUS, MULTIPLY, DIVIDE, L_BRACKET, R_BRACKET, POWER, IDENTIFIER, EQUALS } from './token-type.constants';
+import { NUMBER, EOF, MINUS, PLUS, MULTIPLY, DIVIDE, L_BRACKET, R_BRACKET, POWER, IDENTIFIER, EQUALS } from '../constants/token-type.constants';
 import { ParseResult } from './parse-result';
 
 describe('Parser tests', () => {

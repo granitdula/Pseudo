@@ -1,8 +1,9 @@
+import { KEYWORDS } from './../constants/keywords.constants';
 import { PositionTracker } from './position-tracker';
 import { Error } from './error';
 import { InvalidCharacterError } from './invalid-character-error';
 import { Token } from '../models/token';
-import * as TokenTypes from './token-type.constants';
+import * as TokenTypes from '../constants/token-type.constants';
 
 export class Lexer {
 
@@ -58,7 +59,9 @@ export class Lexer {
       }
       else if (this.isAlphabeticalCharacter(char) || char === '_') {
         const result: string = this.scanString(source);
-        const token: Token = this.createToken(TokenTypes.IDENTIFIER, startOfTokenPosTracker, result);
+        const tokenType = KEYWORDS.has(result) ? TokenTypes.KEYWORD : TokenTypes.IDENTIFIER;
+        const token: Token = this.createToken(tokenType, startOfTokenPosTracker, result);
+
         tokens.push(token);
       }
       else {

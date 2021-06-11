@@ -2,7 +2,7 @@ import { PositionTracker } from './position-tracker';
 import { Lexer } from './lexer';
 import { Error } from './error';
 import { Token } from '../models/token';
-import * as TokenTypes from './token-type.constants';
+import * as TokenTypes from '../constants/token-type.constants';
 
 describe('Lexer tests', () => {
   describe('lex tests', () => {
@@ -472,13 +472,13 @@ describe('Lexer tests', () => {
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
             [TokenTypes.IDENTIFIER, posTracker1, 'variable'], [TokenTypes.EQUALS, posTracker2],
-            [TokenTypes.IDENTIFIER, posTracker3, 'NOT'], [TokenTypes.L_BRACKET, posTracker4],
+            [TokenTypes.KEYWORD, posTracker3, 'NOT'], [TokenTypes.L_BRACKET, posTracker4],
             [TokenTypes.L_BRACKET, posTracker5], [TokenTypes.NUMBER, posTracker6, 1],
             [TokenTypes.G_THAN_EQ, posTracker7], [TokenTypes.NUMBER, posTracker8, 2],
-            [TokenTypes.R_BRACKET, posTracker9], [TokenTypes.IDENTIFIER, posTracker10, 'AND'],
+            [TokenTypes.R_BRACKET, posTracker9], [TokenTypes.KEYWORD, posTracker10, 'AND'],
             [TokenTypes.L_BRACKET, posTracker11], [TokenTypes.NUMBER, posTracker12, 23],
             [TokenTypes.L_THAN, posTracker13], [TokenTypes.NUMBER, posTracker14, 11],
-            [TokenTypes.IDENTIFIER, posTracker15, 'OR'], [TokenTypes.NUMBER, posTracker16, 0],
+            [TokenTypes.KEYWORD, posTracker15, 'OR'], [TokenTypes.NUMBER, posTracker16, 0],
             [TokenTypes.EQUALITY, posTracker17], [TokenTypes.NUMBER, posTracker18, 1],
             [TokenTypes.R_BRACKET, posTracker19], [TokenTypes.R_BRACKET, posTracker20],
             [TokenTypes.NEWLINE, posTracker21]
@@ -526,8 +526,8 @@ describe('Lexer tests', () => {
           const tokenData: Array<[string, PositionTracker, any?]> = [
             [TokenTypes.IDENTIFIER, posTracker1, 'if'], [TokenTypes.L_BRACKET, posTracker2],
             [TokenTypes.NUMBER, posTracker3, 10], [TokenTypes.G_THAN, posTracker4],
-            [TokenTypes.NUMBER, posTracker5, 1], [TokenTypes.IDENTIFIER, posTracker6, 'AND'],
-            [TokenTypes.IDENTIFIER, posTracker7, 'TRUE'], [TokenTypes.R_BRACKET, posTracker8],
+            [TokenTypes.NUMBER, posTracker5, 1], [TokenTypes.KEYWORD, posTracker6, 'AND'],
+            [TokenTypes.KEYWORD, posTracker7, 'TRUE'], [TokenTypes.R_BRACKET, posTracker8],
             [TokenTypes.IDENTIFIER, posTracker9, 'then'], [TokenTypes.NEWLINE, posTracker10],
             [TokenTypes.IDENTIFIER, posTracker11, 'x'], [TokenTypes.EQUALS, posTracker12],
             [TokenTypes.NUMBER, posTracker13, 1], [TokenTypes.NEWLINE, posTracker14],
