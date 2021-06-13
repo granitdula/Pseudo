@@ -3,7 +3,7 @@ import { ASTNode } from '../models/ast-node';
 import { Parser } from './parser';
 import { PositionTracker } from './position-tracker';
 import { Token } from '../models/token';
-import { NUMBER, EOF, MINUS, PLUS, MULTIPLY, DIVIDE, L_BRACKET, R_BRACKET, POWER, IDENTIFIER, EQUALS } from '../constants/token-type.constants';
+import * as TokenTypes from '../constants/token-type.constants';
 import { ParseResult } from './parse-result';
 
 describe('Parser tests', () => {
@@ -13,13 +13,13 @@ describe('Parser tests', () => {
         const posStart = new PositionTracker(0, 1, 1);
         const posStartEof = new PositionTracker(2, 1, 3);
 
-        const tokenList: Array<Token> = [createToken(NUMBER, posStart, 10),
-                                        createToken(EOF, posStartEof)];
+        const tokenList: Array<Token> = [createToken(TokenTypes.NUMBER, posStart, 10),
+                                        createToken(TokenTypes.EOF, posStartEof)];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(NUMBER, posStart, 10) };
+        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStart, 10) };
         let expected = new ParseResult();
         expected = expected.success(numberNode);
 
@@ -32,13 +32,13 @@ describe('Parser tests', () => {
         const posStart = new PositionTracker(0, 1, 1);
         const posStartEof = new PositionTracker(2, 1, 3);
 
-        const tokenList: Array<Token> = [createToken(NUMBER, posStart, 3.14),
-                                        createToken(EOF, posStartEof)];
+        const tokenList: Array<Token> = [createToken(TokenTypes.NUMBER, posStart, 3.14),
+                                        createToken(TokenTypes.EOF, posStartEof)];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(NUMBER, posStart, 3.14) };
+        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStart, 3.14) };
         let expected = new ParseResult();
         expected = expected.success(numberNode);
 
@@ -53,15 +53,18 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(2, 1, 3);
 
         const tokenList: Array<Token> = [
-          createToken(MINUS, posStartMinus), createToken(NUMBER, posStartNumber, 1),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNumber, 1),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(NUMBER, posStartNumber, 1) };
-        const unaryNode: ASTNode = { token: createToken(MINUS, posStartMinus), node: numberNode };
+        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNumber, 1) };
+        const unaryNode: ASTNode = {
+          token: createToken(TokenTypes.MINUS, posStartMinus), node: numberNode
+        };
         let expected = new ParseResult();
         expected = expected.success(unaryNode);
 
@@ -77,15 +80,18 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(2, 1, 3);
 
         const tokenList: Array<Token> = [
-          createToken(PLUS, posStartPlus), createToken(NUMBER, posStartNumber, 1),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNumber, 1),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(NUMBER, posStartNumber, 1) };
-        const unaryNode: ASTNode = { token: createToken(PLUS, posStartPlus), node: numberNode };
+        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNumber, 1) };
+        const unaryNode: ASTNode = {
+          token: createToken(TokenTypes.PLUS, posStartPlus), node: numberNode
+        };
         let expected = new ParseResult();
         expected = expected.success(unaryNode);
 
@@ -102,17 +108,19 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(5, 1, 6);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 3), createToken(PLUS, posStartPlus),
-          createToken(NUMBER, posStartNum2, 4), createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 3),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 4),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 3) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 4) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 3) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 4) };
         const binaryNode: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
@@ -132,17 +140,19 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(6, 1, 7);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 10), createToken(MINUS, posStartMinus),
-          createToken(NUMBER, posStartNum2, 9), createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 10),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 9),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 10) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 9) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 9) };
         const binaryNode: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
@@ -162,17 +172,19 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(5, 1, 6);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 8), createToken(MULTIPLY, posStartMultiply),
-          createToken(NUMBER, posStartNum2, 4), createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 8),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.NUMBER, posStartNum2, 4),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 8) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 4) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 8) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 4) };
         const binaryNode: ASTNode = {
-          token: createToken(MULTIPLY, posStartMultiply),
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
@@ -192,17 +204,19 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(5, 1, 6);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 8), createToken(DIVIDE, posStartDivide),
-          createToken(NUMBER, posStartNum2, 4), createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 8),
+          createToken(TokenTypes.DIVIDE, posStartDivide),
+          createToken(TokenTypes.NUMBER, posStartNum2, 4),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 8) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 4) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 8) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 4) };
         const binaryNode: ASTNode = {
-          token: createToken(DIVIDE, posStartDivide),
+          token: createToken(TokenTypes.DIVIDE, posStartDivide),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
@@ -222,17 +236,19 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(5, 1, 6);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 3), createToken(POWER, posStartPower),
-          createToken(NUMBER, posStartNum2, 2), createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 3),
+          createToken(TokenTypes.POWER, posStartPower),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 3) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 3) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
         const binaryNode: ASTNode = {
-          token: createToken(POWER, posStartPower),
+          token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
@@ -262,37 +278,43 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(19, 1, 20);
 
         const tokenList: Array<Token> = [
-          createToken(L_BRACKET, posStartOuterLeftBrack),
-          createToken(L_BRACKET, posStartInnerLeftBrack1),
-          createToken(NUMBER, posStartNum1, 1), createToken(PLUS, posStartPlus),
-          createToken(NUMBER, posStartNum2, 2), createToken(R_BRACKET, posStartInnerRightBrack1),
-          createToken(MULTIPLY, posStartMultiply), createToken(L_BRACKET, posStartInnerLeftBrack2),
-          createToken(NUMBER, posStartNum3, 4), createToken(MINUS, posStartMinus),
-          createToken(NUMBER, posStartNum4, 1), createToken(R_BRACKET, posStartInnerRightBrack2),
-          createToken(R_BRACKET, posStartOuterRightBrack), createToken(EOF, posStartEof)
+          createToken(TokenTypes.L_BRACKET, posStartOuterLeftBrack),
+          createToken(TokenTypes.L_BRACKET, posStartInnerLeftBrack1),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_BRACKET, posStartInnerRightBrack1),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.L_BRACKET, posStartInnerLeftBrack2),
+          createToken(TokenTypes.NUMBER, posStartNum3, 4),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNum4, 1),
+          createToken(TokenTypes.R_BRACKET, posStartInnerRightBrack2),
+          createToken(TokenTypes.R_BRACKET, posStartOuterRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
         const leftBinaryExp: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 4) };
-        const numberNode4: ASTNode = { token: createToken(NUMBER, posStartNum4, 1) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 4) };
+        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 1) };
         const rightBinaryExp: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: numberNode3,
           rightChild: numberNode4
         };
 
         const ast: ASTNode = {
-          token: createToken(MULTIPLY, posStartMultiply),
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: leftBinaryExp,
           rightChild: rightBinaryExp
         };
@@ -316,27 +338,31 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(11, 1, 12);
 
         const tokenList: Array<Token> = [
-          createToken(L_BRACKET, posStartLeftBrack), createToken(NUMBER, posStartNum1, 1),
-          createToken(PLUS, posStartPlus), createToken(NUMBER, posStartNum2, 2),
-          createToken(R_BRACKET, posStartRightBrack), createToken(DIVIDE, posStartDivide),
-          createToken(NUMBER, posStartNum3, 3), createToken(EOF, posStartEof)
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.DIVIDE, posStartDivide),
+          createToken(TokenTypes.NUMBER, posStartNum3, 3),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
         const binaryExp: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 3) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 3) };
 
         const ast: ASTNode = {
-          token: createToken(DIVIDE, posStartDivide),
+          token: createToken(TokenTypes.DIVIDE, posStartDivide),
           leftChild: binaryExp,
           rightChild: numberNode3
         };
@@ -360,33 +386,37 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(13, 1, 14);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 1), createToken(PLUS, posStartPlus),
-          createToken(NUMBER, posStartNum2, 2), createToken(POWER, posStartPower),
-          createToken(NUMBER, posStartNum3, 3), createToken(MINUS, posStartMinus),
-          createToken(NUMBER, posStartNum4, 4), createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.POWER, posStartPower),
+          createToken(TokenTypes.NUMBER, posStartNum3, 3),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNum4, 4),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 3) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 3) };
         const powerBinaryExp: ASTNode = {
-          token: createToken(POWER, posStartPower),
+          token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: numberNode2,
           rightChild: numberNode3
         };
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
         const plusBinaryExp: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: powerBinaryExp
         };
 
-        const numberNode4: ASTNode = { token: createToken(NUMBER, posStartNum4, 4) };
+        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 4) };
         const ast: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: plusBinaryExp,
           rightChild: numberNode4
         };
@@ -407,24 +437,26 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(6, 1, 7);
 
         const tokenList: Array<Token> = [
-          createToken(MINUS, posStartMinus), createToken(NUMBER, posStartNum1, 2),
-          createToken(POWER, posStartPower), createToken(NUMBER, posStartNum2, 3),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNum1, 2),
+          createToken(TokenTypes.POWER, posStartPower),
+          createToken(TokenTypes.NUMBER, posStartNum2, 3),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 2) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 3) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 2) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 3) };
         const powerBinaryExp: ASTNode = {
-          token: createToken(POWER, posStartPower),
+          token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
         const ast: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           node: powerBinaryExp
         };
 
@@ -449,34 +481,39 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(14, 1, 15);
 
         const tokenList: Array<Token> = [
-          createToken(L_BRACKET, posStartLeftBrack), createToken(NUMBER, posStartNum1, 1),
-          createToken(PLUS, posStartPlus), createToken(NUMBER, posStartNum2, 2),
-          createToken(R_BRACKET, posStartRightBrack), createToken(POWER, posStartPower),
-          createToken(NUMBER, posStartNum3, 3), createToken(MINUS, posStartMinus),
-          createToken(NUMBER, posStartNum4, 4), createToken(EOF, posStartEof)
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.POWER, posStartPower),
+          createToken(TokenTypes.NUMBER, posStartNum3, 3),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNum4, 4),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
         const plusBinaryExp: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 3) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 3) };
         const powerBinaryExp: ASTNode = {
-          token: createToken(POWER, posStartPower),
+          token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: plusBinaryExp,
           rightChild: numberNode3
         };
 
-        const numberNode4: ASTNode = { token: createToken(NUMBER, posStartNum4, 4) };
+        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 4) };
         const ast: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: powerBinaryExp,
           rightChild: numberNode4
         };
@@ -507,43 +544,50 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(20, 1, 21);
 
         const tokenList: Array<Token> = [
-          createToken(MINUS, posStartMinusUnary), createToken(L_BRACKET, posStartOuterLeftBrack),
-          createToken(L_BRACKET, posStartInnerLeftBrack1),
-          createToken(NUMBER, posStartNum1, 1), createToken(PLUS, posStartPlus),
-          createToken(NUMBER, posStartNum2, 2), createToken(R_BRACKET, posStartInnerRightBrack1),
-          createToken(MULTIPLY, posStartMultiply), createToken(L_BRACKET, posStartInnerLeftBrack2),
-          createToken(NUMBER, posStartNum3, 4), createToken(MINUS, posStartMinus),
-          createToken(NUMBER, posStartNum4, 1), createToken(R_BRACKET, posStartInnerRightBrack2),
-          createToken(R_BRACKET, posStartOuterRightBrack), createToken(EOF, posStartEof)
+          createToken(TokenTypes.MINUS, posStartMinusUnary),
+          createToken(TokenTypes.L_BRACKET, posStartOuterLeftBrack),
+          createToken(TokenTypes.L_BRACKET, posStartInnerLeftBrack1),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_BRACKET, posStartInnerRightBrack1),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.L_BRACKET, posStartInnerLeftBrack2),
+          createToken(TokenTypes.NUMBER, posStartNum3, 4),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNum4, 1),
+          createToken(TokenTypes.R_BRACKET, posStartInnerRightBrack2),
+          createToken(TokenTypes.R_BRACKET, posStartOuterRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
         const leftBinaryExp: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 4) };
-        const numberNode4: ASTNode = { token: createToken(NUMBER, posStartNum4, 1) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 4) };
+        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 1) };
         const rightBinaryExp: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: numberNode3,
           rightChild: numberNode4
         };
 
         const outerBinaryExp: ASTNode = {
-          token: createToken(MULTIPLY, posStartMultiply),
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: leftBinaryExp,
           rightChild: rightBinaryExp
         };
 
         const unaryExp: ASTNode = {
-          token: createToken(MINUS, posStartMinusUnary),
+          token: createToken(TokenTypes.MINUS, posStartMinusUnary),
           node: outerBinaryExp
         };
 
@@ -561,16 +605,18 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(4, 1, 5);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 10), createToken(NUMBER, posStartNum2, 200),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 10),
+          createToken(TokenTypes.NUMBER, posStartNum2, 200),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 10) };
-        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/' or '^'`, posStartNum2,
-                                                                               posStartEof);
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
+        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
+                                             `'>', '<=', '>=', 'AND' or 'OR'`, posStartNum2,
+                                              posStartEof);
 
         let expected = new ParseResult();
         expected.success(numberNode1);
@@ -585,32 +631,35 @@ describe('Parser tests', () => {
         const posStartLeftBrack = new PositionTracker(0, 1, 1);
         const posStartNum1 = new PositionTracker(1, 1, 2);
         const posStartPlus = new PositionTracker(3, 1, 4);
-        const posEndPlus = new PositionTracker(4, 1, 5);
         const posStartNum2 = new PositionTracker(5, 1, 6);
         const posStartRightBrack = new PositionTracker(6, 1, 7);
         const posStartNum3 = new PositionTracker(8, 1, 9);
         const posStartEof = new PositionTracker(9, 1, 10);
 
         const tokenList: Array<Token> = [
-          createToken(L_BRACKET, posStartLeftBrack), createToken(NUMBER, posStartNum1, 1),
-          createToken(PLUS, posStartPlus), createToken(NUMBER, posStartNum2, 2),
-          createToken(R_BRACKET, posStartRightBrack), createToken(NUMBER, posStartNum3, 4),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.NUMBER, posStartNum3, 4),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
         const binaryExp: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/' or '^'`, posStartNum3,
-                                                                               posStartEof);
+        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
+                                             `'>', '<=', '>=', 'AND' or 'OR'`, posStartNum3,
+                                              posStartEof);
 
         let expected = new ParseResult();
         expected.success(binaryExp);
@@ -634,11 +683,15 @@ describe('Parser tests', () => {
         const posEndEof = new PositionTracker(13, 1, 14);
 
         const tokenList: Array<Token> = [
-          createToken(L_BRACKET, posStartLeftBrack1), createToken(L_BRACKET, posStartLeftBrack2),
-          createToken(NUMBER, posStartNum1, 1), createToken(PLUS, posStartPlus),
-          createToken(NUMBER, posStartNum2, 2), createToken(R_BRACKET, posStartRightBrack),
-          createToken(MINUS, posStartMinus), createToken(NUMBER, posStartNum3, 1),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack1),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack2),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.NUMBER, posStartNum3, 1),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
@@ -663,17 +716,18 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(12, 1, 13);
 
         const tokenList: Array<Token> = [
-          createToken(IDENTIFIER, posStartVariable, 'variable'),
-          createToken(EQUALS, posStartEquals), createToken(NUMBER, posStartNum1, 1),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
         const ast: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable, 'variable'),
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
           node: numberNode1
         };
 
@@ -698,34 +752,38 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(22, 1, 23);
 
         const tokenList: Array<Token> = [
-          createToken(IDENTIFIER, posStartVariable, 'variable'),
-          createToken(EQUALS, posStartEquals), createToken(L_BRACKET, posStartLeftBrack),
-          createToken(NUMBER, posStartNum1, 1), createToken(MULTIPLY, posStartMultiply),
-          createToken(NUMBER, posStartNum2, 3), createToken(R_BRACKET, posStartRightBrack),
-          createToken(POWER, posStartPower), createToken(NUMBER, posStartNum3, 2),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.NUMBER, posStartNum2, 3),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.POWER, posStartPower),
+          createToken(TokenTypes.NUMBER, posStartNum3, 2),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 3) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 3) };
         const binaryMultExp: ASTNode = {
-          token: createToken(MULTIPLY, posStartMultiply),
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 2) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 2) };
         const binaryPowerExp: ASTNode = {
-          token: createToken(POWER, posStartPower),
+          token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: binaryMultExp,
           rightChild: numberNode3
         };
 
         const ast: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable, 'variable'),
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
           node: binaryPowerExp
         };
 
@@ -753,41 +811,46 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(25, 1, 26);
 
         const tokenList: Array<Token> = [
-          createToken(IDENTIFIER, posStartVariable, 'variable'),
-          createToken(EQUALS, posStartEquals), createToken(MINUS, posStartMinus),
-          createToken(L_BRACKET, posStartOuterLeftBrack),
-          createToken(L_BRACKET, posStartInnerLeftBrack), createToken(NUMBER, posStartNum1, 1),
-          createToken(MULTIPLY, posStartMultiply), createToken(NUMBER, posStartNum2, 3),
-          createToken(R_BRACKET, posStartInnerRightBrack), createToken(POWER, posStartPower),
-          createToken(NUMBER, posStartNum3, 2), createToken(R_BRACKET, posStartOuterRightBrack),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.L_BRACKET, posStartOuterLeftBrack),
+          createToken(TokenTypes.L_BRACKET, posStartInnerLeftBrack),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.NUMBER, posStartNum2, 3),
+          createToken(TokenTypes.R_BRACKET, posStartInnerRightBrack),
+          createToken(TokenTypes.POWER, posStartPower),
+          createToken(TokenTypes.NUMBER, posStartNum3, 2),
+          createToken(TokenTypes.R_BRACKET, posStartOuterRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 3) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 3) };
         const binaryMultExp: ASTNode = {
-          token: createToken(MULTIPLY, posStartMultiply),
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 2) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 2) };
         const binaryPowerExp: ASTNode = {
-          token: createToken(POWER, posStartPower),
+          token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: binaryMultExp,
           rightChild: numberNode3
         };
 
         const unaryExp: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           node: binaryPowerExp
         };
 
         const ast: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable, 'variable'),
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
           node: unaryExp
         };
 
@@ -812,33 +875,37 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(15, 1, 16);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 1), createToken(PLUS, posStartPlus),
-          createToken(L_BRACKET, posStartLeftBrack),
-          createToken(IDENTIFIER, posStartVariable, 'x'), createToken(EQUALS, posStartEquals),
-          createToken(NUMBER, posStartNum2, 10), createToken(R_BRACKET, posStartRightBrack),
-          createToken(MULTIPLY, posStartMultiply), createToken(NUMBER, posStartNum3, 2),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.NUMBER, posStartNum2, 10),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.NUMBER, posStartNum3, 2),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode2: ASTNode = { token: createToken(NUMBER, posStartNum2, 10) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 10) };
         const varAssignNode: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable, 'x'),
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x'),
           node: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(NUMBER, posStartNum3, 2) };
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 2) };
         const binaryMultiplyExp: ASTNode = {
-          token: createToken(MULTIPLY, posStartMultiply),
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: varAssignNode,
           rightChild: numberNode3
         };
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
         const ast: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: binaryMultiplyExp
         };
@@ -858,14 +925,16 @@ describe('Parser tests', () => {
         const posEndEof = new PositionTracker(4, 1, 5);
 
         const tokenList: Array<Token> = [
-          createToken(IDENTIFIER, posStartVariable, 'x'), createToken(EQUALS, posStartEquals),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-' or '('`, posStartEof, posEndEof);
+        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' or ` +
+                                             `'NOT'`, posStartEof, posEndEof);
 
         let expected = new ParseResult();
         expected.failure(error);
@@ -887,24 +956,32 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(13, 1, 14);
 
         const tokenList: Array<Token> = [
-          createToken(NUMBER, posStartNum1, 1), createToken(PLUS, posStartPlus),
-          createToken(IDENTIFIER, posStartVariable, 'x'), createToken(EQUALS, posStartEquals),
-          createToken(NUMBER, posStartNum2, 10), createToken(MULTIPLY, posStartMultiply),
-          createToken(NUMBER, posStartNum3, 2), createToken(EOF, posStartEof)
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.NUMBER, posStartNum2, 10),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.NUMBER, posStartNum3, 2),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(NUMBER, posStartNum1, 1) };
-        const varAccessNode: ASTNode = { token: createToken(IDENTIFIER, posStartVariable, 'x') };
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const varAccessNode: ASTNode = {
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x')
+        };
         const currentAst: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: varAccessNode
         };
 
-        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/' or '^'`, posStartEquals, posEndEquals);
+        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
+                                             `'>', '<=', '>=', 'AND' or 'OR'`, posStartEquals,
+                                             posEndEquals);
 
         let expected = new ParseResult();
         expected.success(currentAst);
@@ -932,36 +1009,47 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(17, 1, 18);
 
         const tokenList: Array<Token> = [
-          createToken(L_BRACKET, posStartLeftBrack1), createToken(NUMBER, posStartNum, 1),
-          createToken(PLUS, posStartPlus), createToken(IDENTIFIER, posStartVariable1, 'x'),
-          createToken(R_BRACKET, posStartRightBrack1), createToken(MULTIPLY, posStartMultiply),
-          createToken(L_BRACKET, posStartLeftBrack2),
-          createToken(IDENTIFIER, posStartVariable2, 'y'), createToken(MINUS, posStartMinus),
-          createToken(IDENTIFIER, posStartVariable3, 'z'),
-          createToken(R_BRACKET, posStartRightBrack2), createToken(EOF, posStartEof)
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack1),
+          createToken(TokenTypes.NUMBER, posStartNum, 1),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack1),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack2),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable2, 'y'),
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable3, 'z'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack2),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(NUMBER, posStartNum, 1) };
-        const xVarAccessNode: ASTNode = { token: createToken(IDENTIFIER, posStartVariable1, 'x') };
+        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum, 1) };
+        const xVarAccessNode: ASTNode = {
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x')
+        };
         const binaryPlusExp: ASTNode = {
-          token: createToken(PLUS, posStartPlus),
+          token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode,
           rightChild: xVarAccessNode
         };
 
-        const yVarAccessNode: ASTNode = { token: createToken(IDENTIFIER, posStartVariable2, 'y') };
-        const zVarAccessNode: ASTNode = { token: createToken(IDENTIFIER, posStartVariable3, 'z') };
+        const yVarAccessNode: ASTNode = {
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable2, 'y')
+        };
+        const zVarAccessNode: ASTNode = {
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable3, 'z')
+        };
         const binaryMinusExp: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: yVarAccessNode,
           rightChild: zVarAccessNode
         };
 
         const ast: ASTNode = {
-          token: createToken(MULTIPLY, posStartMultiply),
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: binaryPlusExp,
           rightChild: binaryMinusExp
         };
@@ -981,18 +1069,20 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(5, 1, 6);
 
         const tokenList: Array<Token> = [
-          createToken(IDENTIFIER, posStartVariable1, 'x'), createToken(EQUALS, posStartEquals),
-          createToken(IDENTIFIER, posStartVariable2, 'y'), createToken(EOF, posStartEof)
+          createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable2, 'y'),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
         const yVarAccessNode: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable2, 'y')
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable2, 'y')
         };
         const ast: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable1, 'x'),
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x'),
           node: yVarAccessNode
         };
 
@@ -1010,18 +1100,19 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(9, 1, 10);
 
         const tokenList: Array<Token> = [
-          createToken(MINUS, posStartMinus), createToken(IDENTIFIER, posStartVariable, 'variable'),
-          createToken(EOF, posStartEof)
+          createToken(TokenTypes.MINUS, posStartMinus),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
         const varAccessNode: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable, 'variable')
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable')
         };
         const ast: ASTNode = {
-          token: createToken(MINUS, posStartMinus),
+          token: createToken(TokenTypes.MINUS, posStartMinus),
           node: varAccessNode
         };
 
@@ -1039,24 +1130,479 @@ describe('Parser tests', () => {
         const posStartEof = new PositionTracker(3, 1, 4);
 
         const tokenList: Array<Token> = [
-          createToken(IDENTIFIER, posStartVariable1, 'x'),
-          createToken(IDENTIFIER, posStartVariable2, 'y'), createToken(EOF, posStartEof)
+          createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x'),
+          createToken(TokenTypes.IDENTIFIER, posStartVariable2, 'y'),
+          createToken(TokenTypes.EOF, posStartEof)
         ];
 
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
         const xVarAccessNode: ASTNode = {
-          token: createToken(IDENTIFIER, posStartVariable1, 'x')
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x')
         };
-        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/' or '^'`,
-                                              posStartVariable2, posStartEof);
+        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
+                                             `'>', '<=', '>=', 'AND' or 'OR'`, posStartVariable2,
+                                             posStartEof);
 
         let expected = new ParseResult();
         expected.success(xVarAccessNode);
         expected.failure(error);
 
         expected.registerAdvancement();
+
+        expect(parseResult).toEqual(expected);
+      });
+    });
+
+    describe('logical operator tests', () => {
+      it('should return correct AST for statement: 1 == 1', () => {
+        const posStartNum1 = new PositionTracker(0, 1, 1);
+        const posStartEquality = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(5, 1, 6);
+        const posStartEof = new PositionTracker(6, 1, 7);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.EQUALITY, posStartEquality),
+          createToken(TokenTypes.NUMBER, posStartNum2, 1),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.EQUALITY, posStartEquality),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: 10 > 1', () => {
+        const posStartNum1 = new PositionTracker(0, 1, 1);
+        const posStartGThan = new PositionTracker(3, 1, 4);
+        const posStartNum2 = new PositionTracker(5, 1, 6);
+        const posStartEof = new PositionTracker(6, 1, 7);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.NUMBER, posStartNum1, 10),
+          createToken(TokenTypes.G_THAN, posStartGThan),
+          createToken(TokenTypes.NUMBER, posStartNum2, 1),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.G_THAN, posStartGThan),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: 1 < 2', () => {
+        const posStartNum1 = new PositionTracker(0, 1, 1);
+        const posStartLThan = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(4, 1, 5);
+        const posStartEof = new PositionTracker(5, 1, 6);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.L_THAN, posStartLThan),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.L_THAN, posStartLThan),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: 1 >= 1', () => {
+        const posStartNum1 = new PositionTracker(0, 1, 1);
+        const posStartGThanEq = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(5, 1, 6);
+        const posStartEof = new PositionTracker(6, 1, 7);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.G_THAN_EQ, posStartGThanEq),
+          createToken(TokenTypes.NUMBER, posStartNum2, 1),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.G_THAN_EQ, posStartGThanEq),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: 1 <= 1', () => {
+        const posStartNum1 = new PositionTracker(0, 1, 1);
+        const posStartLThanEq = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(5, 1, 6);
+        const posStartEof = new PositionTracker(6, 1, 7);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.L_THAN_EQ, posStartLThanEq),
+          createToken(TokenTypes.NUMBER, posStartNum2, 1),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.L_THAN_EQ, posStartLThanEq),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: TRUE AND FALSE', () => {
+        const posStartTrue = new PositionTracker(0, 1, 1);
+        const posStartAnd = new PositionTracker(5, 1, 6);
+        const posStartFalse = new PositionTracker(9, 1, 10);
+        const posStartEof = new PositionTracker(14, 1, 15);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE'),
+          createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const boolAccessNode1: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
+        };
+        const boolAccessNode2: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
+        };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          leftChild: boolAccessNode1,
+          rightChild: boolAccessNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: TRUE OR FALSE', () => {
+        const posStartTrue = new PositionTracker(0, 1, 1);
+        const posStartOr = new PositionTracker(5, 1, 6);
+        const posStartFalse = new PositionTracker(8, 1, 9);
+        const posStartEof = new PositionTracker(13, 1, 14);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE'),
+          createToken(TokenTypes.KEYWORD, posStartOr, 'OR'),
+          createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const boolAccessNode1: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
+        };
+        const boolAccessNode2: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
+        };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartOr, 'OR'),
+          leftChild: boolAccessNode1,
+          rightChild: boolAccessNode2
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: NOT TRUE AND FALSE', () => {
+        const posStartNot = new PositionTracker(0, 1, 1);
+        const posStartTrue = new PositionTracker(4, 1, 5);
+        const posStartAnd = new PositionTracker(9, 1, 10);
+        const posStartFalse = new PositionTracker(13, 1, 14);
+        const posStartEof = new PositionTracker(14, 1, 15);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartNot, 'NOT'),
+          createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE'),
+          createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const boolAccessNode1: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
+        };
+        const boolAccessNode2: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
+        };
+        const boolAndExpr: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          leftChild: boolAccessNode1,
+          rightChild: boolAccessNode2
+        };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartNot, 'NOT'),
+          node: boolAndExpr
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: var = NOT TRUE AND ((10 > 1) OR (5 < x))', () => {
+        const posStartVar = new PositionTracker(0, 1, 1);
+        const posStartEquals = new PositionTracker(4, 1, 5);
+        const posStartNot = new PositionTracker(6, 1, 7);
+        const posStartTrue = new PositionTracker(10, 1, 11);
+        const posStartAnd = new PositionTracker(15, 1, 16);
+        const posStartLeftBrack1 = new PositionTracker(19, 1, 20);
+        const posStartLeftBrack2 = new PositionTracker(20, 1, 21);
+        const posStartNum1 = new PositionTracker(21, 1, 22);
+        const posStartGThan = new PositionTracker(24, 1, 25);
+        const posStartNum2 = new PositionTracker(26, 1, 27);
+        const posStartRightBrack1 = new PositionTracker(27, 1, 28);
+        const posStartOr = new PositionTracker(29, 1, 30);
+        const posStartLeftBrack3 = new PositionTracker(32, 1, 33);
+        const posStartNum3 = new PositionTracker(33, 1, 34);
+        const posStartLThan = new PositionTracker(35, 1, 36);
+        const posStartVarX = new PositionTracker(37, 1, 38);
+        const posStartRightBrack2 = new PositionTracker(38, 1, 39);
+        const posStartRightBrack3 = new PositionTracker(39, 1, 40);
+        const posStartEof = new PositionTracker(40, 1, 41);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartVar, 'var'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.KEYWORD, posStartNot, 'NOT'),
+          createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE'),
+          createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack1),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack2),
+          createToken(TokenTypes.NUMBER, posStartNum1, 10),
+          createToken(TokenTypes.G_THAN, posStartGThan),
+          createToken(TokenTypes.NUMBER, posStartNum2, 1),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack1),
+          createToken(TokenTypes.KEYWORD, posStartOr, 'OR'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack3),
+          createToken(TokenTypes.NUMBER, posStartNum3, 5),
+          createToken(TokenTypes.L_THAN, posStartLThan),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack2),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack3),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
+        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const firstCondExpr: ASTNode = {
+          token: createToken(TokenTypes.G_THAN, posStartGThan),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 5) };
+        const varXAccessNode: ASTNode = {
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x')
+        };
+        const secondCondExpr: ASTNode = {
+          token: createToken(TokenTypes.L_THAN, posStartLThan),
+          leftChild: numberNode3,
+          rightChild: varXAccessNode
+        };
+
+        const orExpr: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartOr, 'OR'),
+          leftChild: firstCondExpr,
+          rightChild: secondCondExpr
+        };
+
+        const trueAccessNode: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
+        };
+        const andExpr: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          leftChild: trueAccessNode,
+          rightChild: orExpr
+        };
+
+        const notExpr: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartNot, 'NOT'),
+          node: andExpr
+        };
+
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.IDENTIFIER, posStartVar, 'var'),
+          node: notExpr
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 18; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement (not keywords): true and false', () => {
+        const posStartTrue = new PositionTracker(0, 1, 1);
+        const posStartAnd = new PositionTracker(5, 1, 6);
+        const posEndAnd = new PositionTracker(6, 1, 7);
+        const posStartFalse = new PositionTracker(9, 1, 10);
+        const posStartEof = new PositionTracker(14, 1, 15);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartTrue, 'true'),
+          createToken(TokenTypes.IDENTIFIER, posStartAnd, 'and'),
+          createToken(TokenTypes.IDENTIFIER, posStartFalse, 'false'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const trueNode: ASTNode = { token: createToken(TokenTypes.IDENTIFIER, posStartTrue, 'true') };
+        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
+                                             `'>', '<=', '>=', 'AND' or 'OR'`, posStartAnd,
+                                             posEndAnd);
+
+        let expected = new ParseResult();
+        expected.success(trueNode);
+        expected.failure(error);
+
+        expected.registerAdvancement();
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: TRUE AND (var = FALSE)', () => {
+        const posStartTrue = new PositionTracker(0, 1, 1);
+        const posStartAnd = new PositionTracker(5, 1, 6);
+        const posStartLeftBrack = new PositionTracker(9, 1, 10);
+        const posStartVar = new PositionTracker(10, 1, 11);
+        const posStartEquals = new PositionTracker(14, 1, 15);
+        const posStartFalse = new PositionTracker(16, 1, 17);
+        const posStartRightBrack = new PositionTracker(21, 1, 22);
+        const posStartEof = new PositionTracker(22, 1, 23);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE'),
+          createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVar, 'var'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const falseNode: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
+        };
+        const varAssignNode: ASTNode = {
+          token: createToken(TokenTypes.IDENTIFIER, posStartVar, 'var'),
+          node: falseNode
+        };
+
+        const trueNode: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
+        };
+        const ast: ASTNode = {
+          token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
+          leftChild: trueNode,
+          rightChild: varAssignNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
         expect(parseResult).toEqual(expected);
       });

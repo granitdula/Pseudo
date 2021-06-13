@@ -41,18 +41,39 @@ export class Parser {
 
     if (otherGrammarFunc === undefined) { otherGrammarFunc = grammerFunc; }
 
-    if (grammerFunc === 'term') { leftNode = parseResult.register(this.term()); }
-    else if (grammerFunc === 'factor') { leftNode = parseResult.register(this.factor()); }
-    else { leftNode = parseResult.register(this.atom()); }
+    switch (grammerFunc) {
+      case 'term':
+        leftNode = parseResult.register(this.term());
+        break;
+      case 'factor':
+        leftNode = parseResult.register(this.factor());
+        break;
+      case 'atom':
+        leftNode = parseResult.register(this.atom());
+        break;
+      case 'comparisonExpr':
+        leftNode = parseResult.register(this.comparisonExpr());
+        break;
+      default:
+        leftNode = parseResult.register(this.arithmeticExpr());
+        break;
+    }
 
     if (parseResult.getError() !== null) { return parseResult; }
 
-    while (ops.has(this.currentToken.type)) {
+    while (ops.has(this.currentToken.type) || (this.currentToken.type === TokenTypes.KEYWORD &&
+          (this.currentToken.value === 'AND' || this.currentToken.value === 'OR'))) {
       let opToken = this.currentToken;
       parseResult.registerAdvancement();
       this.advance();
 
       if (otherGrammarFunc === 'term') { rightNode = parseResult.register(this.term()); }
+      else if (otherGrammarFunc === 'arithmeticExpr') {
+        rightNode = parseResult.register(this.arithmeticExpr());
+      }
+      else if (otherGrammarFunc === 'comparisonExpr') {
+        rightNode = parseResult.register(this.comparisonExpr());
+      }
       else { rightNode = parseResult.register(this.factor()); }
 
       leftNode = {
@@ -76,7 +97,8 @@ export class Parser {
       let numberNode: NumberNode = {token: tok};
       return parseResult.success(numberNode);
     }
-    else if (tok.type === TokenTypes.IDENTIFIER) {
+    else if (tok.type === TokenTypes.IDENTIFIER || tok.value === 'TRUE' ||
+                                                    tok.value === 'FALSE') {
       parseResult.registerAdvancement();
       this.advance();
       const varAccessNode: VarAccessNode = { token: tok };
@@ -137,9 +159,45 @@ export class Parser {
     return this.binaryOperators('factor', operators);
   }
 
+  private arithmeticExpr(): ParseResult {
+    let operators: Set<string> = new Set([TokenTypes.PLUS, TokenTypes.MINUS]);
+    return this.binaryOperators('term', operators);
+  }
+
+  private comparisonExpr(): ParseResult {
+    let parseResult = new ParseResult();
+    const operators: Set<string> = new Set([
+      TokenTypes.EQUALITY, TokenTypes.G_THAN, TokenTypes.L_THAN, TokenTypes.G_THAN_EQ,
+      TokenTypes.L_THAN_EQ
+    ]);
+
+    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'NOT') {
+      const opToken = this.currentToken;
+      parseResult.registerAdvancement();
+      this.advance();
+
+      const node: ASTNode = parseResult.register(this.comparisonExpr());
+
+      if (parseResult.getError() !== null) { return parseResult; }
+
+      const unaryNode: UnaryOpNode = {token: opToken, node: node};
+      return parseResult.success(unaryNode);
+    }
+
+    const node: ASTNode = parseResult.register(this.binaryOperators('arithmeticExpr', operators));
+
+    if (parseResult.getError() !== null) {
+      const syntaxError = new InvalidSyntaxError(`Expected number, identifier, '+', '-', '(' or 'NOT'`,
+                               this.currentToken.positionStart, this.currentToken.positionEnd);
+
+      return parseResult.failure(syntaxError);
+    }
+
+    return parseResult.success(node);
+  }
+
   private expr(): ParseResult {
     let parseResult = new ParseResult();
-    let operators: Set<string> = new Set([TokenTypes.PLUS, TokenTypes.MINUS]);
 
     if (this.tokenIdx + 1 < this.tokens.length) {
       const nextToken: Token = this.tokens[this.tokenIdx+1];
@@ -160,11 +218,11 @@ export class Parser {
       }
     }
 
-    const node = parseResult.register(this.binaryOperators('term', operators));
+    const node = parseResult.register(this.binaryOperators('comparisonExpr', new Set()));
 
     if (parseResult.getError() !== null) {
-      const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-' or '('`,
-                                                this.currentToken.positionStart,
+      const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' ` +
+                                                `or 'NOT'`, this.currentToken.positionStart,
                                                 this.currentToken.positionEnd);
       return parseResult.failure(syntaxError);
     }
@@ -176,7 +234,8 @@ export class Parser {
     let parseResult: ParseResult = this.expr();
 
     if (parseResult.getError() === null && this.currentToken.type !== TokenTypes.EOF) {
-      const syntaxError = new InvalidSyntaxError(`Expected '+', '-', '*', '/' or '^'`,
+      const syntaxError = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<',` +
+                                                  ` '>', '<=', '>=', 'AND' or 'OR'`,
                                                   this.currentToken.positionStart,
                                                   this.currentToken.positionEnd);
       return parseResult.failure(syntaxError);
