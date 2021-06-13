@@ -12,6 +12,7 @@ import { ParseResult } from '../logic/parse-result';
 })
 export class InterpreterService {
 
+  private outputs: string[];
   private lexer: Lexer;
   private parser: Parser;
 
@@ -19,21 +20,53 @@ export class InterpreterService {
     this.lexer = new Lexer();
   }
 
-  public evaluate(source: string): string {
+  public evaluate(source: string): any[] {
 
-    let output = '';
+    let consoleOutput = '';
+    let shellOutput: any;
+    this.outputs = [];
 
     let lexerOutput: Array<Token> | Error = this.lexer.lex(source);
 
     if (lexerOutput instanceof Error) {
-      output = lexerOutput.getErrorMessage();
+      consoleOutput = lexerOutput.getErrorMessage();
     }
     else {
       this.parser = new Parser(lexerOutput);
       let parseResult: ParseResult = this.parser.parse();
-      // TODO: Create visitor functionality to traverse AST and execute program.
+
+      if (parseResult.getError() !== null) {
+        consoleOutput = shellOutput = parseResult.getError().getErrorMessage();
+      }
+      else {
+        shellOutput = this.visitNode(parseResult.getNode());
+
+        for (const output of this.outputs) {
+          consoleOutput += output + "\n";
+        }
+      }
     }
 
-    return output;
+    return [consoleOutput, shellOutput];
+  }
+
+  private visitNode(node: ASTNode) {
+
+  }
+
+  private visitBinaryOpNode(node: ASTNode) {
+
+  }
+
+  private visitUnaryOpNode(node: ASTNode) {
+
+  }
+
+  private visitNumberNode(node: ASTNode) {
+
+  }
+
+  private noVisitNode(): void {
+    throw new ErrorEvent('Undefined visit method');
   }
 }

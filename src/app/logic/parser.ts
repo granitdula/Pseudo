@@ -7,6 +7,7 @@ import { NumberNode } from './../models/number-node';
 import { ASTNode } from '../models/ast-node';
 import { Token } from '../models/token';
 import * as TokenTypes from '../constants/token-type.constants';
+import * as NodeTypes from '../constants/node-type.constants';
 import { UnaryOpNode } from '../models/unary-op-node';
 
 /**
@@ -77,6 +78,7 @@ export class Parser {
       else { rightNode = parseResult.register(this.factor()); }
 
       leftNode = {
+        nodeType: NodeTypes.BINARYOP,
         token: opToken,
         leftChild: leftNode,
         rightChild: rightNode
@@ -94,14 +96,14 @@ export class Parser {
     if (tok.type === TokenTypes.NUMBER) {
       parseResult.registerAdvancement();
       this.advance();
-      let numberNode: NumberNode = {token: tok};
+      let numberNode: NumberNode = { nodeType: NodeTypes.NUMBER, token: tok };
       return parseResult.success(numberNode);
     }
     else if (tok.type === TokenTypes.IDENTIFIER || tok.value === 'TRUE' ||
                                                     tok.value === 'FALSE') {
       parseResult.registerAdvancement();
       this.advance();
-      const varAccessNode: VarAccessNode = { token: tok };
+      const varAccessNode: VarAccessNode = { nodeType: NodeTypes.VARACCESS, token: tok };
       return parseResult.success(varAccessNode);
     }
     else if (tok.type === TokenTypes.L_BRACKET) {
@@ -147,7 +149,7 @@ export class Parser {
 
       if (parseResult.getError() !== null) { return parseResult; }
 
-      const unaryOpNode: UnaryOpNode = {token: tok, node: factor};
+      const unaryOpNode: UnaryOpNode = { nodeType: NodeTypes.UNARYOP, token: tok, node: factor };
       return parseResult.success(unaryOpNode);
     }
 
@@ -180,7 +182,7 @@ export class Parser {
 
       if (parseResult.getError() !== null) { return parseResult; }
 
-      const unaryNode: UnaryOpNode = {token: opToken, node: node};
+      const unaryNode: UnaryOpNode = {nodeType: NodeTypes.UNARYOP, token: opToken, node: node};
       return parseResult.success(unaryNode);
     }
 
@@ -213,7 +215,11 @@ export class Parser {
         const expr = parseResult.register(this.expr());
         if (parseResult.getError() !== null) { return parseResult; }
 
-        const varAssignNode: VarAssignNode = { token: tok, node: expr };
+        const varAssignNode: VarAssignNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: tok,
+          node: expr
+        };
         return parseResult.success(varAssignNode);
       }
     }
