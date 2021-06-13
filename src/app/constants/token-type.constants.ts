@@ -8,6 +8,7 @@ export const R_BRACKET = 'R_BRACKET';
 export const NUMBER = 'NUMBER';
 export const NEWLINE = 'NEWLINE';
 export const IDENTIFIER = 'IDENTIFIER';
+export const KEYWORD = 'KEYWORD';
 export const COMMA = 'COMMA';
 export const EQUALS = 'EQUALS';
 export const EQUALITY = 'EQUALITY';

@@ -3,7 +3,7 @@ import { ASTNode } from './../models/ast-node';
 import { ParseResult } from './parse-result';
 import { InvalidSyntaxError } from './invalid-syntax-error';
 import { Token } from '../models/token';
-import { EQUALS } from './token-type.constants';
+import { EQUALS } from '../constants/token-type.constants';
 
 describe('ParseResult tests', () => {
   it('should initialise node and error attributes as null and advanceCount to 0', () => {
