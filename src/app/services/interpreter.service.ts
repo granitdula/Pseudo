@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { Token } from '../models/token';
 import { Lexer } from '../logic/lexer';
 import { ParseResult } from '../logic/parse-result';
+import * as NodeTypes from '../constants/node-type.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,7 @@ export class InterpreterService {
         consoleOutput = shellOutput = parseResult.getError().getErrorMessage();
       }
       else {
-        shellOutput = this.visitNode(parseResult.getNode());
+        shellOutput = this.visitNode(<ASTNode>parseResult.getNode());
 
         for (const output of this.outputs) {
           consoleOutput += output + "\n";
@@ -51,19 +52,32 @@ export class InterpreterService {
   }
 
   private visitNode(node: ASTNode) {
-
+    switch (node.nodeType) {
+      case NodeTypes.NUMBER:
+        return this.visitNumberNode(node);
+      case NodeTypes.BINARYOP:
+        return this.visitBinaryOpNode(node);
+      case NodeTypes.UNARYOP:
+        return this.visitUnaryOpNode(node);
+      default:
+        this.noVisitNode();
+        break;
+    }
   }
 
   private visitBinaryOpNode(node: ASTNode) {
-
+    console.log('Found binary operator node!');
+    this.visitNode(<ASTNode>node.leftChild);
+    this.visitNode(<ASTNode>node.rightChild);
   }
 
   private visitUnaryOpNode(node: ASTNode) {
-
+    console.log('Found unary operator node!');
+    this.visitNode(<ASTNode>node.node);
   }
 
   private visitNumberNode(node: ASTNode) {
-
+    console.log('Found number node!');
   }
 
   private noVisitNode(): void {
