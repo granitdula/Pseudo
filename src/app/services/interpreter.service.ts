@@ -69,6 +69,8 @@ export class InterpreterService {
 
   private initialiseGlobalSymbolTable(): SymbolTable {
     const globalSymbolTable = new SymbolTable();
+    globalSymbolTable.set('TRUE', new NumberType(1));
+    globalSymbolTable.set('FALSE', new NumberType(0));
     globalSymbolTable.set('PI', new NumberType(Math.PI));
 
     return globalSymbolTable;
@@ -148,6 +150,25 @@ export class InterpreterService {
       case TokenTypes.POWER:
         result = left.poweredBy(right);
         break;
+      case TokenTypes.EQUALITY:
+        result = left.equalityComparison(right);
+        break;
+      case TokenTypes.L_THAN:
+        result = left.lessThanComparison(right);
+        break;
+      case TokenTypes.G_THAN:
+        result = left.greaterThanComparison(right);
+        break;
+      case TokenTypes.L_THAN_EQ:
+        result = left.lessThanOrEqualComparison(right);
+        break;
+      case TokenTypes.G_THAN_EQ:
+        result = left.greaterThanOrEqualComparison(right);
+        break;
+      case TokenTypes.KEYWORD:
+        if (node.token.value === 'AND') { result = left.andBy(right); }
+        else { result = left.orBy(right); }
+        break;
       default:
         break;
     }
@@ -168,6 +189,9 @@ export class InterpreterService {
     // TODO: May need to handle runtime errors here in the future when adding other types like
     // strings.
     if (node.token.type === TokenTypes.MINUS) { number = number.multiplyBy(new NumberType(-1)); }
+    else if (node.token.type === TokenTypes.KEYWORD && node.token.value === 'NOT') {
+      number = number.notted();
+    }
 
     return runtimeResult.success(number.setPos(node.token.positionStart, node.token.positionEnd));
   }

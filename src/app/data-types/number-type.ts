@@ -2,6 +2,9 @@ import { Context } from './../logic/context';
 import { RuntimeError } from './../logic/runtime-error';
 import { PositionTracker } from './../logic/position-tracker';
 
+/**
+ * Used to represent both numbers and boolean primitives in Pseudo.
+ */
 export class NumberType {
 
   private posStart: PositionTracker;
@@ -58,6 +61,71 @@ export class NumberType {
     if (other instanceof NumberType) {
       return new NumberType(this.value ** other.getValue()).setContext(this.context);
     }
+  }
+
+  public equalityComparison(other: NumberType): NumberType {
+    if (other instanceof NumberType) {
+      // This expression is most performant way to convert from boolean to number in Javascript.
+      const convertedBoolToNum: number = this.value === other.getValue() ? 1 : 0;
+      return new NumberType(convertedBoolToNum).setContext(this.context);
+    }
+  }
+
+  public lessThanComparison(other: NumberType): NumberType {
+    if (other instanceof NumberType) {
+      // This expression is most performant way to convert from boolean to number in Javascript.
+      const convertedBoolToNum: number = this.value < other.getValue() ? 1 : 0;
+      return new NumberType(convertedBoolToNum).setContext(this.context);
+    }
+  }
+
+  public greaterThanComparison(other: NumberType): NumberType {
+    if (other instanceof NumberType) {
+      // This expression is most performant way to convert from boolean to number in Javascript.
+      const convertedBoolToNum: number = this.value > other.getValue() ? 1 : 0;
+      return new NumberType(convertedBoolToNum).setContext(this.context);
+    }
+  }
+
+  public lessThanOrEqualComparison(other: NumberType): NumberType {
+    if (other instanceof NumberType) {
+      // This expression is most performant way to convert from boolean to number in Javascript.
+      const convertedBoolToNum: number = this.value <= other.getValue() ? 1 : 0;
+      return new NumberType(convertedBoolToNum).setContext(this.context);
+    }
+  }
+
+  public greaterThanOrEqualComparison(other: NumberType): NumberType {
+    if (other instanceof NumberType) {
+      // This expression is most performant way to convert from boolean to number in Javascript.
+      const convertedBoolToNum: number = this.value >= other.getValue() ? 1 : 0;
+      return new NumberType(convertedBoolToNum).setContext(this.context);
+    }
+  }
+
+  public andBy(other: NumberType): NumberType {
+    if (other instanceof NumberType) {
+      // This expression is most performant way to convert from boolean to number in Javascript.
+      const convertedValue: number = this.value !== 0 ? 1 : 0;
+      const convertedOther: number = other.getValue() !== 0 ? 1 : 0;
+      const convertedBoolToNum: number = convertedValue && convertedOther;
+      return new NumberType(convertedBoolToNum).setContext(this.context);
+    }
+  }
+
+  public orBy(other: NumberType): NumberType {
+    if (other instanceof NumberType) {
+      // This expression is most performant way to convert from boolean to number in Javascript.
+      const convertedValue: number = this.value !== 0 ? 1 : 0;
+      const convertedOther: number = other.getValue() !== 0 ? 1 : 0;
+      const convertedBoolToNum: number = convertedValue || convertedOther;
+      return new NumberType(convertedBoolToNum).setContext(this.context);
+    }
+  }
+
+  public notted(): NumberType {
+    const convertedValueToBool: number = this.value === 0 ? 1 : 0;
+    return new NumberType(convertedValueToBool).setContext(this.context);
   }
 
   public copy(): NumberType {

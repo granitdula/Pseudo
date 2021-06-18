@@ -254,5 +254,254 @@ describe('InterpreterService', () => {
         });
       });
     });
+
+    describe('comparison operator and logical operator tests', () => {
+      describe('comparison operator tests', () => {
+        it(`should produce a shell output of '1' for expression: 10 == 10`, () => {
+          service = new InterpreterService();
+          const source = '10 == 10';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '0' for expression: 10 > 10`, () => {
+          service = new InterpreterService();
+          const source = '10 > 10';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '1' for expression: (2 ^ 2) < ((1 + 2) * 3)`, () => {
+          service = new InterpreterService();
+          const source = '(2 ^ 2) < ((1 + 2) * 3)';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '1' for expression: (2 ^ 2) <= ((1 + 2) * 3)`, () => {
+          service = new InterpreterService();
+          const source = '(2 ^ 2) <= ((1 + 2) * 3)';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '0' for expression: 5 >= 6`, () => {
+          service = new InterpreterService();
+          const source = '5 >= 6';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '1' for expression: TRUE == TRUE`, () => {
+          service = new InterpreterService();
+          const source = 'TRUE == TRUE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '0' for expression: TRUE == FALSE`, () => {
+          service = new InterpreterService();
+          const source = 'TRUE == FALSE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '1' for expression: FALSE == FALSE`, () => {
+          service = new InterpreterService();
+          const source = 'FALSE == FALSE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '1' for expression: TRUE > FALSE`, () => {
+          service = new InterpreterService();
+          const source = 'TRUE > FALSE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '1' for expression: 10 > TRUE`, () => {
+          service = new InterpreterService();
+          const source = '10 > TRUE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+      });
+
+      describe('logical operator tests', () => {
+        it(`should produce a shell output of '1' for expression: 1 AND 1`, () => {
+          service = new InterpreterService();
+          const source = '1 AND 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '0' for expression: 1 AND 0`, () => {
+          service = new InterpreterService();
+          const source = '1 AND 0';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '0' for expression: 0 AND 1`, () => {
+          service = new InterpreterService();
+          const source = '0 AND 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '0' for expression: 0 AND 0`, () => {
+          service = new InterpreterService();
+          const source = '0 AND 0';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '0' for expression: TRUE AND FALSE`, () => {
+          service = new InterpreterService();
+          const source = 'TRUE AND FALSE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '0' for expression: 0 OR 0`, () => {
+          service = new InterpreterService();
+          const source = '0 OR 0';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '1' for expression: 1 OR 0`, () => {
+          service = new InterpreterService();
+          const source = '1 OR 0';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '1' for expression: 1 OR 1`, () => {
+          service = new InterpreterService();
+          const source = '1 OR 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '1' for expression: TRUE OR FALSE`, () => {
+          service = new InterpreterService();
+          const source = 'TRUE OR FALSE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '0' for expression: NOT 1`, () => {
+          service = new InterpreterService();
+          const source = 'NOT 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '1' for expression: NOT 0`, () => {
+          service = new InterpreterService();
+          const source = 'NOT 0';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a shell output of '0' for expression: NOT TRUE`, () => {
+          service = new InterpreterService();
+          const source = 'NOT TRUE';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('0');
+        });
+
+        it(`should produce a shell output of '1' for expression: NOT ((1 > 2) AND (TRUE OR FALSE))`, () => {
+          service = new InterpreterService();
+          const source = 'NOT ((1 > 2) AND (TRUE OR FALSE))';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce a console and shell output an error for expression: TRUE AND`, () => {
+          service = new InterpreterService();
+          const source = 'TRUE AND';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidSyntaxError: Expected a number, identifier, '+', '-' or ` +
+                              `'('\nAt line: 1 column: 9 and ends at line: 1 column: 10`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+      });
+    });
   });
 });
