@@ -40,6 +40,24 @@ describe('Number tests', () => {
     });
   });
 
+  describe('copy tests', () => {
+    it('should create a new copied instance of the NumberType when calling copy', () => {
+      const number = new NumberType(10);
+      const copiedNumber = number.copy();
+
+      expect(number).toEqual(copiedNumber);
+
+      const startPos = new PositionTracker(0, 1, 1);
+      const endPos = new PositionTracker(1, 1, 2);
+      copiedNumber.setPos(startPos, endPos);
+
+      expect(number.getPosStart()).toEqual(null);
+      expect(number.getPosEnd()).toEqual(null);
+      expect(copiedNumber.getPosStart()).toEqual(startPos);
+      expect(copiedNumber.getPosEnd()).toEqual(endPos);
+    });
+  });
+
   describe('addBy tests', () => {
     it('should return NumberType with added value and common context', () => {
       const context = new Context('<pseudo>');

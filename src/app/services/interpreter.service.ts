@@ -12,6 +12,7 @@ import { ParseResult } from '../logic/parse-result';
 import * as NodeTypes from '../constants/node-type.constants';
 import * as TokenTypes from '../constants/token-type.constants';
 import { NumberType } from '../data-types/number-type';
+import { SymbolTable } from '../logic/symbol-table';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,7 @@ export class InterpreterService {
       }
       else {
         const rootContext = new Context('<pseudo>');
+        rootContext.symbolTable = this.initialiseGlobalSymbolTable();
         runtimeResult = this.visitNode(<ASTNode>parseResult.getNode(), rootContext);
 
         if (runtimeResult.getError() !== null) {
@@ -65,6 +67,13 @@ export class InterpreterService {
     return [consoleOutput, shellOutput];
   }
 
+  private initialiseGlobalSymbolTable(): SymbolTable {
+    const globalSymbolTable = new SymbolTable();
+    globalSymbolTable.set('PI', new NumberType(Math.PI));
+
+    return globalSymbolTable;
+  }
+
   private visitNode(node: ASTNode, context: Context): RuntimeResult {
     switch (node.nodeType) {
       case NodeTypes.NUMBER:
@@ -73,10 +82,43 @@ export class InterpreterService {
         return this.visitBinaryOpNode(node, context);
       case NodeTypes.UNARYOP:
         return this.visitUnaryOpNode(node, context);
+      case NodeTypes.VARACCESS:
+        return this.visitVarAccessNode(node, context);
+      case NodeTypes.VARASSIGN:
+        return this.visitVarAssignNode(node, context);
       default:
         this.noVisitNode();
         break;
     }
+  }
+
+  private visitVarAccessNode(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    const varName: string = node.token.value;
+    let value: NumberType = context.symbolTable.get(varName);
+
+    if (value === undefined) {
+      const runtimeError = new RuntimeError(`${varName} is not defined`,
+                                            node.token.positionStart,
+                                            node.token.positionEnd, context);
+      return runtimeResult.failure(runtimeError);
+    }
+
+    value = value.copy().setPos(node.token.positionStart, node.token.positionEnd);
+    return runtimeResult.success(value);
+  }
+
+  private visitVarAssignNode(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    const varName: string = node.token.value;
+    const value: NumberType = runtimeResult.register(this.visitNode(<ASTNode>node.node, context));
+
+    if (runtimeResult.getError() !== null) { return runtimeResult; }
+
+    context.symbolTable.set(varName, value);
+    return runtimeResult.success(value);
   }
 
   private visitBinaryOpNode(node: ASTNode, context: Context): RuntimeResult {

@@ -147,5 +147,112 @@ describe('InterpreterService', () => {
         });
       });
     });
+
+    describe('variable assignment and access tests', () => {
+      describe('variable assignment tests', () => {
+        it(`should produce shell output of '1' for expression: var = 1`, () => {
+          service = new InterpreterService();
+          const source = 'var = 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce shell output of '-27' for expression: var = -((1 + 0.5) / (1 - 0.5)) ^ 3`, () => {
+          service = new InterpreterService();
+          const source = 'var = -((1 + 0.5) / (1 - 0.5)) ^ 3';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('-27');
+        });
+
+        it(`should produce shell output of '4' for expression: 1 + (var = 1) + 2`, () => {
+          service = new InterpreterService();
+          const source = '1 + (var = 1) + 2';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('4');
+        });
+
+        it(`should produce shell output of '4' for expression: var = 1 + (var = 1) + 2`, () => {
+          service = new InterpreterService();
+          const source = 'var = 1 + (var = 1) + 2';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('4');
+        });
+
+        it(`should produce a character error for console and shell output for expression: var =`, () => {
+          service = new InterpreterService();
+          const source = 'var =';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidCharacterError: can not end line statement with '='.\n` +
+                              `At line: 1 column: 5 and ends at line: 1 column: 6`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it(`should produce a operator syntax error for console and shell output for expression: 1 + var = 1 + 2`, () => {
+          service = new InterpreterService();
+          const source = '1 + var = 1 + 2';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidSyntaxError: Expected '+', '-', '*', '/', '^', '==', ` +
+                              `'<', '>', '<=', '>=', 'AND' or 'OR'\nAt line: 1 column: 9 and` +
+                              ` ends at line: 1 column: 10`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+      });
+
+      describe('variable access tests', () => {
+        it(`should produce shell output of '4.14159...' for expression (using the PI global pre-built variable): 1 + PI`, () => {
+          service = new InterpreterService();
+          const source = '1 + PI';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual((1 + Math.PI).toString());
+        });
+
+        it(`should produce shell output of '3.14159...' for expression (using the PI global pre-built variable): var = PI`, () => {
+          service = new InterpreterService();
+          const source = 'var = PI';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual((Math.PI).toString());
+        });
+
+        it(`should produce undefined variable runtime error for console and shell output for expression: x + 1`, () => {
+          service = new InterpreterService();
+          const source = 'x + 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 2, in <pseudo>\n` +
+                              `Runtime Error: x is not defined\nAt line: 1 column: 1 and` +
+                              ` ends at line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+      });
+    });
   });
 });

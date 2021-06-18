@@ -60,6 +60,15 @@ export class NumberType {
     }
   }
 
+  public copy(): NumberType {
+    const number = new NumberType(this.value);
+
+    number.setPos(this.posStart, this.posEnd);
+    number.setContext(this.context);
+
+    return number;
+  }
+
   public getValue(): number { return this.value; }
 
   public getPosStart(): PositionTracker { return this.posStart; }
