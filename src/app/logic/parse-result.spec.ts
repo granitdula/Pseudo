@@ -3,7 +3,8 @@ import { ASTNode } from './../models/ast-node';
 import { ParseResult } from './parse-result';
 import { InvalidSyntaxError } from './invalid-syntax-error';
 import { Token } from '../models/token';
-import { EQUALS } from '../constants/token-type.constants';
+import { NUMBER } from '../constants/token-type.constants';
+import * as NodeTypes from '../constants/node-type.constants';
 
 describe('ParseResult tests', () => {
   it('should initialise node and error attributes as null and advanceCount to 0', () => {
@@ -16,7 +17,7 @@ describe('ParseResult tests', () => {
 
   describe('success tests', () => {
     it('should return a node instance and null error when using getter, after calling success', () => {
-      const astNode: ASTNode = createASTNode(EQUALS);
+      const astNode: ASTNode = createASTNode(NodeTypes.NUMBER, NUMBER);
       const parseResult = new ParseResult();
 
       parseResult.success(astNode);
@@ -60,7 +61,7 @@ describe('ParseResult tests', () => {
     });
 
     it('should return node in passed in parse result and assign node if node exists in passed parse result', () => {
-      const astNode: ASTNode = createASTNode(EQUALS);
+      const astNode: ASTNode = createASTNode(NodeTypes.NUMBER, NUMBER);
       const nodeParseResult = new ParseResult();
       nodeParseResult.success(astNode);
 
@@ -99,7 +100,7 @@ describe('ParseResult tests', () => {
   });
 });
 
-function createASTNode(tokenType: string): ASTNode {
+function createASTNode(nodeType: string, tokenType: string): ASTNode {
   const startPos = new PositionTracker(0, 1, 1);
   const endPos = startPos.copy();
   endPos.advance();
@@ -110,7 +111,7 @@ function createASTNode(tokenType: string): ASTNode {
     positionEnd: endPos
   };
 
-  const astNode: ASTNode = { token: equalsToken };
+  const astNode: ASTNode = { nodeType: nodeType, token: equalsToken };
 
   return astNode;
 }

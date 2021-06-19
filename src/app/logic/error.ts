@@ -2,8 +2,8 @@ import { PositionTracker } from './position-tracker';
 
 export class Error {
 
-    constructor(private type: string, private posStart: PositionTracker,
-                private posEnd: PositionTracker, private details?: string) {}
+    constructor(protected type: string, protected posStart: PositionTracker,
+                protected posEnd: PositionTracker, protected details?: string) {}
 
     public getErrorMessage(): string {
 

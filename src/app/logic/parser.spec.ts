@@ -4,6 +4,7 @@ import { Parser } from './parser';
 import { PositionTracker } from './position-tracker';
 import { Token } from '../models/token';
 import * as TokenTypes from '../constants/token-type.constants';
+import * as NodeTypes from '../constants/node-type.constants';
 import { ParseResult } from './parse-result';
 
 describe('Parser tests', () => {
@@ -19,7 +20,10 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStart, 10) };
+        const numberNode: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStart, 10)
+        };
         let expected = new ParseResult();
         expected = expected.success(numberNode);
 
@@ -38,7 +42,10 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStart, 3.14) };
+        const numberNode: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStart, 3.14)
+        };
         let expected = new ParseResult();
         expected = expected.success(numberNode);
 
@@ -61,8 +68,12 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNumber, 1) };
+        const numberNode: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNumber, 1)
+        };
         const unaryNode: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus), node: numberNode
         };
         let expected = new ParseResult();
@@ -88,8 +99,12 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNumber, 1) };
+        const numberNode: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNumber, 1)
+        };
         const unaryNode: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus), node: numberNode
         };
         let expected = new ParseResult();
@@ -117,9 +132,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 3) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 4) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 3)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 4)
+        };
         const binaryNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -149,9 +171,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 9) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 10)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 9)
+        };
         const binaryNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -181,9 +210,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 8) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 4) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 8)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 4)
+        };
         const binaryNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -213,9 +249,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 8) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 4) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 8)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 4)
+        };
         const binaryNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.DIVIDE, posStartDivide),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -245,9 +288,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 3) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 3)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
         const binaryNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -297,23 +347,38 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
         const leftBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 4) };
-        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 1) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 4)
+        };
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 1)
+        };
         const rightBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: numberNode3,
           rightChild: numberNode4
         };
 
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: leftBinaryExp,
           rightChild: rightBinaryExp
@@ -351,17 +416,28 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
         const binaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 3) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 3)
+        };
 
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.DIVIDE, posStartDivide),
           leftChild: binaryExp,
           rightChild: numberNode3
@@ -399,23 +475,38 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 3) };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 3)
+        };
         const powerBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: numberNode2,
           rightChild: numberNode3
         };
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
         const plusBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: powerBinaryExp
         };
 
-        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 4) };
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 4)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: plusBinaryExp,
           rightChild: numberNode4
@@ -447,15 +538,23 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 2) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 3) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 2)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 3)
+        };
         const powerBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
         const ast: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           node: powerBinaryExp
         };
@@ -496,23 +595,38 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
         const plusBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 3) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 3)
+        };
         const powerBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: plusBinaryExp,
           rightChild: numberNode3
         };
 
-        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 4) };
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 4)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: powerBinaryExp,
           rightChild: numberNode4
@@ -564,29 +678,45 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
         const leftBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 4) };
-        const numberNode4: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum4, 1) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 4)
+        };
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 1)
+        };
         const rightBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: numberNode3,
           rightChild: numberNode4
         };
 
         const outerBinaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: leftBinaryExp,
           rightChild: rightBinaryExp
         };
 
         const unaryExp: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinusUnary),
           node: outerBinaryExp
         };
@@ -613,7 +743,10 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 10)
+        };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
                                              `'>', '<=', '>=', 'AND' or 'OR'`, posStartNum2,
                                               posStartEof);
@@ -649,9 +782,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
         const binaryExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -725,8 +865,12 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
           node: numberNode1
         };
@@ -767,22 +911,34 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 3) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 3)
+        };
         const binaryMultExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 2) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 2)
+        };
         const binaryPowerExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: binaryMultExp,
           rightChild: numberNode3
         };
 
         const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
           node: binaryPowerExp
         };
@@ -829,27 +985,40 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 3) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 3)
+        };
         const binaryMultExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 2) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 2)
+        };
         const binaryPowerExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.POWER, posStartPower),
           leftChild: binaryMultExp,
           rightChild: numberNode3
         };
 
         const unaryExp: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           node: binaryPowerExp
         };
 
         const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable'),
           node: unaryExp
         };
@@ -890,21 +1059,33 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 10) };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 10)
+        };
         const varAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x'),
           node: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 2) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 2)
+        };
         const binaryMultiplyExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: varAssignNode,
           rightChild: numberNode3
         };
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: binaryMultiplyExp
@@ -969,11 +1150,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
         const varAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x')
         };
         const currentAst: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode1,
           rightChild: varAccessNode
@@ -1026,29 +1212,38 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum, 1) };
+        const numberNode: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum, 1)
+        };
         const xVarAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x')
         };
         const binaryPlusExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.PLUS, posStartPlus),
           leftChild: numberNode,
           rightChild: xVarAccessNode
         };
 
         const yVarAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable2, 'y')
         };
         const zVarAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable3, 'z')
         };
         const binaryMinusExp: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           leftChild: yVarAccessNode,
           rightChild: zVarAccessNode
         };
 
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.MULTIPLY, posStartMultiply),
           leftChild: binaryPlusExp,
           rightChild: binaryMinusExp
@@ -1079,9 +1274,11 @@ describe('Parser tests', () => {
         const parseResult: ParseResult = parser.parse();
 
         const yVarAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable2, 'y')
         };
         const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x'),
           node: yVarAccessNode
         };
@@ -1109,9 +1306,11 @@ describe('Parser tests', () => {
         const parseResult: ParseResult = parser.parse();
 
         const varAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'variable')
         };
         const ast: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.MINUS, posStartMinus),
           node: varAccessNode
         };
@@ -1139,6 +1338,7 @@ describe('Parser tests', () => {
         const parseResult: ParseResult = parser.parse();
 
         const xVarAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x')
         };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
@@ -1172,9 +1372,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 1)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.EQUALITY, posStartEquality),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -1204,9 +1411,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 10)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 1)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.G_THAN, posStartGThan),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -1236,9 +1450,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 2) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.L_THAN, posStartLThan),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -1268,9 +1489,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 1)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.G_THAN_EQ, posStartGThanEq),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -1300,9 +1528,16 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 1) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 1)
+        };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.L_THAN_EQ, posStartLThanEq),
           leftChild: numberNode1,
           rightChild: numberNode2
@@ -1333,12 +1568,15 @@ describe('Parser tests', () => {
         const parseResult: ParseResult = parser.parse();
 
         const boolAccessNode1: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
         };
         const boolAccessNode2: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
         };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
           leftChild: boolAccessNode1,
           rightChild: boolAccessNode2
@@ -1369,12 +1607,15 @@ describe('Parser tests', () => {
         const parseResult: ParseResult = parser.parse();
 
         const boolAccessNode1: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
         };
         const boolAccessNode2: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
         };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartOr, 'OR'),
           leftChild: boolAccessNode1,
           rightChild: boolAccessNode2
@@ -1407,17 +1648,21 @@ describe('Parser tests', () => {
         const parseResult: ParseResult = parser.parse();
 
         const boolAccessNode1: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
         };
         const boolAccessNode2: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
         };
         const boolAndExpr: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
           leftChild: boolAccessNode1,
           rightChild: boolAccessNode2
         };
         const ast: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartNot, 'NOT'),
           node: boolAndExpr
         };
@@ -1476,45 +1721,62 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const numberNode1: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum1, 10) };
-        const numberNode2: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum2, 1) };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 10)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 1)
+        };
         const firstCondExpr: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.G_THAN, posStartGThan),
           leftChild: numberNode1,
           rightChild: numberNode2
         };
 
-        const numberNode3: ASTNode = { token: createToken(TokenTypes.NUMBER, posStartNum3, 5) };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 5)
+        };
         const varXAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x')
         };
         const secondCondExpr: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.L_THAN, posStartLThan),
           leftChild: numberNode3,
           rightChild: varXAccessNode
         };
 
         const orExpr: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartOr, 'OR'),
           leftChild: firstCondExpr,
           rightChild: secondCondExpr
         };
 
         const trueAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
         };
         const andExpr: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
           leftChild: trueAccessNode,
           rightChild: orExpr
         };
 
         const notExpr: ASTNode = {
+          nodeType: NodeTypes.UNARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartNot, 'NOT'),
           node: andExpr
         };
 
         const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
           token: createToken(TokenTypes.IDENTIFIER, posStartVar, 'var'),
           node: notExpr
         };
@@ -1544,7 +1806,10 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const trueNode: ASTNode = { token: createToken(TokenTypes.IDENTIFIER, posStartTrue, 'true') };
+        const trueNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartTrue, 'true')
+        };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
                                              `'>', '<=', '>=', 'AND' or 'OR'`, posStartAnd,
                                              posEndAnd);
@@ -1583,17 +1848,21 @@ describe('Parser tests', () => {
         const parseResult: ParseResult = parser.parse();
 
         const falseNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartFalse, 'FALSE')
         };
         const varAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
           token: createToken(TokenTypes.IDENTIFIER, posStartVar, 'var'),
           node: falseNode
         };
 
         const trueNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
         };
         const ast: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
           token: createToken(TokenTypes.KEYWORD, posStartAnd, 'AND'),
           leftChild: trueNode,
           rightChild: varAssignNode
