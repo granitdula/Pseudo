@@ -7,4 +7,6 @@ export interface ASTNode {
   leftChild?: ASTNode | InvalidSyntaxError,
   rightChild?: ASTNode | InvalidSyntaxError,
   node?: ASTNode | InvalidSyntaxError // Some nodes have single nodes such as NumberNode.
+  cases?: Array<[ASTNode, ASTNode]>,
+  elseCase?: ASTNode
 }
