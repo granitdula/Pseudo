@@ -1,3 +1,4 @@
+import { IfNode } from './../models/if-node';
 import { VarAccessNode } from './../models/var-access-node';
 import { VarAssignNode } from './../models/var-assign-node';
 import { ParseResult } from './parse-result';
@@ -88,6 +89,84 @@ export class Parser {
     return parseResult.success(leftNode);
   }
 
+  private ifExpr(): ParseResult {
+    let parseResult = new ParseResult();
+    const cases: Array<[ASTNode, ASTNode]> = [];
+    let elseCase: ASTNode = null;
+    const ifToken: Token = this.currentToken;
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const condition: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'then')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'then' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const expr = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    cases.push([condition, expr]);
+
+    while (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'elif') {
+      parseResult.registerAdvancement();
+      this.advance();
+
+      const condition: ASTNode = parseResult.register(this.expr());
+      if (parseResult.getError() !== null) { return parseResult; }
+
+      if (!(this.currentToken.type === TokenTypes.KEYWORD &&
+          this.currentToken.value === 'then')) {
+        const syntaxError = new InvalidSyntaxError(`Expected 'then' keyword`,
+                                                   this.currentToken.positionStart,
+                                                   this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+
+      parseResult.registerAdvancement();
+      this.advance();
+
+      const expr = parseResult.register(this.expr());
+      if (parseResult.getError() !== null) { return parseResult; }
+
+      cases.push([condition, expr]);
+    }
+
+    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'else') {
+      parseResult.registerAdvancement();
+      this.advance();
+
+      elseCase = parseResult.register(this.expr());
+      if (parseResult.getError() !== null) { return parseResult; }
+    }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
+                                                   this.currentToken.positionStart,
+                                                   this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const ifNode: IfNode = {
+      nodeType: NodeTypes.IFSTATEMENT,
+      token: ifToken,
+      cases: cases,
+      elseCase: elseCase
+    };
+    return parseResult.success(ifNode);
+  }
+
   private atom(): ParseResult {
 
     let parseResult = new ParseResult();
@@ -123,6 +202,11 @@ export class Parser {
                                                                   this.currentToken.positionEnd);
         return parseResult.failure(syntaxError);
       }
+    }
+    else if (tok.type === TokenTypes.KEYWORD && tok.value === 'if') {
+      const ifExpr: ASTNode = parseResult.register(this.ifExpr());
+      if (parseResult.getError() !== null) { return parseResult; }
+      return parseResult.success(ifExpr);
     }
 
     const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-' or '('`,

@@ -543,4 +543,40 @@ describe('Number tests', () => {
       expect(newNumber.getContext()).toEqual(context);
     });
   });
+
+  describe('isTrue tests', () => {
+    it('should return true if NumberType is not 0', () => {
+      const context = new Context('<pseudo>');
+      const number = new NumberType(1);
+      const number2 = new NumberType(100);
+
+      number.setContext(context);
+      number2.setContext(context);
+
+      expect(number.getValue()).toEqual(1);
+      expect(number.getPosStart()).toEqual(null);
+      expect(number.getPosEnd()).toEqual(null);
+      expect(number.getContext()).toEqual(context);
+      expect(number.isTrue()).toEqual(true);
+
+      expect(number2.getValue()).toEqual(100);
+      expect(number2.getPosStart()).toEqual(null);
+      expect(number2.getPosEnd()).toEqual(null);
+      expect(number2.getContext()).toEqual(context);
+      expect(number2.isTrue()).toEqual(true);
+    });
+
+    it('should return false if NumberType is 0', () => {
+      const context = new Context('<pseudo>');
+      const number = new NumberType(0);
+
+      number.setContext(context);
+
+      expect(number.getValue()).toEqual(0);
+      expect(number.getPosStart()).toEqual(null);
+      expect(number.getPosEnd()).toEqual(null);
+      expect(number.getContext()).toEqual(context);
+      expect(number.isTrue()).toEqual(false);
+    });
+  });
 });

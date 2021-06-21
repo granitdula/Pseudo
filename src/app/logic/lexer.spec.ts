@@ -524,17 +524,17 @@ describe('Lexer tests', () => {
           const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(47, 6, 1));
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
-            [TokenTypes.IDENTIFIER, posTracker1, 'if'], [TokenTypes.L_BRACKET, posTracker2],
+            [TokenTypes.KEYWORD, posTracker1, 'if'], [TokenTypes.L_BRACKET, posTracker2],
             [TokenTypes.NUMBER, posTracker3, 10], [TokenTypes.G_THAN, posTracker4],
             [TokenTypes.NUMBER, posTracker5, 1], [TokenTypes.KEYWORD, posTracker6, 'AND'],
             [TokenTypes.KEYWORD, posTracker7, 'TRUE'], [TokenTypes.R_BRACKET, posTracker8],
-            [TokenTypes.IDENTIFIER, posTracker9, 'then'], [TokenTypes.NEWLINE, posTracker10],
+            [TokenTypes.KEYWORD, posTracker9, 'then'], [TokenTypes.NEWLINE, posTracker10],
             [TokenTypes.IDENTIFIER, posTracker11, 'x'], [TokenTypes.EQUALS, posTracker12],
             [TokenTypes.NUMBER, posTracker13, 1], [TokenTypes.NEWLINE, posTracker14],
-            [TokenTypes.IDENTIFIER, posTracker15, 'else'], [TokenTypes.NEWLINE, posTracker16],
+            [TokenTypes.KEYWORD, posTracker15, 'else'], [TokenTypes.NEWLINE, posTracker16],
             [TokenTypes.IDENTIFIER, posTracker17, 'x'], [TokenTypes.EQUALS, posTracker18],
             [TokenTypes.NUMBER, posTracker19, 2], [TokenTypes.NEWLINE, posTracker20],
-            [TokenTypes.IDENTIFIER, posTracker21, 'end'], [TokenTypes.NEWLINE, posTracker22]
+            [TokenTypes.KEYWORD, posTracker21, 'end'], [TokenTypes.NEWLINE, posTracker22]
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
@@ -587,7 +587,7 @@ describe('Lexer tests', () => {
             [TokenTypes.IDENTIFIER, posTracker15, 'x'], [TokenTypes.EQUALS, posTracker16],
             [TokenTypes.IDENTIFIER, posTracker17, 'x'], [TokenTypes.MULTIPLY, posTracker18],
             [TokenTypes.IDENTIFIER, posTracker19, 'i'], [TokenTypes.NEWLINE, posTracker20],
-            [TokenTypes.IDENTIFIER, posTracker21, 'end'], [TokenTypes.NEWLINE, posTracker22]
+            [TokenTypes.KEYWORD, posTracker21, 'end'], [TokenTypes.NEWLINE, posTracker22]
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
@@ -641,7 +641,7 @@ describe('Lexer tests', () => {
             [TokenTypes.IDENTIFIER, posTracker17, 'i'], [TokenTypes.EQUALS, posTracker18],
             [TokenTypes.IDENTIFIER, posTracker19, 'i'], [TokenTypes.PLUS, posTracker20],
             [TokenTypes.NUMBER, posTracker21, 1], [TokenTypes.NEWLINE, posTracker22],
-            [TokenTypes.IDENTIFIER, posTracker23, 'end'], [TokenTypes.NEWLINE, posTracker24]
+            [TokenTypes.KEYWORD, posTracker23, 'end'], [TokenTypes.NEWLINE, posTracker24]
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);
@@ -686,7 +686,7 @@ describe('Lexer tests', () => {
             [TokenTypes.IDENTIFIER, posTracker10, 'return'],
             [TokenTypes.IDENTIFIER, posTracker11, 'x'], [TokenTypes.PLUS, posTracker12],
             [TokenTypes.IDENTIFIER, posTracker13, 'y'], [TokenTypes.NEWLINE, posTracker14],
-            [TokenTypes.IDENTIFIER, posTracker15, 'end'], [TokenTypes.NEWLINE, posTracker16]
+            [TokenTypes.KEYWORD, posTracker15, 'end'], [TokenTypes.NEWLINE, posTracker16]
           ];
 
           const expected: Array<Token> = createTokenArray(tokenData);

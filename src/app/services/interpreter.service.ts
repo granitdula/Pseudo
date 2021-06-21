@@ -55,7 +55,8 @@ export class InterpreterService {
           consoleOutput = shellOutput = runtimeResult.getError().getErrorMessage();
         }
         else {
-          shellOutput = runtimeResult.getValue().getValue().toString();
+          if (runtimeResult.getValue() === null) { shellOutput = ''; }
+          else { shellOutput = runtimeResult.getValue().getValue().toString(); }
 
           for (const output of this.outputs) {
             consoleOutput += output + "\n";
@@ -88,10 +89,37 @@ export class InterpreterService {
         return this.visitVarAccessNode(node, context);
       case NodeTypes.VARASSIGN:
         return this.visitVarAssignNode(node, context);
+      case NodeTypes.IFSTATEMENT:
+        return this.visitIfNode(node, context);
       default:
         this.noVisitNode();
         break;
     }
+  }
+
+  private visitIfNode(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    for (let [condNode, exprNode] of node.cases) {
+      const conditionValue: NumberType = runtimeResult.register(this.visitNode(condNode, context));
+      if(runtimeResult.getError() !== null) { return runtimeResult; }
+
+      if (conditionValue.isTrue()) {
+        const exprValue: NumberType = runtimeResult.register(this.visitNode(exprNode, context));
+        if(runtimeResult.getError() !== null) { return runtimeResult; }
+
+        return runtimeResult.success(exprValue);
+      }
+    }
+
+    if (node.elseCase !== null) {
+      const elseValue: NumberType = runtimeResult.register(this.visitNode(node.elseCase, context));
+      if(runtimeResult.getError() !== null) { return runtimeResult; }
+
+      return runtimeResult.success(elseValue);
+    }
+
+    return runtimeResult.success(null);
   }
 
   private visitVarAccessNode(node: ASTNode, context: Context): RuntimeResult {

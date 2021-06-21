@@ -128,6 +128,8 @@ export class NumberType {
     return new NumberType(convertedValueToBool).setContext(this.context);
   }
 
+  public isTrue(): boolean { return this.value !== 0; }
+
   public copy(): NumberType {
     const number = new NumberType(this.value);
 

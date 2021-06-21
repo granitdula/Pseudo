@@ -503,5 +503,86 @@ describe('InterpreterService', () => {
         });
       });
     });
+
+    describe('if, elif and else statement tests', () => {
+      it(`should produce a shell output of '2' for expression: if PI > 3 then 1 + 1 end`, () => {
+        service = new InterpreterService();
+        const source = 'if PI > 3 then 1 + 1 end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('2');
+      });
+
+      it(`should produce a shell output of '100' for expression: if PI == 3 then 1 + 1 else 100 end`, () => {
+        service = new InterpreterService();
+        const source = 'if PI == 3 then 1 + 1 else 100 end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('100');
+      });
+
+      it(`should produce a shell output of '1' for expression: if FALSE then 5 elif TRUE then 1 else 100 end`, () => {
+        service = new InterpreterService();
+        const source = 'if FALSE then 5 elif TRUE then 1 else 100 end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('1');
+      });
+
+      it(`should produce a shell output of '0' for expression: if FALSE then 5 elif FALSE then 1 elif TRUE then 0 else 100 end`, () => {
+        service = new InterpreterService();
+        const source = 'if FALSE then 5 elif FALSE then 1 elif TRUE then 0 else 100 end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('0');
+      });
+
+      it(`should produce a console/shell syntax error missing 'then' keyword for expression: if TRUE 5 end`, () => {
+        service = new InterpreterService();
+        const source = 'if TRUE 5 end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        const expectedErr = `InvalidSyntaxError: Expected 'then' keyword\nAt line: 1 column:` +
+                            ` 9 and ends at line: 1 column: 10`;
+
+        expect(consoleOut).toEqual(expectedErr);
+        expect(shellOut).toEqual(expectedErr);
+      });
+
+      it(`should produce a console/shell syntax error missing 'end' keyword for expression: if TRUE then 5`, () => {
+        service = new InterpreterService();
+        const source = 'if TRUE then 5';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        const expectedErr = `InvalidSyntaxError: Expected 'end' keyword\nAt line: 1 column:` +
+                            ` 15 and ends at line: 1 column: 16`;
+
+        expect(consoleOut).toEqual(expectedErr);
+        expect(shellOut).toEqual(expectedErr);
+      });
+
+      it(`should produce a console/shell syntax error missing 'then' keyword for expression: if FALSE then 5 elif TRUE 1 end`, () => {
+        service = new InterpreterService();
+        const source = 'if FALSE then 5 elif TRUE 1 end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        const expectedErr = `InvalidSyntaxError: Expected 'then' keyword\nAt line: 1 column:` +
+                            ` 27 and ends at line: 1 column: 28`;
+
+        expect(consoleOut).toEqual(expectedErr);
+        expect(shellOut).toEqual(expectedErr);
+      });
+    });
   });
 });
