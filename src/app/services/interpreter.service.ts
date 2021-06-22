@@ -91,10 +91,67 @@ export class InterpreterService {
         return this.visitVarAssignNode(node, context);
       case NodeTypes.IFSTATEMENT:
         return this.visitIfNode(node, context);
+      case NodeTypes.FORLOOP:
+        return this.visitForNode(node, context);
+      case NodeTypes.WHILELOOP:
+        return this.visitWhileNode(node, context);
       default:
         this.noVisitNode();
         break;
     }
+  }
+
+  private visitWhileNode(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    while (true) {
+      const conditionValue: NumberType = runtimeResult.register(this.visitNode(node.conditionNode, context));
+      if (runtimeResult.getError() !== null) { return runtimeResult; }
+
+      if (!conditionValue.isTrue()) { break; }
+
+      runtimeResult.register(this.visitNode(node.bodyNode, context));
+      if (runtimeResult.getError() !== null) { return runtimeResult; }
+    }
+
+    // Nothing is returned to the shell output as a single line statement.
+    return runtimeResult.success(null);
+  }
+
+  private visitForNode(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    const startValue: NumberType = runtimeResult.register(this.visitNode(node.startValueNode, context));
+    if (runtimeResult.getError() !== null) { return runtimeResult; }
+
+    const endValue: NumberType = runtimeResult.register(this.visitNode(node.endValueNode, context));
+    if (runtimeResult.getError() !== null) { return runtimeResult; }
+
+    let stepValue = new NumberType(1);
+    if (node.stepValueNode !== null) {
+      stepValue = runtimeResult.register(this.visitNode(node.stepValueNode, context));
+      if (runtimeResult.getError() !== null) { return runtimeResult; }
+    }
+
+    let i: number = startValue.getValue();
+    let rangeCondition: ((currVal: number, endVal: number) => boolean);
+    if (stepValue.getValue() >= 0) {
+      rangeCondition = (currVal: number, endVal: number) => { return i < endValue.getValue(); }
+    }
+    else {
+      rangeCondition = (currVal: number, endVal: number) => { return i > endValue.getValue(); }
+    }
+
+    while (rangeCondition(i, endValue.getValue())) {
+      context.symbolTable.set(node.varNameToken.value, new NumberType(i));
+      i += stepValue.getValue();
+
+      runtimeResult.register(this.visitNode(node.bodyNode, context));
+      if (runtimeResult.getError() !== null) { return runtimeResult; }
+    }
+
+    // Nothing is returned to the shell output as a single line statement.
+    return runtimeResult.success(null);
   }
 
   private visitIfNode(node: ASTNode, context: Context): RuntimeResult {
