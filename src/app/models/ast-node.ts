@@ -8,5 +8,11 @@ export interface ASTNode {
   rightChild?: ASTNode | InvalidSyntaxError,
   node?: ASTNode | InvalidSyntaxError // Some nodes have single nodes such as NumberNode.
   cases?: Array<[ASTNode, ASTNode]>,
-  elseCase?: ASTNode
+  elseCase?: ASTNode,
+  varNameToken?: Token,
+  startValueNode?: ASTNode,
+  endValueNode?: ASTNode,
+  stepValueNode?: ASTNode,
+  conditionNode?: ASTNode,
+  bodyNode?: ASTNode
 }
