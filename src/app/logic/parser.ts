@@ -1,3 +1,4 @@
+import { ForNode } from './../models/for-node';
 import { IfNode } from './../models/if-node';
 import { VarAccessNode } from './../models/var-access-node';
 import { VarAssignNode } from './../models/var-assign-node';
@@ -10,6 +11,7 @@ import { Token } from '../models/token';
 import * as TokenTypes from '../constants/token-type.constants';
 import * as NodeTypes from '../constants/node-type.constants';
 import { UnaryOpNode } from '../models/unary-op-node';
+import { WhileNode } from '../models/while-node';
 
 /**
  * This Parser implements a recursive descent parser.
@@ -87,6 +89,139 @@ export class Parser {
     }
 
     return parseResult.success(leftNode);
+  }
+
+  private whileExpr(): ParseResult {
+    let parseResult = new ParseResult();
+    const whileToken: Token = this.currentToken;
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const conditionValue: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'loop')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'loop' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const bodyValue: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const whileNode: WhileNode = {
+      nodeType: NodeTypes.WHILELOOP,
+      token: whileToken,
+      conditionNode: conditionValue,
+      bodyNode: bodyValue
+    };
+    return parseResult.success(whileNode);
+  }
+
+  private forExpr(): ParseResult {
+    let parseResult = new ParseResult();
+    const forToken: Token = this.currentToken;
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    if (this.currentToken.type !== TokenTypes.IDENTIFIER) {
+      const syntaxError = new InvalidSyntaxError(`Expected identifier`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    const varNameToken: Token = this.currentToken;
+
+    // Some advance calls assign the changed currentToken to itself so the linter doesn't act up
+    // thinking that the next if statement is redundant due to the first if statement.
+    parseResult.registerAdvancement();
+    this.currentToken = this.advance();
+
+    if (this.currentToken.type !== TokenTypes.EQUALS) {
+      const syntaxError = new InvalidSyntaxError(`Expected '='`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.currentToken = this.advance();
+
+    const startValue: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'to')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'to' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.currentToken = this.advance();
+
+    const endValue: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    let stepValue: ASTNode = null;
+    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'step') {
+      parseResult.registerAdvancement();
+      this.advance();
+
+      stepValue = parseResult.register(this.expr());
+      if (parseResult.getError() !== null) { return parseResult; }
+    }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'loop')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'loop' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const body: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    const forNode: ForNode = {
+      nodeType: NodeTypes.FORLOOP,
+      token: forToken,
+      varNameToken: varNameToken,
+      startValueNode: startValue,
+      endValueNode: endValue,
+      stepValueNode: stepValue,
+      bodyNode: body
+    };
+    return parseResult.success(forNode);
   }
 
   private ifExpr(): ParseResult {
@@ -207,6 +342,16 @@ export class Parser {
       const ifExpr: ASTNode = parseResult.register(this.ifExpr());
       if (parseResult.getError() !== null) { return parseResult; }
       return parseResult.success(ifExpr);
+    }
+    else if (tok.type === TokenTypes.KEYWORD && tok.value === 'for') {
+      const forExpr: ASTNode = parseResult.register(this.forExpr());
+      if (parseResult.getError() !== null) { return parseResult; }
+      return parseResult.success(forExpr);
+    }
+    else if (tok.type === TokenTypes.KEYWORD && tok.value === 'while') {
+      const whileExpr: ASTNode = parseResult.register(this.whileExpr());
+      if (parseResult.getError() !== null) { return parseResult; }
+      return parseResult.success(whileExpr);
     }
 
     const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-' or '('`,
