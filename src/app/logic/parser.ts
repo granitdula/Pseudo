@@ -1,3 +1,4 @@
+import { FunctionDefNode } from './../models/function-def-node';
 import { ForNode } from './../models/for-node';
 import { IfNode } from './../models/if-node';
 import { VarAccessNode } from './../models/var-access-node';
@@ -12,6 +13,7 @@ import * as TokenTypes from '../constants/token-type.constants';
 import * as NodeTypes from '../constants/node-type.constants';
 import { UnaryOpNode } from '../models/unary-op-node';
 import { WhileNode } from '../models/while-node';
+import { FunctionCallNode } from '../models/function-call-node';
 
 /**
  * This Parser implements a recursive descent parser.
@@ -52,8 +54,8 @@ export class Parser {
       case 'factor':
         leftNode = parseResult.register(this.factor());
         break;
-      case 'atom':
-        leftNode = parseResult.register(this.atom());
+      case 'functionCall':
+        leftNode = parseResult.register(this.functionCall());
         break;
       case 'comparisonExpr':
         leftNode = parseResult.register(this.comparisonExpr());
@@ -89,6 +91,116 @@ export class Parser {
     }
 
     return parseResult.success(leftNode);
+  }
+
+  private functionDef(): ParseResult {
+    let parseResult = new ParseResult();
+    const functionToken: Token = this.currentToken;
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    let varNameToken: Token;
+    if (this.currentToken.type === TokenTypes.IDENTIFIER) {
+      varNameToken = this.currentToken;
+      parseResult.registerAdvancement();
+      this.currentToken = this.advance();
+
+      if (this.currentToken.type !== TokenTypes.L_BRACKET) {
+        const syntaxError = new InvalidSyntaxError(`Expected '('`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+    }
+    // Anonymous functions.
+    else {
+      varNameToken = null;
+
+      if (this.currentToken.type !== TokenTypes.L_BRACKET) {
+        const syntaxError = new InvalidSyntaxError(`Expected identifier or '('`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+    }
+
+    parseResult.registerAdvancement();
+    this.currentToken = this.advance();
+
+    let argNameTokens: Token[] = [];
+
+    if (this.currentToken.type === TokenTypes.IDENTIFIER) {
+      argNameTokens.push(this.currentToken);
+      parseResult.registerAdvancement();
+      this.currentToken = this.advance();
+
+      while (this.currentToken.type === TokenTypes.COMMA) {
+        parseResult.registerAdvancement();
+        this.currentToken = this.advance();
+
+        if (this.currentToken.type !== TokenTypes.IDENTIFIER) {
+          const syntaxError = new InvalidSyntaxError(`Expected identifier`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+          return parseResult.failure(syntaxError);
+        }
+
+        argNameTokens.push(this.currentToken);
+        parseResult.registerAdvancement();
+        this.currentToken = this.advance();
+      }
+
+      if (this.currentToken.type !== TokenTypes.R_BRACKET) {
+        const syntaxError = new InvalidSyntaxError(`Expected ',' or ')'`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+    }
+    else {
+      if (this.currentToken.type !== TokenTypes.R_BRACKET) {
+        const syntaxError = new InvalidSyntaxError(`Expected identifier or ')'`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+    }
+
+    parseResult.registerAdvancement();
+    this.currentToken = this.advance();
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'begin')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'begin' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.currentToken = this.advance();
+
+    const bodyNode: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
+                                                  this.currentToken.positionStart,
+                                                  this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    parseResult.registerAdvancement();
+    this.currentToken = this.advance();
+
+    const functionDefNode: FunctionDefNode = {
+      nodeType: NodeTypes.FUNCTIONDEF,
+      token: functionToken,
+      varNameToken: varNameToken,
+      argNameTokens: argNameTokens,
+      bodyNode: bodyNode
+    };
+    return parseResult.success(functionDefNode);
   }
 
   private whileExpr(): ParseResult {
@@ -353,6 +465,11 @@ export class Parser {
       if (parseResult.getError() !== null) { return parseResult; }
       return parseResult.success(whileExpr);
     }
+    else if (tok.type === TokenTypes.KEYWORD && tok.value === 'function') {
+      const functionNode: ASTNode = parseResult.register(this.functionDef());
+      if (parseResult.getError() !== null) { return parseResult; }
+      return parseResult.success(functionNode);
+    }
 
     const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-' or '('`,
                                                 this.currentToken.positionStart,
@@ -363,7 +480,65 @@ export class Parser {
 
   private power(): ParseResult {
     const operators: Set<string> = new Set([TokenTypes.POWER]);
-    return this.binaryOperators('atom', operators, 'factor');
+    return this.binaryOperators('functionCall', operators, 'factor');
+  }
+
+  private functionCall(): ParseResult {
+    let parseResult = new ParseResult();
+    const functionCallToken: Token = this.currentToken;
+
+    // Regular atom call as previously.
+    const atom: ASTNode = parseResult.register(this.atom());
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    if (this.currentToken.type === TokenTypes.L_BRACKET) {
+      parseResult.registerAdvancement();
+      this.currentToken = this.advance();
+      let argNodes: ASTNode[] = [];
+
+      if (this.currentToken.type === TokenTypes.R_BRACKET) {
+        parseResult.registerAdvancement();
+        this.currentToken = this.advance();
+      }
+      else {
+        argNodes.push(parseResult.register(this.expr()));
+        if (parseResult.getError() !== null) {
+          const syntaxError = new InvalidSyntaxError(`Expected ')', 'if', 'for', 'while',` +
+                                                     ` 'function', number, identifier, '+',` +
+                                                     ` '-', '(' or 'NOT'`,
+                                                     this.currentToken.positionStart,
+                                                     this.currentToken.positionEnd);
+          return parseResult.failure(syntaxError);
+        }
+
+        while (this.currentToken.type === TokenTypes.COMMA) {
+          parseResult.registerAdvancement();
+          this.currentToken = this.advance();
+
+          argNodes.push(parseResult.register(this.expr()));
+          if (parseResult.getError() !== null) { return parseResult; }
+        }
+
+        if (this.currentToken.type !== TokenTypes.R_BRACKET) {
+          const syntaxError = new InvalidSyntaxError(`Expected ',' or ')'`,
+                                                     this.currentToken.positionStart,
+                                                     this.currentToken.positionEnd);
+          return parseResult.failure(syntaxError);
+        }
+
+        parseResult.registerAdvancement();
+        this.currentToken = this.advance();
+      }
+
+      const callNode: FunctionCallNode = {
+        nodeType: NodeTypes.FUNCTIONCALL,
+        token: functionCallToken,
+        nodeToCall: atom,
+        argNodes: argNodes
+      };
+      return parseResult.success(callNode);
+    }
+    return parseResult.success(atom);
   }
 
   private factor(): ParseResult {
