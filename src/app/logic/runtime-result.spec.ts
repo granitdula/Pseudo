@@ -1,3 +1,4 @@
+import { ValueType } from './../data-types/value-type';
 import { Context } from './context';
 import { PositionTracker } from './position-tracker';
 import { RuntimeError } from './runtime-error';
@@ -48,7 +49,7 @@ describe('RuntimeResult tests', () => {
       const otherRuntimeResult = new RuntimeResult();
 
       otherRuntimeResult.success(number);
-      const returnedValue: NumberType = runtimeResult.register(otherRuntimeResult);
+      const returnedValue: ValueType = runtimeResult.register(otherRuntimeResult);
 
       expect(returnedValue).toEqual(number);
       expect(runtimeResult.getValue()).toEqual(null);
@@ -64,7 +65,7 @@ describe('RuntimeResult tests', () => {
       const otherRuntimeResult = new RuntimeResult();
 
       otherRuntimeResult.failure(runtimeError);
-      const returnedValue: NumberType = runtimeResult.register(otherRuntimeResult);
+      const returnedValue: ValueType = runtimeResult.register(otherRuntimeResult);
 
       expect(returnedValue).toEqual(null);
       expect(runtimeResult.getValue()).toEqual(null);

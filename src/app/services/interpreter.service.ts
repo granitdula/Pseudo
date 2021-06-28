@@ -1,3 +1,4 @@
+import { ValueType } from './../data-types/value-type';
 import { RuntimeError } from './../logic/runtime-error';
 import { Context } from './../logic/context';
 import { RuntimeResult } from './../logic/runtime-result';
@@ -55,8 +56,13 @@ export class InterpreterService {
           consoleOutput = shellOutput = runtimeResult.getError().getErrorMessage();
         }
         else {
-          if (runtimeResult.getValue() === null) { shellOutput = ''; }
-          else { shellOutput = runtimeResult.getValue().getValue().toString(); }
+          const runtimeValue: ValueType = runtimeResult.getValue();
+
+          if (runtimeValue === null) { shellOutput = ''; }
+          else if (runtimeValue instanceof NumberType) {
+            shellOutput = runtimeValue.getValue().toString();
+          }
+          else { shellOutput = ''; }
 
           for (const output of this.outputs) {
             consoleOutput += output + "\n";
@@ -105,7 +111,7 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
 
     while (true) {
-      const conditionValue: NumberType = runtimeResult.register(this.visitNode(node.conditionNode, context));
+      const conditionValue: ValueType = runtimeResult.register(this.visitNode(node.conditionNode, context));
       if (runtimeResult.getError() !== null) { return runtimeResult; }
 
       if (!conditionValue.isTrue()) { break; }
@@ -121,30 +127,46 @@ export class InterpreterService {
   private visitForNode(node: ASTNode, context: Context): RuntimeResult {
     const runtimeResult = new RuntimeResult();
 
-    const startValue: NumberType = runtimeResult.register(this.visitNode(node.startValueNode, context));
+    const startValue: ValueType = runtimeResult.register(this.visitNode(node.startValueNode, context));
     if (runtimeResult.getError() !== null) { return runtimeResult; }
 
-    const endValue: NumberType = runtimeResult.register(this.visitNode(node.endValueNode, context));
+    const endValue: ValueType = runtimeResult.register(this.visitNode(node.endValueNode, context));
     if (runtimeResult.getError() !== null) { return runtimeResult; }
 
-    let stepValue = new NumberType(1);
+    let stepValue: ValueType = new NumberType(1);
     if (node.stepValueNode !== null) {
       stepValue = runtimeResult.register(this.visitNode(node.stepValueNode, context));
       if (runtimeResult.getError() !== null) { return runtimeResult; }
     }
 
-    let i: number = startValue.getValue();
-    let rangeCondition: ((currVal: number, endVal: number) => boolean);
-    if (stepValue.getValue() >= 0) {
-      rangeCondition = (currVal: number, endVal: number) => { return i < endValue.getValue(); }
+    let startValNum: number;
+    let endValNum: number;
+    let stepValNum: number;
+    if (startValue instanceof NumberType && endValue instanceof NumberType &&
+                                              stepValue instanceof NumberType) {
+      startValNum = startValue.getValue();
+      endValNum = endValue.getValue();
+      stepValNum = stepValue.getValue();
     }
     else {
-      rangeCondition = (currVal: number, endVal: number) => { return i > endValue.getValue(); }
+      const runtimeError = new RuntimeError(`Start, end or step value is not a numerical value`,
+                                            node.token.positionStart, node.token.positionEnd,
+                                            context);
+      return runtimeResult.failure(runtimeError);
     }
 
-    while (rangeCondition(i, endValue.getValue())) {
+    let i: number = startValNum;
+    let rangeCondition: ((currVal: number, endVal: number) => boolean);
+    if (stepValNum >= 0) {
+      rangeCondition = (currVal: number, endVal: number) => { return i < endValNum; }
+    }
+    else {
+      rangeCondition = (currVal: number, endVal: number) => { return i > endValNum; }
+    }
+
+    while (rangeCondition(i, endValNum)) {
       context.symbolTable.set(node.varNameToken.value, new NumberType(i));
-      i += stepValue.getValue();
+      i += stepValNum;
 
       runtimeResult.register(this.visitNode(node.bodyNode, context));
       if (runtimeResult.getError() !== null) { return runtimeResult; }
@@ -158,11 +180,11 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
 
     for (let [condNode, exprNode] of node.cases) {
-      const conditionValue: NumberType = runtimeResult.register(this.visitNode(condNode, context));
+      const conditionValue: ValueType = runtimeResult.register(this.visitNode(condNode, context));
       if(runtimeResult.getError() !== null) { return runtimeResult; }
 
       if (conditionValue.isTrue()) {
-        const exprValue: NumberType = runtimeResult.register(this.visitNode(exprNode, context));
+        const exprValue: ValueType = runtimeResult.register(this.visitNode(exprNode, context));
         if(runtimeResult.getError() !== null) { return runtimeResult; }
 
         return runtimeResult.success(exprValue);
@@ -170,7 +192,7 @@ export class InterpreterService {
     }
 
     if (node.elseCase !== null) {
-      const elseValue: NumberType = runtimeResult.register(this.visitNode(node.elseCase, context));
+      const elseValue: ValueType = runtimeResult.register(this.visitNode(node.elseCase, context));
       if(runtimeResult.getError() !== null) { return runtimeResult; }
 
       return runtimeResult.success(elseValue);
@@ -183,7 +205,7 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
 
     const varName: string = node.token.value;
-    let value: NumberType = context.symbolTable.get(varName);
+    let value: ValueType = context.symbolTable.get(varName);
 
     if (value === undefined) {
       const runtimeError = new RuntimeError(`${varName} is not defined`,
@@ -192,7 +214,11 @@ export class InterpreterService {
       return runtimeResult.failure(runtimeError);
     }
 
-    value = value.copy().setPos(node.token.positionStart, node.token.positionEnd);
+    if (value instanceof NumberType) {
+      value = value.copy().setPos(node.token.positionStart, node.token.positionEnd);
+    }
+    else { throw new ErrorEvent(`Can't create copy of data type`); }
+
     return runtimeResult.success(value);
   }
 
@@ -200,7 +226,7 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
 
     const varName: string = node.token.value;
-    const value: NumberType = runtimeResult.register(this.visitNode(<ASTNode>node.node, context));
+    const value: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.node, context));
 
     if (runtimeResult.getError() !== null) { return runtimeResult; }
 
@@ -211,48 +237,48 @@ export class InterpreterService {
   private visitBinaryOpNode(node: ASTNode, context: Context): RuntimeResult {
     const runtimeResult = new RuntimeResult();
 
-    const left: NumberType = runtimeResult.register(this.visitNode(<ASTNode>node.leftChild, context));
+    const left: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.leftChild, context));
     if (runtimeResult.getError() !== null) { return runtimeResult; }
-    const right: NumberType = runtimeResult.register(this.visitNode(<ASTNode>node.rightChild, context));
+    const right: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.rightChild, context));
     if (runtimeResult.getError() !== null) { return runtimeResult; }
 
     let error: RuntimeError = null;
-    let result: NumberType;
+    let result: ValueType;
 
     switch(node.token.type) {
       case TokenTypes.PLUS:
-        result = left.addBy(right);
+        [result, error] = left.addBy(right);
         break;
       case TokenTypes.MINUS:
-        result = left.subtractBy(right);
+        [result, error] = left.subtractBy(right);
         break;
       case TokenTypes.MULTIPLY:
-        result = left.multiplyBy(right);
+        [result, error] = left.multiplyBy(right);
         break;
       case TokenTypes.DIVIDE:
         [result, error] = left.divideBy(right);
         break;
       case TokenTypes.POWER:
-        result = left.poweredBy(right);
+        [result, error] = left.poweredBy(right);
         break;
       case TokenTypes.EQUALITY:
-        result = left.equalityComparison(right);
+        [result, error] = left.equalityComparison(right);
         break;
       case TokenTypes.L_THAN:
-        result = left.lessThanComparison(right);
+        [result, error] = left.lessThanComparison(right);
         break;
       case TokenTypes.G_THAN:
-        result = left.greaterThanComparison(right);
+        [result, error] = left.greaterThanComparison(right);
         break;
       case TokenTypes.L_THAN_EQ:
-        result = left.lessThanOrEqualComparison(right);
+        [result, error] = left.lessThanOrEqualComparison(right);
         break;
       case TokenTypes.G_THAN_EQ:
-        result = left.greaterThanOrEqualComparison(right);
+        [result, error] = left.greaterThanOrEqualComparison(right);
         break;
       case TokenTypes.KEYWORD:
-        if (node.token.value === 'AND') { result = left.andBy(right); }
-        else { result = left.orBy(right); }
+        if (node.token.value === 'AND') { [result, error] = left.andBy(right); }
+        else { [result, error] = left.orBy(right); }
         break;
       default:
         break;
@@ -267,18 +293,21 @@ export class InterpreterService {
 
   private visitUnaryOpNode(node: ASTNode, context: Context): RuntimeResult {
     const runtimeResult = new RuntimeResult();
-    let number: NumberType = runtimeResult.register(this.visitNode(<ASTNode>node.node,
+    let number: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.node,
                                                                               context));
     if (runtimeResult.getError() !== null) { return runtimeResult; }
 
-    // TODO: May need to handle runtime errors here in the future when adding other types like
-    // strings.
-    if (node.token.type === TokenTypes.MINUS) { number = number.multiplyBy(new NumberType(-1)); }
+    let error: RuntimeError = null;
+
+    if (node.token.type === TokenTypes.MINUS) { [number, error] = number.multiplyBy(new NumberType(-1)); }
     else if (node.token.type === TokenTypes.KEYWORD && node.token.value === 'NOT') {
-      number = number.notted();
+      [number, error] = number.notted();
     }
 
-    return runtimeResult.success(number.setPos(node.token.positionStart, node.token.positionEnd));
+    if (error !== null) { return runtimeResult.failure(error); }
+    else {
+      return runtimeResult.success(number.setPos(node.token.positionStart, node.token.positionEnd));
+    }
   }
 
   private visitNumberNode(node: ASTNode, context: Context): RuntimeResult {

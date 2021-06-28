@@ -1,3 +1,4 @@
+import { ValueType } from './../data-types/value-type';
 import { NumberType } from './../data-types/number-type';
 import { SymbolTable } from './symbol-table';
 
@@ -14,7 +15,7 @@ describe('SymbolTable tests', () => {
   describe('set and get tests', () => {
     it('should return undefined value for trying to get from an empty SymbolTable', () => {
       const symbolTable = new SymbolTable();
-      const value: NumberType = symbolTable.get('variable');
+      const value: ValueType = symbolTable.get('variable');
 
       expect(value).toEqual(undefined);
     });
@@ -25,10 +26,10 @@ describe('SymbolTable tests', () => {
       symbolTable.set('variable2', new NumberType(20));
       symbolTable.set('variable3', new NumberType(100));
 
-      const value1: NumberType = symbolTable.get('variable');
-      const value2: NumberType = symbolTable.get('variable2');
-      const value3: NumberType = symbolTable.get('variable3');
-      const value4: NumberType = symbolTable.get('var');
+      const value1: ValueType = symbolTable.get('variable');
+      const value2: ValueType = symbolTable.get('variable2');
+      const value3: ValueType = symbolTable.get('variable3');
+      const value4: ValueType = symbolTable.get('var');
 
       expect(value1).toEqual(new NumberType(10));
       expect(value2).toEqual(new NumberType(20));
@@ -61,9 +62,9 @@ describe('SymbolTable tests', () => {
 
       symbolTable.remove('variable');
 
-      const value1: NumberType = symbolTable.get('variable');
-      const value2: NumberType = symbolTable.get('variable2');
-      const value3: NumberType = symbolTable.get('variable3');
+      const value1: ValueType = symbolTable.get('variable');
+      const value2: ValueType = symbolTable.get('variable2');
+      const value3: ValueType = symbolTable.get('variable3');
 
       expect(value1).toEqual(undefined);
       expect(value2).toEqual(new NumberType(20));
