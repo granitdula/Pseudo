@@ -74,16 +74,7 @@ export class InterpreterService {
     return [consoleOutput, shellOutput];
   }
 
-  private initialiseGlobalSymbolTable(): SymbolTable {
-    const globalSymbolTable = new SymbolTable();
-    globalSymbolTable.set('TRUE', new NumberType(1));
-    globalSymbolTable.set('FALSE', new NumberType(0));
-    globalSymbolTable.set('PI', new NumberType(Math.PI));
-
-    return globalSymbolTable;
-  }
-
-  private visitNode(node: ASTNode, context: Context): RuntimeResult {
+  public visitNode(node: ASTNode, context: Context): RuntimeResult {
     switch (node.nodeType) {
       case NodeTypes.NUMBER:
         return this.visitNumberNode(node, context);
@@ -105,6 +96,15 @@ export class InterpreterService {
         this.noVisitNode();
         break;
     }
+  }
+
+  private initialiseGlobalSymbolTable(): SymbolTable {
+    const globalSymbolTable = new SymbolTable();
+    globalSymbolTable.set('TRUE', new NumberType(1));
+    globalSymbolTable.set('FALSE', new NumberType(0));
+    globalSymbolTable.set('PI', new NumberType(Math.PI));
+
+    return globalSymbolTable;
   }
 
   private visitWhileNode(node: ASTNode, context: Context): RuntimeResult {

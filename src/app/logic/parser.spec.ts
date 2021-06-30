@@ -6,6 +6,7 @@ import { Token } from '../models/token';
 import * as TokenTypes from '../constants/token-type.constants';
 import * as NodeTypes from '../constants/node-type.constants';
 import { ParseResult } from './parse-result';
+import { createToken } from '../utils/token-functions';
 
 describe('Parser tests', () => {
   describe('parse tests', () => {
@@ -3565,31 +3566,3 @@ describe('Parser tests', () => {
     });
   });
 });
-
-// Utility functions.
-function createToken(type: string, posStart: PositionTracker, value?: any): Token {
-
-  let token: Token;
-
-  const posStartNew = posStart.copy();
-  let posEnd = posStart.copy();
-  posEnd.advance();
-
-  if (value === undefined) {
-    token = {
-      type: type,
-      positionStart: posStartNew,
-      positionEnd: posEnd
-    };
-  }
-  else {
-    token = {
-      type: type,
-      positionStart: posStartNew,
-      positionEnd: posEnd,
-      value: value
-    };
-  }
-
-  return token;
-}

@@ -3,13 +3,22 @@ import { NumberType } from './../data-types/number-type';
 import { SymbolTable } from './symbol-table';
 
 describe('SymbolTable tests', () => {
-  it('should initialise with an empty symbols map and null parent', () => {
+  it('should initialise with an empty symbols map and null parent (if not passed)', () => {
     const symbolTable = new SymbolTable();
     const expectedSymbols = new Map<string, NumberType>();
     const expectedParentTable: SymbolTable = null;
 
     expect(symbolTable.getSymbols()).toEqual(expectedSymbols);
     expect(symbolTable.getParent()).toEqual(expectedParentTable);
+  });
+
+  it('should initialise with an empty symbols map and a parent when passed', () => {
+    const parentSymbolTable = new SymbolTable();
+    const symbolTable = new SymbolTable(parentSymbolTable);
+    const expectedSymbols = new Map<string, NumberType>();
+
+    expect(symbolTable.getSymbols()).toEqual(expectedSymbols);
+    expect(symbolTable.getParent()).toEqual(parentSymbolTable);
   });
 
   describe('set and get tests', () => {
@@ -35,6 +44,17 @@ describe('SymbolTable tests', () => {
       expect(value2).toEqual(new NumberType(20));
       expect(value3).toEqual(new NumberType(100));
       expect(value4).toEqual(undefined);
+    });
+
+    it('should return correct value for getting an existing value in the parent SymbolTable', () => {
+      const parentSymbolTable = new SymbolTable();
+
+      parentSymbolTable.set('globalVar', new NumberType(0));
+
+      const symbolTable = new SymbolTable(parentSymbolTable);
+      const value: ValueType = symbolTable.get('globalVar');
+
+      expect(value).toEqual(new NumberType(0));
     });
   });
 

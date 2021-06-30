@@ -5,6 +5,10 @@ export class SymbolTable {
   private symbols: Map<string, ValueType> = new Map<string, ValueType>();
   private parent: SymbolTable = null;
 
+  constructor(parent?: SymbolTable) {
+    this.parent = parent === undefined ? null : parent;
+  }
+
   public get(variableName: string): ValueType {
     const value: ValueType = this.symbols.get(variableName);
     if (value === undefined && this.parent !== null) { return this.parent.get(variableName); }
