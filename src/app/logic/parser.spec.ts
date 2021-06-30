@@ -6,6 +6,7 @@ import { Token } from '../models/token';
 import * as TokenTypes from '../constants/token-type.constants';
 import * as NodeTypes from '../constants/node-type.constants';
 import { ParseResult } from './parse-result';
+import { createToken } from '../utils/token-functions';
 
 describe('Parser tests', () => {
   describe('parse tests', () => {
@@ -2713,33 +2714,855 @@ describe('Parser tests', () => {
         expect(parseResult).toEqual(expected);
       });
     });
+
+    describe('function definition and calls tests', () => {
+      it('should return correct AST for statement: function one() begin 1 end', () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartRightBrack = new PositionTracker(13, 1, 14);
+        const posStartBegin = new PositionTracker(15, 1, 16);
+        const posStartNum = new PositionTracker(21, 1, 22);
+        const posStartEnd = new PositionTracker(23, 1, 24);
+        const posStartEof = new PositionTracker(26, 1, 27);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'one'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.NUMBER, posStartNum, 1),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum, 1)
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONDEF,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          varNameToken: createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'one'),
+          argNameTokens: [],
+          bodyNode: numberNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: function add(x, y) begin x + y end', () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartVarY = new PositionTracker(16, 1, 17);
+        const posStartRightBrack = new PositionTracker(17, 1, 18);
+        const posStartBegin = new PositionTracker(19, 1, 20);
+        const posStartVarX2 = new PositionTracker(25, 1, 26);
+        const posStartPlus = new PositionTracker(27, 1, 28);
+        const posStartVarY2 = new PositionTracker(29, 1, 30);
+        const posStartEnd = new PositionTracker(31, 1, 32);
+        const posStartEof = new PositionTracker(34, 1, 35);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const varXNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x')
+        };
+        const varYNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y')
+        };
+        const bodyNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.PLUS, posStartPlus),
+          leftChild: varXNode,
+          rightChild: varYNode
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONDEF,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          varNameToken: createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          argNameTokens: [createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+                          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y')],
+          bodyNode: bodyNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 12; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      // // Anonymous function support.
+      it('should return correct AST for statement: function (x, y) begin x + y end', () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartLeftBrack = new PositionTracker(9, 1, 10);
+        const posStartVarX = new PositionTracker(10, 1, 11);
+        const posStartComma = new PositionTracker(11, 1, 12);
+        const posStartVarY = new PositionTracker(13, 1, 14);
+        const posStartRightBrack = new PositionTracker(14, 1, 15);
+        const posStartBegin = new PositionTracker(16, 1, 17);
+        const posStartVarX2 = new PositionTracker(22, 1, 23);
+        const posStartPlus = new PositionTracker(24, 1, 25);
+        const posStartVarY2 = new PositionTracker(26, 1, 27);
+        const posStartEnd = new PositionTracker(28, 1, 29);
+        const posStartEof = new PositionTracker(31, 1, 32);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const varXNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x')
+        };
+        const varYNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y')
+        };
+        const bodyNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.PLUS, posStartPlus),
+          leftChild: varXNode,
+          rightChild: varYNode
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONDEF,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          varNameToken: null,
+          argNameTokens: [createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+                          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y')],
+          bodyNode: bodyNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: func = function (x, y) begin x + y end', () => {
+        const posStartVariable = new PositionTracker(0, 1, 1);
+        const posStartEquals = new PositionTracker(5, 1, 6);
+        const posStartFunction = new PositionTracker(7, 1, 8);
+        const posStartLeftBrack = new PositionTracker(16, 1, 17);
+        const posStartVarX = new PositionTracker(17, 1, 18);
+        const posStartComma = new PositionTracker(18, 1, 19);
+        const posStartVarY = new PositionTracker(20, 1, 21);
+        const posStartRightBrack = new PositionTracker(21, 1, 22);
+        const posStartBegin = new PositionTracker(23, 1, 24);
+        const posStartVarX2 = new PositionTracker(29, 1, 30);
+        const posStartPlus = new PositionTracker(31, 1, 32);
+        const posStartVarY2 = new PositionTracker(33, 1, 34);
+        const posStartEnd = new PositionTracker(35, 1, 36);
+        const posStartEof = new PositionTracker(38, 1, 39);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'func'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const varXNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x')
+        };
+        const varYNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y')
+        };
+        const bodyNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.PLUS, posStartPlus),
+          leftChild: varXNode,
+          rightChild: varYNode
+        };
+        const functionDefNode: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONDEF,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          varNameToken: null,
+          argNameTokens: [createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+                          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y')],
+          bodyNode: bodyNode
+        };
+
+        const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'func'),
+          node: functionDefNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 13; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: func(x, y, z)', () => {
+        const posStartFunc = new PositionTracker(0, 1, 1);
+        const posStartLeftBrack = new PositionTracker(4, 1, 5);
+        const posStartVarX = new PositionTracker(5, 1, 6);
+        const posStartComma1 = new PositionTracker(6, 1, 7);
+        const posStartVarY = new PositionTracker(8, 1, 9);
+        const posStartComma2 = new PositionTracker(9, 1, 10);
+        const posStartVarZ = new PositionTracker(11, 1, 12);
+        const posStartRightBrack = new PositionTracker(12, 1, 13);
+        const posStartEof = new PositionTracker(13, 1, 14);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarZ, 'z'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const funcNameNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func')
+        };
+        const xNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x')
+        };
+        const yNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y')
+        };
+        const zNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarZ, 'z')
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONCALL,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func'),
+          nodeToCall: funcNameNode,
+          argNodes: [xNode, yNode, zNode]
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: func(10, 1, 2)', () => {
+        const posStartFunc = new PositionTracker(0, 1, 1);
+        const posStartLeftBrack = new PositionTracker(4, 1, 5);
+        const posStartNum1 = new PositionTracker(5, 1, 6);
+        const posStartComma1 = new PositionTracker(7, 1, 8);
+        const posStartNum2 = new PositionTracker(9, 1, 10);
+        const posStartComma2 = new PositionTracker(10, 1, 11);
+        const posStartNum3 = new PositionTracker(12, 1, 13);
+        const posStartRightBrack = new PositionTracker(13, 1, 14);
+        const posStartEof = new PositionTracker(14, 1, 15);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.NUMBER, posStartNum1, 10),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.NUMBER, posStartNum2, 1),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.NUMBER, posStartNum3, 2),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const funcNameNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func')
+        };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 10)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 1)
+        };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 2)
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONCALL,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func'),
+          nodeToCall: funcNameNode,
+          argNodes: [numberNode1, numberNode2, numberNode3]
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: func()', () => {
+        const posStartFunc = new PositionTracker(0, 1, 1);
+        const posStartLeftBrack = new PositionTracker(4, 1, 5);
+        const posStartRightBrack = new PositionTracker(5, 1, 6);
+        const posStartEof = new PositionTracker(6, 1, 7);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const funcNameNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func')
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONCALL,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFunc, 'func'),
+          nodeToCall: funcNameNode,
+          argNodes: []
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: sum = add(x, y)', () => {
+        const posStartSum = new PositionTracker(0, 1, 1);
+        const posStartEquals = new PositionTracker(4, 1, 5);
+        const posStartAdd = new PositionTracker(6, 1, 7);
+        const posStartLeftBrack = new PositionTracker(9, 1, 10);
+        const posStartVarX = new PositionTracker(10, 1, 11);
+        const posStartComma1 = new PositionTracker(11, 1, 12);
+        const posStartVarY = new PositionTracker(13, 1, 14);
+        const posStartRightBrack = new PositionTracker(14, 1, 15);
+        const posStartEof = new PositionTracker(15, 1, 16);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartSum, 'sum'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.IDENTIFIER, posStartAdd, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const funcNameNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartAdd, 'add')
+        };
+        const xNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x')
+        };
+        const yNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y')
+        };
+        const functionNode: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONCALL,
+          token: createToken(TokenTypes.IDENTIFIER, posStartAdd, 'add'),
+          nodeToCall: funcNameNode,
+          argNodes: [xNode, yNode]
+        };
+
+        const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartSum, 'sum'),
+          node: functionNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error expected '(' in parse result for expression: function add x, y) begin x + y end`, () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartVarX = new PositionTracker(11, 1, 12);
+        const posStartComma = new PositionTracker(12, 1, 13);
+        const posStartVarY = new PositionTracker(14, 1, 15);
+        const posStartRightBrack = new PositionTracker(15, 1, 16);
+        const posStartBegin = new PositionTracker(17, 1, 18);
+        const posStartVarX2 = new PositionTracker(23, 1, 24);
+        const posStartPlus = new PositionTracker(25, 1, 26);
+        const posStartVarY2 = new PositionTracker(27, 1, 28);
+        const posStartEnd = new PositionTracker(29, 1, 30);
+        const posStartEof = new PositionTracker(32, 1, 33);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected '('`, posStartVarX,
+                                              posStartComma);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error missing ',' or ')' in parse result for expression: function add(x y) begin x + y end`, () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartVarY = new PositionTracker(15, 1, 16);
+        const posStartRightBrack = new PositionTracker(16, 1, 17);
+        const posStartBegin = new PositionTracker(18, 1, 19);
+        const posStartVarX2 = new PositionTracker(20, 1, 21);
+        const posStartPlus = new PositionTracker(22, 1, 23);
+        const posStartVarY2 = new PositionTracker(24, 1, 25);
+        const posStartEnd = new PositionTracker(26, 1, 27);
+        const posStartEof = new PositionTracker(29, 1, 30);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected ',' or ')'`, posStartVarY,
+                                              posStartRightBrack);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error missing ',' or ')' in parse result for expression: function add(x, y begin x + y end`, () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartVarY = new PositionTracker(16, 1, 17);
+        const posStartBegin = new PositionTracker(18, 1, 19);
+        const posEndBegin = new PositionTracker(19, 1, 20);
+        const posStartVarX2 = new PositionTracker(24, 1, 25);
+        const posStartPlus = new PositionTracker(26, 1, 27);
+        const posStartVarY2 = new PositionTracker(28, 1, 29);
+        const posStartEnd = new PositionTracker(30, 1, 31);
+        const posStartEof = new PositionTracker(33, 1, 34);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected ',' or ')'`, posStartBegin,
+                                              posEndBegin);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error 'Expected identifier' in parse result for expression: function add(x, ) begin x + y end`, () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartRightBrack = new PositionTracker(16, 1, 17);
+        const posEndRightBrack = new PositionTracker(17, 1, 18);
+        const posStartBegin = new PositionTracker(18, 1, 19);
+        const posStartVarX2 = new PositionTracker(24, 1, 25);
+        const posStartPlus = new PositionTracker(26, 1, 27);
+        const posStartVarY2 = new PositionTracker(28, 1, 29);
+        const posStartEnd = new PositionTracker(30, 1, 31);
+        const posStartEof = new PositionTracker(33, 1, 34);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected identifier`, posStartRightBrack,
+                                              posEndRightBrack);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 5; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error missing 'begin' in parse result for expression: function add(x, y) x + y end`, () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartVarY = new PositionTracker(16, 1, 17);
+        const posStartRightBrack = new PositionTracker(17, 1, 18);
+        const posStartVarX2 = new PositionTracker(19, 1, 20);
+        const posEndVarX2 = new PositionTracker(20, 1, 21);
+        const posStartPlus = new PositionTracker(21, 1, 22);
+        const posStartVarY2 = new PositionTracker(23, 1, 24);
+        const posStartEnd = new PositionTracker(25, 1, 26);
+        const posStartEof = new PositionTracker(28, 1, 29);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected 'begin' keyword`, posStartVarX2,
+                                              posEndVarX2);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct expression error in parse result for expression: function add(x, y) begin end`, () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartVarY = new PositionTracker(16, 1, 17);
+        const posStartRightBrack = new PositionTracker(17, 1, 18);
+        const posStartBegin = new PositionTracker(19, 1, 20);
+        const posStartEnd = new PositionTracker(25, 1, 26);
+        const posEndEnd = new PositionTracker(26, 1, 27);
+        const posStartEof = new PositionTracker(29, 1, 30);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' ` +
+                                             `or 'NOT'`, posStartEnd, posEndEnd);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error missing 'end' in parse result for expression: function add(x, y) begin x + y`, () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartVarY = new PositionTracker(16, 1, 17);
+        const posStartRightBrack = new PositionTracker(17, 1, 18);
+        const posStartBegin = new PositionTracker(19, 1, 20);
+        const posStartVarX2 = new PositionTracker(25, 1, 26);
+        const posStartPlus = new PositionTracker(27, 1, 28);
+        const posStartVarY2 = new PositionTracker(29, 1, 30);
+        const posStartEof = new PositionTracker(30, 1, 31);
+        const posEndEof = new PositionTracker(31, 1, 32);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected 'end' keyword`, posStartEof, posEndEof);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error 'Expected identifier' in parse result for expression: add(x, )`, () => {
+        const posStartFuncName = new PositionTracker(0, 1, 1);
+        const posStartLeftBrack = new PositionTracker(3, 1, 4);
+        const posStartVarX = new PositionTracker(4, 1, 5);
+        const posStartComma = new PositionTracker(5, 1, 6);
+        const posStartRightBrack = new PositionTracker(7, 1, 8);
+        const posStartEof = new PositionTracker(8, 1, 9);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' ` +
+                                             `or 'NOT'`, posStartRightBrack, posStartEof);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error missing ',' or ')' in parse result for expression: add(x y)`, () => {
+        const posStartFuncName = new PositionTracker(0, 1, 1);
+        const posStartLeftBrack = new PositionTracker(3, 1, 4);
+        const posStartVarX = new PositionTracker(4, 1, 5);
+        const posStartVarY = new PositionTracker(6, 1, 7);
+        const posStartRightBrack = new PositionTracker(7, 1, 8);
+        const posStartEof = new PositionTracker(8, 1, 9);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected ',' or ')'`, posStartVarY,
+                                              posStartRightBrack);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it(`should return correct error missing ',' or ')' in parse result for expression: add(x, y`, () => {
+        const posStartFuncName = new PositionTracker(0, 1, 1);
+        const posStartLeftBrack = new PositionTracker(3, 1, 4);
+        const posStartVarX = new PositionTracker(4, 1, 5);
+        const posStartComma = new PositionTracker(5, 1, 6);
+        const posStartVarY = new PositionTracker(7, 1, 8);
+        const posStartEof = new PositionTracker(8, 1, 9);
+        const posEndEof = new PositionTracker(9, 1, 10);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected ',' or ')'`, posStartEof, posEndEof);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 5; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+    });
   });
 });
-
-// Utility functions.
-function createToken(type: string, posStart: PositionTracker, value?: any): Token {
-
-  let token: Token;
-
-  const posStartNew = posStart.copy();
-  let posEnd = posStart.copy();
-  posEnd.advance();
-
-  if (value === undefined) {
-    token = {
-      type: type,
-      positionStart: posStartNew,
-      positionEnd: posEnd
-    };
-  }
-  else {
-    token = {
-      type: type,
-      positionStart: posStartNew,
-      positionEnd: posEnd,
-      value: value
-    };
-  }
-
-  return token;
-}

@@ -2,6 +2,7 @@ import { RuntimeError } from './../logic/runtime-error';
 import { PositionTracker } from './../logic/position-tracker';
 import { NumberType } from './number-type';
 import { Context } from '../logic/context';
+import { ValueType } from './value-type';
 
 describe('Number tests', () => {
   it('should initialise with with passed value but with null position tracker and context', () => {
@@ -65,12 +66,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(5);
 
       number.setContext(context);
-      const newNumber: NumberType = number.addBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.addBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(15);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(15); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -81,12 +85,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(5);
 
       number.setContext(context);
-      const newNumber: NumberType = number.subtractBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.subtractBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(5);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(5); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -97,12 +104,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(5);
 
       number.setContext(context);
-      const newNumber: NumberType = number.multiplyBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.multiplyBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(50);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(50); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -113,12 +123,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(5);
 
       number.setContext(context);
-      const [newNumber, _]: [NumberType, RuntimeError] = number.divideBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.divideBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(2);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(2); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return runtime error when passing a NumberType with value 0', () => {
@@ -130,7 +143,7 @@ describe('Number tests', () => {
                                                                       otherNumber.getContext());
 
       number.setContext(context);
-      const [newNumber, error]: [NumberType, RuntimeError] = number.divideBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.divideBy(otherNumber);
 
       expect(newNumber).toEqual(null);
       expect(error).toEqual(expectedRuntimeErr);
@@ -144,12 +157,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(5);
 
       number.setContext(context);
-      const newNumber: NumberType = number.poweredBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.poweredBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(100000);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(100000); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -160,12 +176,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(10);
 
       number.setContext(context);
-      const newNumber: NumberType = number.equalityComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.equalityComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when values are not equal', () => {
@@ -174,12 +193,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(11);
 
       number.setContext(context);
-      const newNumber: NumberType = number.equalityComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.equalityComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -190,12 +212,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(2);
 
       number.setContext(context);
-      const newNumber: NumberType = number.lessThanComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.lessThanComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is equal to otherNumber', () => {
@@ -204,12 +229,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.lessThanComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.lessThanComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is greater than otherNumber', () => {
@@ -218,12 +246,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.lessThanComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.lessThanComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -234,12 +265,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.greaterThanComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.greaterThanComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is equal to otherNumber', () => {
@@ -248,12 +282,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.greaterThanComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.greaterThanComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is less than otherNumber', () => {
@@ -262,12 +299,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(2);
 
       number.setContext(context);
-      const newNumber: NumberType = number.greaterThanComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.greaterThanComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -278,12 +318,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(2);
 
       number.setContext(context);
-      const newNumber: NumberType = number.lessThanOrEqualComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.lessThanOrEqualComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is equal to otherNumber', () => {
@@ -292,12 +335,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.lessThanOrEqualComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.lessThanOrEqualComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is greater than otherNumber', () => {
@@ -306,12 +352,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.lessThanOrEqualComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.lessThanOrEqualComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -322,12 +371,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.greaterThanOrEqualComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.greaterThanOrEqualComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is equal to otherNumber', () => {
@@ -336,12 +388,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.greaterThanOrEqualComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.greaterThanOrEqualComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is less than otherNumber', () => {
@@ -350,12 +405,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(2);
 
       number.setContext(context);
-      const newNumber: NumberType = number.greaterThanOrEqualComparison(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.greaterThanOrEqualComparison(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -366,12 +424,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(0);
 
       number.setContext(context);
-      const newNumber: NumberType = number.andBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.andBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is 1 and otherNumber is 0', () => {
@@ -380,12 +441,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(0);
 
       number.setContext(context);
-      const newNumber: NumberType = number.andBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.andBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 0 when number is 0 and otherNumber is 1', () => {
@@ -394,12 +458,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.andBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.andBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is 1 and otherNumber is 1', () => {
@@ -408,12 +475,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.andBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.andBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is 100 and otherNumber is 10 (treated as 1s)', () => {
@@ -422,12 +492,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(10);
 
       number.setContext(context);
-      const newNumber: NumberType = number.andBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.andBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -438,12 +511,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(0);
 
       number.setContext(context);
-      const newNumber: NumberType = number.orBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.orBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is 1 and otherNumber is 0', () => {
@@ -452,12 +528,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(0);
 
       number.setContext(context);
-      const newNumber: NumberType = number.orBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.orBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is 0 and otherNumber is 1', () => {
@@ -466,12 +545,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.orBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.orBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is 1 and otherNumber is 1', () => {
@@ -480,12 +562,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.orBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.orBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with a value of 1 when number is 100 and otherNumber is 10 (treated as 1s)', () => {
@@ -494,12 +579,15 @@ describe('Number tests', () => {
       const otherNumber = new NumberType(10);
 
       number.setContext(context);
-      const newNumber: NumberType = number.orBy(otherNumber);
+      const [newNumber, error]: [ValueType, RuntimeError] = number.orBy(otherNumber);
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 
@@ -509,12 +597,15 @@ describe('Number tests', () => {
       const number = new NumberType(1);
 
       number.setContext(context);
-      const newNumber: NumberType = number.notted();
+      const [newNumber, error]: [ValueType, RuntimeError] = number.notted();
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with value of 1 when number is 0', () => {
@@ -522,12 +613,15 @@ describe('Number tests', () => {
       const number = new NumberType(0);
 
       number.setContext(context);
-      const newNumber: NumberType = number.notted();
+      const [newNumber, error]: [ValueType, RuntimeError] = number.notted();
 
-      expect(newNumber.getValue()).toEqual(1);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(1); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
 
     it('should return NumberType with value of 0 when number is 100 (treated as 1)', () => {
@@ -535,12 +629,15 @@ describe('Number tests', () => {
       const number = new NumberType(100);
 
       number.setContext(context);
-      const newNumber: NumberType = number.notted();
+      const [newNumber, error]: [ValueType, RuntimeError] = number.notted();
 
-      expect(newNumber.getValue()).toEqual(0);
+      if (newNumber instanceof NumberType) { expect(newNumber.getValue()).toEqual(0); }
+      else { fail('newNumber is not an instance of NumberType'); }
+
       expect(newNumber.getPosStart()).toEqual(null);
       expect(newNumber.getPosEnd()).toEqual(null);
       expect(newNumber.getContext()).toEqual(context);
+      expect(error).toEqual(null);
     });
   });
 

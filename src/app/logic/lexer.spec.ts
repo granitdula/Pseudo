@@ -678,11 +678,11 @@ describe('Lexer tests', () => {
           const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(42, 4, 1));
 
           const tokenData: Array<[string, PositionTracker, any?]> = [
-            [TokenTypes.IDENTIFIER, posTracker1, 'function'],
+            [TokenTypes.KEYWORD, posTracker1, 'function'],
             [TokenTypes.IDENTIFIER, posTracker2, 'add'], [TokenTypes.L_BRACKET, posTracker3],
             [TokenTypes.IDENTIFIER, posTracker4, 'x'], [TokenTypes.COMMA, posTracker5],
             [TokenTypes.IDENTIFIER, posTracker6, 'y'], [TokenTypes.R_BRACKET, posTracker7],
-            [TokenTypes.IDENTIFIER, posTracker8, 'begin'], [TokenTypes.NEWLINE, posTracker9],
+            [TokenTypes.KEYWORD, posTracker8, 'begin'], [TokenTypes.NEWLINE, posTracker9],
             [TokenTypes.IDENTIFIER, posTracker10, 'return'],
             [TokenTypes.IDENTIFIER, posTracker11, 'x'], [TokenTypes.PLUS, posTracker12],
             [TokenTypes.IDENTIFIER, posTracker13, 'y'], [TokenTypes.NEWLINE, posTracker14],

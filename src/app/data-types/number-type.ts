@@ -1,52 +1,39 @@
 import { Context } from './../logic/context';
 import { RuntimeError } from './../logic/runtime-error';
 import { PositionTracker } from './../logic/position-tracker';
+import { ValueType } from './value-type';
 
 /**
  * Used to represent both numbers and boolean primitives in Pseudo.
  */
-export class NumberType {
-
-  private posStart: PositionTracker;
-  private posEnd: PositionTracker;
-  private context;
+export class NumberType extends ValueType {
 
   constructor(private value: number) {
-    this.setPos(null, null);
-    this.setContext(null);
+    super();
   }
 
-  public setPos(start: PositionTracker, end: PositionTracker): NumberType {
-    this.posStart = start;
-    this.posEnd = end;
-
-    return this;
-  }
-
-  public setContext(context: Context): NumberType {
-    this.context = context;
-    return this;
-  }
-
-  public addBy(other: NumberType): NumberType {
+  public addBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
-      return new NumberType(this.value + other.getValue()).setContext(this.context);
+      return [new NumberType(this.value + other.getValue()).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public subtractBy(other: NumberType): NumberType {
+  public subtractBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
-      return new NumberType(this.value - other.getValue()).setContext(this.context);
+      return [new NumberType(this.value - other.getValue()).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public multiplyBy(other: NumberType): NumberType {
+  public multiplyBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
-      return new NumberType(this.value * other.getValue()).setContext(this.context);
+      return [new NumberType(this.value * other.getValue()).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public divideBy(other: NumberType): [NumberType, RuntimeError] {
+  public divideBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       if (other.getValue() === 0) {
         return [null, new RuntimeError('Division by zero', other.getPosStart(),
@@ -55,77 +42,86 @@ export class NumberType {
 
       return [new NumberType(this.value / other.getValue()).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public poweredBy(other: NumberType): NumberType {
+  public poweredBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
-      return new NumberType(this.value ** other.getValue()).setContext(this.context);
+      return [new NumberType(this.value ** other.getValue()).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public equalityComparison(other: NumberType): NumberType {
+  public equalityComparison(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       // This expression is most performant way to convert from boolean to number in Javascript.
       const convertedBoolToNum: number = this.value === other.getValue() ? 1 : 0;
-      return new NumberType(convertedBoolToNum).setContext(this.context);
+      return [new NumberType(convertedBoolToNum).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public lessThanComparison(other: NumberType): NumberType {
+  public lessThanComparison(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       // This expression is most performant way to convert from boolean to number in Javascript.
       const convertedBoolToNum: number = this.value < other.getValue() ? 1 : 0;
-      return new NumberType(convertedBoolToNum).setContext(this.context);
+      return [new NumberType(convertedBoolToNum).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public greaterThanComparison(other: NumberType): NumberType {
+  public greaterThanComparison(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       // This expression is most performant way to convert from boolean to number in Javascript.
       const convertedBoolToNum: number = this.value > other.getValue() ? 1 : 0;
-      return new NumberType(convertedBoolToNum).setContext(this.context);
+      return [new NumberType(convertedBoolToNum).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public lessThanOrEqualComparison(other: NumberType): NumberType {
+  public lessThanOrEqualComparison(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       // This expression is most performant way to convert from boolean to number in Javascript.
       const convertedBoolToNum: number = this.value <= other.getValue() ? 1 : 0;
-      return new NumberType(convertedBoolToNum).setContext(this.context);
+      return [new NumberType(convertedBoolToNum).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public greaterThanOrEqualComparison(other: NumberType): NumberType {
+  public greaterThanOrEqualComparison(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       // This expression is most performant way to convert from boolean to number in Javascript.
       const convertedBoolToNum: number = this.value >= other.getValue() ? 1 : 0;
-      return new NumberType(convertedBoolToNum).setContext(this.context);
+      return [new NumberType(convertedBoolToNum).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public andBy(other: NumberType): NumberType {
+  public andBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       // This expression is most performant way to convert from boolean to number in Javascript.
       const convertedValue: number = this.value !== 0 ? 1 : 0;
       const convertedOther: number = other.getValue() !== 0 ? 1 : 0;
       const convertedBoolToNum: number = convertedValue && convertedOther;
-      return new NumberType(convertedBoolToNum).setContext(this.context);
+      return [new NumberType(convertedBoolToNum).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public orBy(other: NumberType): NumberType {
+  public orBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
       // This expression is most performant way to convert from boolean to number in Javascript.
       const convertedValue: number = this.value !== 0 ? 1 : 0;
       const convertedOther: number = other.getValue() !== 0 ? 1 : 0;
       const convertedBoolToNum: number = convertedValue || convertedOther;
-      return new NumberType(convertedBoolToNum).setContext(this.context);
+      return [new NumberType(convertedBoolToNum).setContext(this.context), null];
     }
+    else { return [null, this.illegalOperation()]; }
   }
 
-  public notted(): NumberType {
+  public notted(): [ValueType, RuntimeError] {
     const convertedValueToBool: number = this.value === 0 ? 1 : 0;
-    return new NumberType(convertedValueToBool).setContext(this.context);
+    return [new NumberType(convertedValueToBool).setContext(this.context), null];
   }
 
   public isTrue(): boolean { return this.value !== 0; }
@@ -140,10 +136,4 @@ export class NumberType {
   }
 
   public getValue(): number { return this.value; }
-
-  public getPosStart(): PositionTracker { return this.posStart; }
-
-  public getPosEnd(): PositionTracker { return this.posEnd; }
-
-  public getContext(): Context { return this.context; }
 }
