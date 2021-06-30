@@ -46,6 +46,8 @@ export class FunctionType extends ValueType {
     return copy;
   }
 
+  public getName(): string { return this.name; }
+
   private checkArgLengths(args: ValueType[]): RuntimeResult {
     const runtimeResult = new RuntimeResult();
 

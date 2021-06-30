@@ -705,5 +705,46 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual(expectedErr);
       });
     });
+
+    describe('function definition and calls tests', () => {
+      it('should return function value by its name, when defined, in the shell output', () => {
+        service = new InterpreterService();
+        const source = 'function add(x, y) begin x + y end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('function add');
+      });
+
+      it('should return function value by its name <anonymous>, when defined, in the shell output', () => {
+        service = new InterpreterService();
+        const source = 'function (x, y) begin x + y end';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('function <anonymous>');
+      });
+
+      // TODO: Add tests for normal function calls after supporting multiline code.
+      // it('should return function output in the shell output when called', () => {
+
+      // });
+
+      it('should return a runtime error for calling a none FunctionType', () => {
+        service = new InterpreterService();
+        const source = 'randomFunc(x)';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        const expectedError = `Traceback (most recent call last):\nLine 2, in <pseudo>\nRuntime` +
+                              ` Error: Can not make a call to a none FunctionType\nAt line: 1 ` +
+                              `column: 1 and ends at line: 1 column: 2`;
+
+        expect(consoleOut).toEqual(expectedError);
+        expect(shellOut).toEqual(expectedError);
+      });
+    });
   });
 });

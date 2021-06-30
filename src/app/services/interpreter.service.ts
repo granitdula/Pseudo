@@ -1,3 +1,4 @@
+import { FunctionType } from './../data-types/function-type';
 import { ValueType } from './../data-types/value-type';
 import { RuntimeError } from './../logic/runtime-error';
 import { Context } from './../logic/context';
@@ -62,6 +63,9 @@ export class InterpreterService {
           else if (runtimeValue instanceof NumberType) {
             shellOutput = runtimeValue.getValue().toString();
           }
+          else if (runtimeValue instanceof FunctionType) {
+            shellOutput = `function ${runtimeValue.getName()}`;
+          }
           else { shellOutput = ''; }
 
           for (const output of this.outputs) {
@@ -92,6 +96,10 @@ export class InterpreterService {
         return this.visitForNode(node, context);
       case NodeTypes.WHILELOOP:
         return this.visitWhileNode(node, context);
+      case NodeTypes.FUNCTIONDEF:
+        return this.visitFunctionDefinion(node, context);
+      case NodeTypes.FUNCTIONCALL:
+        return this.visitFunctionCall(node, context);
       default:
         this.noVisitNode();
         break;
@@ -105,6 +113,50 @@ export class InterpreterService {
     globalSymbolTable.set('PI', new NumberType(Math.PI));
 
     return globalSymbolTable;
+  }
+
+  private visitFunctionCall(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+    let args: ValueType[] = []; // Nodes of the arguments passed in the called function.
+
+    let functionVal: ValueType = runtimeResult.register(this.visitNode(node.nodeToCall,
+                                                                              context));
+    if (!(functionVal instanceof FunctionType)) {
+      const runtimeError = new RuntimeError('Can not make a call to a none FunctionType',
+                                            node.token.positionStart, node.token.positionEnd,
+                                            context);
+      return runtimeResult.failure(runtimeError);
+    }
+    if (runtimeResult.getError() !== null) { return runtimeResult; }
+
+    // To reference the position of the function call, rather than function definition.
+    functionVal = functionVal.copy().setPos(node.token.positionStart, node.token.positionEnd);
+
+    for (let argNode of node.argNodes) {
+      args.push(runtimeResult.register(this.visitNode(argNode, context)));
+      if (runtimeResult.getError() !== null) { return runtimeResult; }
+    }
+
+    const returnValue: ValueType = runtimeResult.register(functionVal.execute(args));
+    if (runtimeResult.getError() !== null) { return runtimeResult; }
+
+    return runtimeResult.success(returnValue);
+  }
+
+  private visitFunctionDefinion(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    const funcName: string = node.varNameToken !== null ? node.varNameToken.value : null;
+    let argNames: string[] = [];
+    for (let argNameTok of node.argNameTokens) { argNames.push(argNameTok.value); }
+
+    let functionVal: FunctionType;
+    if (funcName !== null) { functionVal = new FunctionType(node.bodyNode, argNames, funcName); }
+    else { functionVal = new FunctionType(node.bodyNode, argNames); }
+
+    if (node.varNameToken !== null) { context.symbolTable.set(funcName, functionVal); }
+
+    return runtimeResult.success(functionVal);
   }
 
   private visitWhileNode(node: ASTNode, context: Context): RuntimeResult {
