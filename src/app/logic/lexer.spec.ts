@@ -3,6 +3,7 @@ import { Lexer } from './lexer';
 import { Error } from './error';
 import { Token } from '../models/token';
 import * as TokenTypes from '../constants/token-type.constants';
+import { createToken, createTokenArray } from '../utils/token-functions';
 
 describe('Lexer tests', () => {
   describe('lex tests', () => {
@@ -382,6 +383,88 @@ describe('Lexer tests', () => {
     });
 
     describe('Multi-character syntactically valid source code token tests', () => {
+      describe('String data type tests', () => {
+        it('should return a single string token with empty string value for empty strings', () => {
+          const sourceCode = '""';
+
+          const lexer: Lexer = new Lexer();
+
+          const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+          const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(2, 1, 3));
+          const expectedToken: Token = createToken(TokenTypes.STRING, posTracker, '');
+
+          const expectedTokens: Array<Token> = [expectedToken, eofToken];
+
+          expect(tokens).toEqual(expectedTokens);
+        });
+
+        it('should return a single string token with correct string value for valid string', () => {
+          const sourceCode = '"some random string"';
+
+          const lexer: Lexer = new Lexer();
+
+          const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+          const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(20, 1, 21));
+          const expectedToken: Token = createToken(TokenTypes.STRING, posTracker, 'some random string');
+
+          const expectedTokens: Array<Token> = [expectedToken, eofToken];
+
+          expect(tokens).toEqual(expectedTokens);
+        });
+
+        it('should return a single string token with correct string value for string with tabs and newlines', () => {
+          const sourceCode = '"text with \t and\n"';
+
+          const lexer: Lexer = new Lexer();
+
+          const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+          const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(18, 1, 19));
+          const expectedToken: Token = createToken(TokenTypes.STRING, posTracker, 'text with \t and\n');
+
+          const expectedTokens: Array<Token> = [expectedToken, eofToken];
+
+          expect(tokens).toEqual(expectedTokens);
+        });
+
+        it('should return a single string token with correct string value for string with backlashes', () => {
+          const sourceCode = '"text with \\t and\\n"';
+
+          const lexer: Lexer = new Lexer();
+
+          const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+          const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(20, 1, 21));
+          const expectedToken: Token = createToken(TokenTypes.STRING, posTracker, 'text with \t and\n');
+
+          const expectedTokens: Array<Token> = [expectedToken, eofToken];
+
+          expect(tokens).toEqual(expectedTokens);
+        });
+
+        it('should return a single string token with correct string value for string with backlashes on double quotes', () => {
+          const sourceCode = '"double quotes: \\""';
+
+          const lexer: Lexer = new Lexer();
+
+          const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+          const posTracker = new PositionTracker(0, 1, 1);
+          const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(19, 1, 20));
+          const expectedToken: Token = createToken(TokenTypes.STRING, posTracker, 'double quotes: "');
+
+          const expectedTokens: Array<Token> = [expectedToken, eofToken];
+
+          expect(tokens).toEqual(expectedTokens);
+        });
+      });
+
       describe('Variable assignment tokens tests', () => {
         it('should return a list of correct tokens for single line variable assignment', () => {
 
@@ -828,54 +911,28 @@ describe('Lexer tests', () => {
           fail('Token array created instead of an Error object.');
         }
       });
+
+      it('should return an error for string with missing closing double quote', () => {
+        const sourceCode = '"some random string';
+
+        const lexer: Lexer = new Lexer();
+
+        const error: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posStart = new PositionTracker(19, 1, 20);
+        const posEnd = new PositionTracker(20, 1, 21);
+
+        const expectErrorType = 'InvalidCharacterError';
+        const expectErrorDetails = `missing closing " in string`;
+        const expectedError: Error = new Error(expectErrorType, posStart, posEnd, expectErrorDetails);
+
+        if (error instanceof Error) {
+          expect(error.getErrorMessage()).toEqual(expectedError.getErrorMessage());
+        }
+        else{
+          fail('Token array created instead of an Error object.');
+        }
+      });
     });
   });
 });
-
-// Utility functions.
-function createToken(type: string, posStart: PositionTracker, value?: any): Token {
-
-  let token: Token;
-
-  const posStartNew = posStart.copy();
-  let posEnd = posStart.copy();
-  posEnd.advance();
-
-  if (value === undefined) {
-    token = {
-      type: type,
-      positionStart: posStartNew,
-      positionEnd: posEnd
-    };
-  }
-  else {
-    token = {
-      type: type,
-      positionStart: posStartNew,
-      positionEnd: posEnd,
-      value: value
-    };
-  }
-
-  return token;
-}
-
-function createTokenArray(tokenData: Array<[string, PositionTracker, any?]>): Array<Token> {
-
-  let tokens: Array<Token> = [];
-
-  for (let data of tokenData) {
-    let token: Token;
-
-    if (data.length === 2) {
-      token = createToken(data[0], data[1]);
-    }
-    else {
-      token = createToken(data[0], data[1], data[2]);
-    }
-
-    tokens.push(token);
-  }
-
-  return tokens;
-}

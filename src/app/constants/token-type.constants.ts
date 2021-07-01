@@ -6,6 +6,7 @@ export const POWER = 'POWER';
 export const L_BRACKET = 'L_BRACKET';
 export const R_BRACKET = 'R_BRACKET';
 export const NUMBER = 'NUMBER';
+export const STRING = 'STRING';
 export const NEWLINE = 'NEWLINE';
 export const IDENTIFIER = 'IDENTIFIER';
 export const KEYWORD = 'KEYWORD';
