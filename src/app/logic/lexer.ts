@@ -117,6 +117,12 @@ export class Lexer {
       case ')':
         tokenType = TokenTypes.R_BRACKET;
         break;
+      case '[':
+        tokenType = TokenTypes.L_SQUARE;
+        break;
+      case ']':
+        tokenType = TokenTypes.R_SQUARE;
+        break;
       case ',':
         tokenType = TokenTypes.COMMA;
         break;
