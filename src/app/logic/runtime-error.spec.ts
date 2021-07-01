@@ -13,7 +13,7 @@ describe('RuntimeError tests', () => {
                               `${posStart.getColumn()} and ends at line: ` +
                               `${posEnd.getLine()} column: ${posEnd.getColumn()}`;
 
-      const expected = `Traceback (most recent call last):\nLine ${posStart.getLine() + 1}, ` +
+      const expected = `Traceback (most recent call last):\nLine ${posStart.getLine()}, ` +
                        `in ${context.getContextName()}\nRuntime Error: Division by zero\n` +
                        `${positionDetails}`;
 
@@ -32,9 +32,9 @@ describe('RuntimeError tests', () => {
                               `${posEnd.getLine()} column: ${posEnd.getColumn()}`;
 
       const tracebackDetails = `Traceback (most recent call last):\nLine ` +
-                               `${posStartParent.getLine() + 1}, in ` +
+                               `${posStartParent.getLine()}, in ` +
                                `${parentContext.getContextName()}\nLine ` +
-                               `${posStart.getLine() + 1}, in ${context.getContextName()}\n`;
+                               `${posStart.getLine()}, in ${context.getContextName()}\n`;
 
       const expected = `${tracebackDetails}Runtime Error: Division by zero\n${positionDetails}`;
 

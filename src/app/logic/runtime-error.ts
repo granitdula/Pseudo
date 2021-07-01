@@ -25,7 +25,7 @@ export class RuntimeError extends Error {
     let ctx = this.context;
 
     while (ctx !== null) {
-      result = `Line ${pos.getLine() + 1}, in ${ctx.getContextName()}\n` + result;
+      result = `Line ${pos.getLine()}, in ${ctx.getContextName()}\n` + result;
       pos = ctx.getParentEntryPos();
       ctx = ctx.getParent();
     }

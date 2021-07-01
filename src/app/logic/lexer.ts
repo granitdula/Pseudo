@@ -4,6 +4,7 @@ import { Error } from './error';
 import { InvalidCharacterError } from './invalid-character-error';
 import { Token } from '../models/token';
 import * as TokenTypes from '../constants/token-type.constants';
+import { createToken } from '../utils/token-functions';
 
 export class Lexer {
 
@@ -35,7 +36,7 @@ export class Lexer {
         return error;
       }
       else if (singleCharTokenType !== null) {
-        const token: Token = this.createToken(singleCharTokenType, startOfTokenPosTracker);
+        const token: Token = createToken(singleCharTokenType, startOfTokenPosTracker);
         tokens.push(token);
         this.positionTracker.advance(char); // Passed arg to check for newline char.
       }
@@ -43,7 +44,7 @@ export class Lexer {
         return compTokenType;
       }
       else if (typeof compTokenType === 'string') {
-        tokens.push(this.createToken(compTokenType, startOfTokenPosTracker));
+        tokens.push(createToken(compTokenType, startOfTokenPosTracker));
         this.positionTracker.advance();
       }
       else if (this.isDigit(char)) {
@@ -53,14 +54,24 @@ export class Lexer {
           return result;
         }
         else{
-          const token: Token = this.createToken(TokenTypes.NUMBER, startOfTokenPosTracker, result);
+          const token: Token = createToken(TokenTypes.NUMBER, startOfTokenPosTracker, result);
+          tokens.push(token);
+        }
+      }
+      else if (char === '"') {
+        const stringValue: string | Error = this.scanString(source);
+
+        if (stringValue instanceof Error) { return stringValue; }
+        else {
+          const token: Token = createToken(TokenTypes.STRING, startOfTokenPosTracker,
+                                                                             stringValue);
           tokens.push(token);
         }
       }
       else if (this.isAlphabeticalCharacter(char) || char === '_') {
-        const result: string = this.scanString(source);
+        const result: string = this.scanIdentifier(source);
         const tokenType = KEYWORDS.has(result) ? TokenTypes.KEYWORD : TokenTypes.IDENTIFIER;
-        const token: Token = this.createToken(tokenType, startOfTokenPosTracker, result);
+        const token: Token = createToken(tokenType, startOfTokenPosTracker, result);
 
         tokens.push(token);
       }
@@ -71,7 +82,7 @@ export class Lexer {
       }
     }
 
-    const eofToken: Token = this.createToken(TokenTypes.EOF, this.positionTracker);
+    const eofToken: Token = createToken(TokenTypes.EOF, this.positionTracker);
     tokens.push(eofToken);
 
     return tokens;
@@ -181,33 +192,6 @@ export class Lexer {
     }
   }
 
-  private createToken(type: string, posStart: PositionTracker, value?: any): Token {
-
-    let token: Token;
-
-    const posStartNew = posStart.copy();
-    let posEnd = posStart.copy();
-    posEnd.advance();
-
-    if (value === undefined) {
-      token = {
-        type: type,
-        positionStart: posStartNew,
-        positionEnd: posEnd
-      };
-    }
-    else {
-      token = {
-        type: type,
-        positionStart: posStartNew,
-        positionEnd: posEnd,
-        value: value
-      };
-    }
-
-    return token;
-  }
-
   private isDigit(x: string): boolean {
 
     if (x.length === 0 || x.length > 1) { return false; }
@@ -249,6 +233,48 @@ export class Lexer {
     }
   }
 
+  private scanString(source: string): string | Error {
+    let stringValue = '';
+
+    this.positionTracker.advance();
+    let char: string = source.charAt(this.positionTracker.getIndex());
+
+    let isEscapeCharacter = false;
+    const escapeCharacterMap = new Map<string, string>([
+      ['t', '\t'], ['n', '\n'], ['"', '"']
+    ]);
+
+    while ((char !== '"' || isEscapeCharacter) &&
+           this.positionTracker.getIndex() < source.length) {
+      if (isEscapeCharacter) {
+        if (escapeCharacterMap.get(char) !== undefined) {
+          stringValue += escapeCharacterMap.get(char);
+          isEscapeCharacter = false;
+        }
+      }
+      else if (char === '\\') { isEscapeCharacter = true; }
+      else { stringValue += char; }
+
+      this.positionTracker.advance();
+      char = source.charAt(this.positionTracker.getIndex());
+    }
+
+    if (char !== '"') {
+      const errorMessage = 'missing closing " in string';
+      const posEnd = this.positionTracker.copy();
+      posEnd.advance();
+      const error: InvalidCharacterError = new InvalidCharacterError(errorMessage,
+                                                                     this.positionTracker,
+                                                                     posEnd);
+
+      return error;
+    }
+
+    this.positionTracker.advance();
+
+    return stringValue;
+  }
+
   private isAlphabeticalCharacter(char: string): boolean {
 
     if (char.length === 0 || char.length > 1) { return false; }
@@ -258,8 +284,7 @@ export class Lexer {
     return char.toUpperCase() != char.toLowerCase();
   }
 
-  // TODO: Change so that underscore variables can be used or variable names with numbers.
-  private scanString(source: string): string {
+  private scanIdentifier(source: string): string {
 
     let char: string = source.charAt(this.positionTracker.getIndex());
     let value: string = '';

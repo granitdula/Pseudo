@@ -849,6 +849,33 @@ describe('Parser tests', () => {
       });
     });
 
+    describe('string expression tests', () => {
+      it('should return correct AST for expression: "some string"', () => {
+        const posStartString = new PositionTracker(0, 1, 1);
+        const posStartEof = new PositionTracker(13, 1, 14);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.STRING, posStartString, 'some string'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const ast: ASTNode = {
+          nodeType: NodeTypes.STRING,
+          token: createToken(TokenTypes.STRING, posStartString, 'some string')
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        expected.registerAdvancement();
+
+        expect(parseResult).toEqual(expected);
+      });
+    });
+
     describe('variable assignment tests', () => {
       it('should return correct AST for statement: variable = 1', () => {
         const posStartVariable = new PositionTracker(0, 1, 1);
@@ -1096,6 +1123,41 @@ describe('Parser tests', () => {
         expected = expected.success(ast);
 
         for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: x = "some string"', () => {
+        const posStartVariable = new PositionTracker(0, 1, 1);
+        const posStartEquals = new PositionTracker(2, 1, 3);
+        const posStartString = new PositionTracker(4, 1, 5);
+        const posStartEof = new PositionTracker(17, 1, 18);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals),
+          createToken(TokenTypes.STRING, posStartString, 'some string'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const stringNode: ASTNode = {
+          nodeType: NodeTypes.STRING,
+          token: createToken(TokenTypes.STRING, posStartString, 'some string')
+        };
+
+        const ast: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable, 'x'),
+          node: stringNode
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
         expect(parseResult).toEqual(expected);
       });

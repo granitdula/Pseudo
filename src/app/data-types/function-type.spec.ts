@@ -89,7 +89,7 @@ describe('FunctionType tests', () => {
 
       const result: RuntimeResult = functionType.execute([number1]);
 
-      const expectedErrorMessage = `Traceback (most recent call last):\nLine 2, in add\nRuntime` +
+      const expectedErrorMessage = `Traceback (most recent call last):\nLine 1, in add\nRuntime` +
                                    ` Error: 1 arguments were passed into add. Expected 2\n` +
                                    `At line: 1 column: 1 and ends at line: 1 column: 2`;
 
@@ -135,7 +135,7 @@ describe('FunctionType tests', () => {
 
       const result: RuntimeResult = functionType.execute([number1, number2, number3]);
 
-      const expectedErrorMessage = `Traceback (most recent call last):\nLine 2, in add\nRuntime` +
+      const expectedErrorMessage = `Traceback (most recent call last):\nLine 1, in add\nRuntime` +
                                    ` Error: 3 arguments were passed into add. Expected 2\n` +
                                    `At line: 1 column: 1 and ends at line: 1 column: 2`;
 

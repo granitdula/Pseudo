@@ -138,9 +138,129 @@ describe('InterpreterService', () => {
 
           const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
-          const expectedErr = `Traceback (most recent call last):\nLine 2, in <pseudo>\n` +
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\n` +
                               `Runtime Error: Division by zero\nAt line: 1 column: 6 and ends` +
                               ` at line: 1 column: 7`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+      });
+    });
+
+    describe('string expression tests', () => {
+      describe('valid string expression tests', () => {
+        it(`should return empty console output with shell output 'string' for expression: "string"`, () => {
+          service = new InterpreterService();
+          const source = '"string"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('string');
+        });
+
+        it(`should return empty console output with shell output 'string \t " \n' for expression: "string \t \\" \n"`, () => {
+          service = new InterpreterService();
+          const source = '"string \t \\" \n"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('string \t " \n');
+        });
+
+        it(`should return empty console output with shell output 'string concat' for expression: "string" + " concat"`, () => {
+          service = new InterpreterService();
+          const source = '"string" + " concat"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('string concat');
+        });
+
+        it(`should return empty console output with shell output 'hello hello ' for expression: "hello " * 2`, () => {
+          service = new InterpreterService();
+          const source = '"hello " * 2';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('hello hello ');
+        });
+
+        it(`should return empty console output with shell output '' for expression: "hello " * 0`, () => {
+          service = new InterpreterService();
+          const source = '"hello " * 0';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('');
+        });
+
+        it(`should return empty console output with shell output 'hello! hello! World!' for expression: "hello! " * 2 + "World!"`, () => {
+          service = new InterpreterService();
+          const source = '"hello! " * 2 + "World!"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('hello! hello! World!');
+        });
+      });
+
+      describe('erroneous string expression tests', () => {
+        it('should return syntax error in console/shell output for expression: "hello', () => {
+          service = new InterpreterService();
+          const source = '"hello';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidCharacterError: missing closing " in string\n` +
+                              `At line: 1 column: 7 and ends at line: 1 column: 8`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return syntax error in console/shell output for expression: "hello\\"', () => {
+          service = new InterpreterService();
+          const source = '"hello\\"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidCharacterError: missing closing " in string\n` +
+                              `At line: 1 column: 9 and ends at line: 1 column: 10`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: "age: " + 1', () => {
+          service = new InterpreterService();
+          const source = '"age: " + 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: Illegal operation\nAt line: 1 column: 1 and ends at ` +
+                              `line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: "hello" * -1', () => {
+          service = new InterpreterService();
+          const source = '"hello" * -1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: Multiplied string by negative value\nAt line: 1 column: ` +
+                              `11 and ends at line: 1 column: 12`;
 
           expect(consoleOut).toEqual(expectedErr);
           expect(shellOut).toEqual(expectedErr);
@@ -158,6 +278,16 @@ describe('InterpreterService', () => {
 
           expect(consoleOut).toEqual('');
           expect(shellOut).toEqual('1');
+        });
+
+        it(`should produce shell output of 'string' for expression: var = "string"`, () => {
+          service = new InterpreterService();
+          const source = 'var = "string"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('string');
         });
 
         it(`should produce shell output of '-27' for expression: var = -((1 + 0.5) / (1 - 0.5)) ^ 3`, () => {
@@ -245,7 +375,7 @@ describe('InterpreterService', () => {
 
           const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
-          const expectedErr = `Traceback (most recent call last):\nLine 2, in <pseudo>\n` +
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\n` +
                               `Runtime Error: x is not defined\nAt line: 1 column: 1 and` +
                               ` ends at line: 1 column: 2`;
 
@@ -738,7 +868,7 @@ describe('InterpreterService', () => {
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
-        const expectedError = `Traceback (most recent call last):\nLine 2, in <pseudo>\nRuntime` +
+        const expectedError = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
                               ` Error: Can not make a call to a none FunctionType\nAt line: 1 ` +
                               `column: 1 and ends at line: 1 column: 2`;
 
