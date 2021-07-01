@@ -1,3 +1,4 @@
+import { StringNode } from './../models/string-node';
 import { FunctionDefNode } from './../models/function-def-node';
 import { ForNode } from './../models/for-node';
 import { IfNode } from './../models/if-node';
@@ -424,6 +425,12 @@ export class Parser {
       this.advance();
       let numberNode: NumberNode = { nodeType: NodeTypes.NUMBER, token: tok };
       return parseResult.success(numberNode);
+    }
+    else if (tok.type === TokenTypes.STRING) {
+      parseResult.registerAdvancement();
+      this.advance();
+      let stringNode: StringNode = { nodeType: NodeTypes.STRING, token: tok };
+      return parseResult.success(stringNode);
     }
     else if (tok.type === TokenTypes.IDENTIFIER || tok.value === 'TRUE' ||
                                                     tok.value === 'FALSE') {
