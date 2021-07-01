@@ -1,3 +1,4 @@
+import { StringType } from './../data-types/string-type';
 import { FunctionType } from './../data-types/function-type';
 import { ValueType } from './../data-types/value-type';
 import { RuntimeError } from './../logic/runtime-error';
@@ -57,16 +58,17 @@ export class InterpreterService {
           consoleOutput = shellOutput = runtimeResult.getError().getErrorMessage();
         }
         else {
-          const runtimeValue: ValueType = runtimeResult.getValue();
+          shellOutput = this.generateShellOutput(runtimeResult);
+          // const runtimeValue: ValueType = runtimeResult.getValue();
 
-          if (runtimeValue === null) { shellOutput = ''; }
-          else if (runtimeValue instanceof NumberType) {
-            shellOutput = runtimeValue.getValue().toString();
-          }
-          else if (runtimeValue instanceof FunctionType) {
-            shellOutput = `function ${runtimeValue.getName()}`;
-          }
-          else { shellOutput = ''; }
+          // if (runtimeValue === null) { shellOutput = ''; }
+          // else if (runtimeValue instanceof NumberType) {
+          //   shellOutput = runtimeValue.getValue().toString();
+          // }
+          // else if (runtimeValue instanceof FunctionType) {
+          //   shellOutput = `function ${runtimeValue.getName()}`;
+          // }
+          // else { shellOutput = ''; }
 
           for (const output of this.outputs) {
             consoleOutput += output + "\n";
@@ -82,6 +84,8 @@ export class InterpreterService {
     switch (node.nodeType) {
       case NodeTypes.NUMBER:
         return this.visitNumberNode(node, context);
+      case NodeTypes.STRING:
+        return this.visitStringNode(node, context);
       case NodeTypes.BINARYOP:
         return this.visitBinaryOpNode(node, context);
       case NodeTypes.UNARYOP:
@@ -113,6 +117,25 @@ export class InterpreterService {
     globalSymbolTable.set('PI', new NumberType(Math.PI));
 
     return globalSymbolTable;
+  }
+
+  private generateShellOutput(runtimeResult: RuntimeResult): string {
+    let shellOutput: string;
+    const runtimeValue: ValueType = runtimeResult.getValue();
+
+    if (runtimeValue === null) { shellOutput = ''; }
+    else if (runtimeValue instanceof NumberType) {
+      shellOutput = runtimeValue.getValue().toString();
+    }
+    else if (runtimeValue instanceof StringType) {
+      shellOutput = runtimeValue.getValue();
+    }
+    else if (runtimeValue instanceof FunctionType) {
+      shellOutput = `function ${runtimeValue.getName()}`;
+    }
+    else { shellOutput = ''; }
+
+    return shellOutput;
   }
 
   private visitFunctionCall(node: ASTNode, context: Context): RuntimeResult {
@@ -360,6 +383,12 @@ export class InterpreterService {
     else {
       return runtimeResult.success(number.setPos(node.token.positionStart, node.token.positionEnd));
     }
+  }
+
+  private visitStringNode(node: ASTNode, context: Context): RuntimeResult {
+    const str = new StringType(node.token.value);
+    str.setContext(context).setPos(node.token.positionStart, node.token.positionEnd);
+    return new RuntimeResult().success(str);
   }
 
   private visitNumberNode(node: ASTNode, context: Context): RuntimeResult {

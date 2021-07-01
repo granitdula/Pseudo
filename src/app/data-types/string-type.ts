@@ -17,6 +17,10 @@ export class StringType extends ValueType {
 
   public multiplyBy(other: ValueType): [ValueType, RuntimeError] {
     if (other instanceof NumberType) {
+      if (other.getValue() < 0) {
+        return [null, new RuntimeError('Multiplied string by negative value', other.getPosStart(),
+                                        other.getPosEnd(), other.getContext())];
+      }
       return [new StringType(this.value.repeat(other.getValue())).setContext(this.context), null];
     }
     else { return [null, this.illegalOperation()]; }
