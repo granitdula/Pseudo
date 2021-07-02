@@ -876,6 +876,314 @@ describe('Parser tests', () => {
       });
     });
 
+    describe('list expression tests', () => {
+      it('should return correct AST for statement: []', () => {
+        const posStartLeftSquare = new PositionTracker(0, 1, 1);
+        const posStartRightSquare = new PositionTracker(1, 1, 2);
+        const posStartEof = new PositionTracker(2, 1, 3);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const ast: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          elementNodes: []
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: [1, 2, 3]', () => {
+        const posStartLeftSquare = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(1, 1, 2);
+        const posStartComma1 = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(4, 1, 5);
+        const posStartComma2 = new PositionTracker(5, 1, 6);
+        const posStartNum3 = new PositionTracker(7, 1, 8);
+        const posStartRightSquare = new PositionTracker(8, 1, 9);
+        const posStartEof = new PositionTracker(9, 1, 10);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.NUMBER, posStartNum3, 3),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 3)
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          elementNodes: [numberNode1, numberNode2, numberNode3]
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: [1, 2, "string"]', () => {
+        const posStartLeftSquare = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(1, 1, 2);
+        const posStartComma1 = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(4, 1, 5);
+        const posStartComma2 = new PositionTracker(5, 1, 6);
+        const posStartString = new PositionTracker(7, 1, 8);
+        const posStartRightSquare = new PositionTracker(15, 1, 16);
+        const posStartEof = new PositionTracker(16, 1, 17);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.STRING, posStartString, 'string'),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
+        const stringNode: ASTNode = {
+          nodeType: NodeTypes.STRING,
+          token: createToken(TokenTypes.STRING, posStartString, 'string')
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          elementNodes: [numberNode1, numberNode2, stringNode]
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: [[]]', () => {
+        const posStartLeftSquare1 = new PositionTracker(0, 1, 1);
+        const posStartLeftSquare2 = new PositionTracker(1, 1, 2);
+        const posStartRightSquare1 = new PositionTracker(2, 1, 3);
+        const posStartRightSquare2 = new PositionTracker(3, 1, 4);
+        const posStartEof = new PositionTracker(4, 1, 5);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare1),
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare2),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare1),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare2),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const innerListNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare2),
+          elementNodes: []
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare1),
+          elementNodes: [innerListNode]
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct AST for statement: [[1, 2], [1, 3]]', () => {
+        const posStartLeftSquare1 = new PositionTracker(0, 1, 1);
+        const posStartLeftSquare2 = new PositionTracker(1, 1, 2);
+        const posStartNum1 = new PositionTracker(2, 1, 3);
+        const posStartComma1 = new PositionTracker(3, 1, 4);
+        const posStartNum2 = new PositionTracker(5, 1, 6);
+        const posStartRightSquare1 = new PositionTracker(6, 1, 7);
+        const posStartComma2 = new PositionTracker(7, 1, 8);
+        const posStartLeftSquare3 = new PositionTracker(9, 1, 10);
+        const posStartNum3 = new PositionTracker(10, 1, 11);
+        const posStartComma3 = new PositionTracker(11, 1, 12);
+        const posStartNum4 = new PositionTracker(13, 1, 14);
+        const posStartRightSquare2 = new PositionTracker(14, 1, 15);
+        const posStartRightSquare3 = new PositionTracker(15, 1, 16);
+        const posStartEof = new PositionTracker(16, 1, 17);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare1),
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare2),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare1),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare3),
+          createToken(TokenTypes.NUMBER, posStartNum3, 1),
+          createToken(TokenTypes.COMMA, posStartComma3),
+          createToken(TokenTypes.NUMBER, posStartNum4, 3),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare2),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare3),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2)
+        };
+        const listNode1: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare2),
+          elementNodes: [numberNode1, numberNode2]
+        }
+
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 1)
+        };
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 3)
+        };
+        const listNode2: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare3),
+          elementNodes: [numberNode3, numberNode4]
+        }
+
+        const ast: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_SQUARE, posStartLeftSquare1),
+          elementNodes: [listNode1, listNode2]
+        };
+
+        let expected = new ParseResult();
+        expected = expected.success(ast);
+
+        for (let i = 0; i < 13; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct error in parse result for expression: [1 2]', () => {
+        const posStartLeftSquare = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(1, 1, 2);
+        const posStartNum2 = new PositionTracker(3, 1, 4);
+        const posStartRightSquare = new PositionTracker(4, 1, 5);
+        const posStartEof = new PositionTracker(5, 1, 6);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.R_SQUARE, posStartRightSquare),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected ',' or ']'`, posStartNum2,
+                                              posStartRightSquare);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+
+      it('should return correct error in parse result for expression: [1, 2, 3', () => {
+        const posStartLeftSquare = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(1, 1, 2);
+        const posStartComma1 = new PositionTracker(2, 1, 3);
+        const posStartNum2 = new PositionTracker(4, 1, 5);
+        const posStartComma2 = new PositionTracker(5, 1, 6);
+        const posStartNum3 = new PositionTracker(7, 1, 8);
+        const posStartEof = new PositionTracker(8, 1, 9);
+        const posEndEof = new PositionTracker(9, 1, 10);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.L_SQUARE, posStartLeftSquare),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.NUMBER, posStartNum3, 3),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected ',' or ']'`, posStartEof,
+                                              posEndEof);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult).toEqual(expected);
+      });
+    });
+
     describe('variable assignment tests', () => {
       it('should return correct AST for statement: variable = 1', () => {
         const posStartVariable = new PositionTracker(0, 1, 1);
@@ -1177,8 +1485,8 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' or ` +
-                                             `'NOT'`, posStartEof, posEndEof);
+        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(', ` +
+                                             `'[' or 'NOT'`, posStartEof, posEndEof);
 
         let expected = new ParseResult();
         expected.failure(error);
@@ -3479,8 +3787,8 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' ` +
-                                             `or 'NOT'`, posStartEnd, posEndEnd);
+        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(', '['` +
+                                             ` or 'NOT'`, posStartEnd, posEndEnd);
 
         let expected = new ParseResult();
         expected.failure(error);
@@ -3553,8 +3861,8 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' ` +
-                                             `or 'NOT'`, posStartRightBrack, posStartEof);
+        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(', '['` +
+                                             ` or 'NOT'`, posStartRightBrack, posStartEof);
 
         let expected = new ParseResult();
         expected.failure(error);

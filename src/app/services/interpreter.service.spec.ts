@@ -625,8 +625,8 @@ describe('InterpreterService', () => {
 
           const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
-          const expectedErr = `InvalidSyntaxError: Expected a number, identifier, '+', '-' or ` +
-                              `'('\nAt line: 1 column: 9 and ends at line: 1 column: 10`;
+          const expectedErr = `InvalidSyntaxError: Expected a number, identifier, '+', '-', '('` +
+                              ` or '['\nAt line: 1 column: 9 and ends at line: 1 column: 10`;
 
           expect(consoleOut).toEqual(expectedErr);
           expect(shellOut).toEqual(expectedErr);
