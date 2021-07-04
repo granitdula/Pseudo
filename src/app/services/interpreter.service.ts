@@ -1,3 +1,4 @@
+import { ListType } from './../data-types/list-type';
 import { StringType } from './../data-types/string-type';
 import { FunctionType } from './../data-types/function-type';
 import { ValueType } from './../data-types/value-type';
@@ -59,16 +60,6 @@ export class InterpreterService {
         }
         else {
           shellOutput = this.generateShellOutput(runtimeResult);
-          // const runtimeValue: ValueType = runtimeResult.getValue();
-
-          // if (runtimeValue === null) { shellOutput = ''; }
-          // else if (runtimeValue instanceof NumberType) {
-          //   shellOutput = runtimeValue.getValue().toString();
-          // }
-          // else if (runtimeValue instanceof FunctionType) {
-          //   shellOutput = `function ${runtimeValue.getName()}`;
-          // }
-          // else { shellOutput = ''; }
 
           for (const output of this.outputs) {
             consoleOutput += output + "\n";
@@ -86,6 +77,8 @@ export class InterpreterService {
         return this.visitNumberNode(node, context);
       case NodeTypes.STRING:
         return this.visitStringNode(node, context);
+      case NodeTypes.LIST:
+        return this.visitListNode(node, context);
       case NodeTypes.BINARYOP:
         return this.visitBinaryOpNode(node, context);
       case NodeTypes.UNARYOP:
@@ -130,12 +123,56 @@ export class InterpreterService {
     else if (runtimeValue instanceof StringType) {
       shellOutput = runtimeValue.getValue();
     }
+    else if (runtimeValue instanceof ListType) {
+      shellOutput = this.createListShellOutput(runtimeValue);
+    }
     else if (runtimeValue instanceof FunctionType) {
       shellOutput = `function ${runtimeValue.getName()}`;
     }
     else { shellOutput = ''; }
 
     return shellOutput;
+  }
+
+  private createListShellOutput(runtimeValue: ListType): string {
+    let output = '[';
+
+    for (let element of runtimeValue.elements) {
+      if (element instanceof NumberType) {
+        output += element.getValue().toString() + ', ';
+      }
+      else if (element instanceof StringType) {
+        output += element.getValue() + ', ';
+      }
+      else if (element instanceof ListType) {
+        output += this.createListShellOutput(element) + ', ';
+      }
+      else if (element instanceof FunctionType) {
+        output += `<function ${element.getName()}>, `;
+      }
+    }
+
+    // Chop off unnecessary ', ' added to the last element in the list.
+    if (runtimeValue.elements.length > 0) {
+      output = output.substring(0, output.length - 2) + ']';
+    }
+    else { output += ']'; }
+
+    return output;
+  }
+
+  private visitListNode(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+    let elements: ValueType[] = [];
+
+    for (let elementNode of node.elementNodes) {
+      elements.push(runtimeResult.register(this.visitNode(elementNode, context)));
+      if (runtimeResult.getError() !== null) { return runtimeResult; }
+    }
+
+    const listValue = new ListType(elements);
+    listValue.setContext(context).setPos(node.token.positionStart, node.token.positionEnd);
+    return runtimeResult.success(listValue);
   }
 
   private visitFunctionCall(node: ASTNode, context: Context): RuntimeResult {

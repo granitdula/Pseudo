@@ -1,5 +1,6 @@
 export const NUMBER = 'NumberNode';
 export const STRING = 'StringNode';
+export const LIST = 'ListNode';
 export const BINARYOP = 'BinaryOpNode';
 export const UNARYOP = 'UnaryOpNode';
 export const VARACCESS = 'VarAccessNode';

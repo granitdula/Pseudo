@@ -161,6 +161,36 @@ describe('Lexer tests', () => {
         expect(tokens).toEqual(expected);
       });
 
+      it('should return list with correct token if character is a [', () => {
+
+        const sourceCode: string = '[';
+        const lexer: Lexer = new Lexer();
+
+        const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
+        const expectedToken: Token = createToken(TokenTypes.L_SQUARE, posTracker);
+        const expected: Array<Token> = [expectedToken, eofToken];
+
+        expect(tokens).toEqual(expected);
+      });
+
+      it('should return list with correct token if character is a ]', () => {
+
+        const sourceCode: string = ']';
+        const lexer: Lexer = new Lexer();
+
+        const tokens: Array<Token> | Error = lexer.lex(sourceCode);
+
+        const posTracker = new PositionTracker(0, 1, 1);
+        const eofToken: Token = createToken(TokenTypes.EOF, new PositionTracker(1, 1, 2));
+        const expectedToken: Token = createToken(TokenTypes.R_SQUARE, posTracker);
+        const expected: Array<Token> = [expectedToken, eofToken];
+
+        expect(tokens).toEqual(expected);
+      });
+
       it('should return list with correct token if character is a ,', () => {
 
         const sourceCode: string = ',';

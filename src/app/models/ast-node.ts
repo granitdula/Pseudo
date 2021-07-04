@@ -17,5 +17,6 @@ export interface ASTNode {
   bodyNode?: ASTNode,
   argNameTokens?: Token[],
   nodeToCall?: ASTNode,
-  argNodes?: ASTNode[]
+  argNodes?: ASTNode[],
+  elementNodes?: ASTNode[]
 }

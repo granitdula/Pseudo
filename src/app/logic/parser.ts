@@ -1,3 +1,4 @@
+import { ListNode } from './../models/list-node';
 import { StringNode } from './../models/string-node';
 import { FunctionDefNode } from './../models/function-def-node';
 import { ForNode } from './../models/for-node';
@@ -457,6 +458,11 @@ export class Parser {
         return parseResult.failure(syntaxError);
       }
     }
+    else if (tok.type === TokenTypes.L_SQUARE){
+      const listExpr: ASTNode = parseResult.register(this.listExpr());
+      if (parseResult.getError() !== null) { return parseResult; }
+      return parseResult.success(listExpr);
+    }
     else if (tok.type === TokenTypes.KEYWORD && tok.value === 'if') {
       const ifExpr: ASTNode = parseResult.register(this.ifExpr());
       if (parseResult.getError() !== null) { return parseResult; }
@@ -478,7 +484,7 @@ export class Parser {
       return parseResult.success(functionNode);
     }
 
-    const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-' or '('`,
+    const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' or '['`,
                                                 this.currentToken.positionStart,
                                                 this.currentToken.positionEnd);
 
@@ -488,6 +494,62 @@ export class Parser {
   private power(): ParseResult {
     const operators: Set<string> = new Set([TokenTypes.POWER]);
     return this.binaryOperators('functionCall', operators, 'factor');
+  }
+
+  private listExpr(): ParseResult {
+    let parseResult = new ParseResult();
+    let elementNodes: ASTNode[] = [];
+    const listToken: Token = this.currentToken;
+
+    parseResult.registerAdvancement();
+    this.advance();
+
+    if (this.currentToken.type === TokenTypes.R_SQUARE) {
+      parseResult.registerAdvancement();
+      this.advance();
+    }
+    else {
+      elementNodes.push(parseResult.register(this.expr()));
+      if (parseResult.getError() !== null) {
+        const syntaxError = new InvalidSyntaxError(`Expected either ']' or a valid expression` +
+                                                   ` for a list element`,
+                                                     this.currentToken.positionStart,
+                                                     this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+
+      while (this.currentToken.type === TokenTypes.COMMA) {
+        parseResult.registerAdvancement();
+        this.advance();
+
+        elementNodes.push(parseResult.register(this.expr()));
+        if (parseResult.getError() !== null) {
+          const syntaxError = new InvalidSyntaxError(`Expected either ']' or a valid expression` +
+                                                     ` for a list element`,
+                                                       this.currentToken.positionStart,
+                                                       this.currentToken.positionEnd);
+          return parseResult.failure(syntaxError);
+        }
+      }
+
+      if (this.currentToken.type !== TokenTypes.R_SQUARE) {
+        const syntaxError = new InvalidSyntaxError(`Expected ',' or ']'`,
+                                                    this.currentToken.positionStart,
+                                                    this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+
+      parseResult.registerAdvancement();
+      this.advance();
+    }
+
+    const listNode: ListNode = {
+      nodeType: NodeTypes.LIST,
+      token: listToken,
+      elementNodes: elementNodes
+    };
+
+    return parseResult.success(listNode);
   }
 
   private functionCall(): ParseResult {
@@ -512,7 +574,7 @@ export class Parser {
         if (parseResult.getError() !== null) {
           const syntaxError = new InvalidSyntaxError(`Expected ')', 'if', 'for', 'while',` +
                                                      ` 'function', number, identifier, '+',` +
-                                                     ` '-', '(' or 'NOT'`,
+                                                     ` '-', '(', '[' or 'NOT'`,
                                                      this.currentToken.positionStart,
                                                      this.currentToken.positionEnd);
           return parseResult.failure(syntaxError);
@@ -600,8 +662,9 @@ export class Parser {
     const node: ASTNode = parseResult.register(this.binaryOperators('arithmeticExpr', operators));
 
     if (parseResult.getError() !== null) {
-      const syntaxError = new InvalidSyntaxError(`Expected number, identifier, '+', '-', '(' or 'NOT'`,
-                               this.currentToken.positionStart, this.currentToken.positionEnd);
+      const syntaxError = new InvalidSyntaxError(`Expected number, identifier, '+', '-', '(',` +
+                                                 ` '[' or 'NOT'`, this.currentToken.positionStart,
+                                                 this.currentToken.positionEnd);
 
       return parseResult.failure(syntaxError);
     }
@@ -638,8 +701,8 @@ export class Parser {
     const node = parseResult.register(this.binaryOperators('comparisonExpr', new Set()));
 
     if (parseResult.getError() !== null) {
-      const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(' ` +
-                                                `or 'NOT'`, this.currentToken.positionStart,
+      const syntaxError = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(',` +
+                                                ` '[' or 'NOT'`, this.currentToken.positionStart,
                                                 this.currentToken.positionEnd);
       return parseResult.failure(syntaxError);
     }
