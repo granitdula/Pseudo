@@ -268,6 +268,432 @@ describe('InterpreterService', () => {
       });
     });
 
+    describe('list expression and function tests', () => {
+      describe('valid list expression tests', () => {
+        it(`should return empty console output with shell output '[]' for expression: []`, () => {
+          service = new InterpreterService();
+          const source = '[]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2, string]' for expression: [1, 2, "string"]`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2, "string"]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, string]');
+        });
+
+        it(`should return empty console output with shell output '[1, <function x>]' for expression: [1, function x() begin 1 end]`, () => {
+          service = new InterpreterService();
+          const source = '[1, function x() begin 1 end]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, <function x>]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2, 3]' for expression: [1, 2, 1+2]`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2, 1+2]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, 3]');
+        });
+
+        it(`should return empty console output with shell output '[[1,2], [0,0]]' for expression: [[1,2], [0,0]]`, () => {
+          service = new InterpreterService();
+          const source = '[[1,2], [0,0]]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[[1, 2], [0, 0]]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2, 1]' for expression: [1, 2] + 1`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2] + 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, 1]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2, [string]]' for expression: [1, 2] + ["string"]`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2] + ["string"]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, [string]]');
+        });
+
+        it(`should return empty console output with shell output '[1, 3]' for expression: [1, 2, 3] - 1`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2, 3] - 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 3]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2]' for expression: [1, 2, 3] - -1`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2, 3] - -1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2, 3, 4]' for expression: [1, 2] * [3, 4]`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2] * [3, 4]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, 3, 4]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2]' for expression: [1, 2] * []`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2] * []';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2]');
+        });
+
+        it(`should return empty console output with shell output '2' for expression: [1, 2, 3] ^ 1`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2, 3] ^ 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('2');
+        });
+
+        it(`should return empty console output with shell output '3' for expression: [1, 2, 3] ^ -1`, () => {
+          service = new InterpreterService();
+          const source = '[1, 2, 3] ^ -1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('3');
+        });
+
+        it(`should return empty console output with shell output '[1, 2, 3]' for expression: [2, 3] < [0, 1]`, () => {
+          service = new InterpreterService();
+          const source = '[2, 3] < [0, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, 3]');
+        });
+
+        it(`should return empty console output with shell output '[2, 3, 1]' for expression: [2, 3] < [2, 1]`, () => {
+          service = new InterpreterService();
+          const source = '[2, 3] < [2, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[2, 3, 1]');
+        });
+
+        it(`should return empty console output with shell output '[2, 1, 3]' for expression: [2, 3] < [-1, 1]`, () => {
+          service = new InterpreterService();
+          const source = '[2, 3] < [-1, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[2, 1, 3]');
+        });
+
+        it(`should return empty console output with shell output '[1, 2, 3]' for expression: [2, 3] < [-2, 1]`, () => {
+          service = new InterpreterService();
+          const source = '[2, 3] < [-2, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, 3]');
+        });
+      });
+
+      describe('erroneous list tests', () => {
+        it('should return syntax error in console/shell output for expression: [', () => {
+          service = new InterpreterService();
+          const source = '[';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidSyntaxError: Expected a number, identifier, '+', '-', ` +
+                              `'(', '[' or 'NOT'\nAt line: 1 column: 2 and ends at line: 1 column: 3`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return syntax error in console/shell output for expression: [1 2]', () => {
+          service = new InterpreterService();
+          const source = '[1 2]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidSyntaxError: Expected ',' or ']'\nAt line: 1 column: 4` +
+                              ` and ends at line: 1 column: 5`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return syntax error in console/shell output for expression: [1, 2', () => {
+          service = new InterpreterService();
+          const source = '[1, 2';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `InvalidSyntaxError: Expected ',' or ']'\nAt line: 1 column: 6` +
+                              ` and ends at line: 1 column: 7`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] - "string"', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] - "string"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: Illegal operation\nAt line: 1 column: 1 and ends at line:` +
+                              ` 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] - 1.5', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] - 1.5';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: right operand should be an integer\nAt line: 1 column: 10` +
+                              ` and ends at line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] - 2', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] - 2';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: index out of bounds\nAt line: 1 column: 10 and ends at ` +
+                              `line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] - -3', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] - -3';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: index out of bounds\nAt line: 1 column: 10 and ends at ` +
+                              `line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] * 1', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] * 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: Illegal operation\nAt line: 1 column: 1 and ends at ` +
+                              `line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] ^ "string"', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] ^ "string"';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: Illegal operation\nAt line: 1 column: 1 and ends at ` +
+                              `line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] ^ 1.5', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] ^ 1.5';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: right operand should be an integer\nAt line: 1 column: 10` +
+                              ` and ends at line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] ^ 2', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] ^ 2';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: index out of bounds\nAt line: 1 column: 10 and ends at ` +
+                              `line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] ^ -3', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] ^ -3';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: index out of bounds\nAt line: 1 column: 10 and ends at ` +
+                              `line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] < 1', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] < 1';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: Illegal operation\nAt line: 1 column: 1 and ends at ` +
+                              `line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] < [1, 1, 1]', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] < [1, 1, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: list on the right should be of size 2 where index 0 is` +
+                              ` the position and 1 is the element\nAt line: 1 column: 10 and ` +
+                              `ends at line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] < ["string", 1]', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] < ["string", 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: element at index 0 of list on the right should be an ` +
+                              `integer\nAt line: 1 column: 10 and ends at line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] < [1.5, 1]', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] < [1.5, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: element at index 0 of list on the right should be an ` +
+                              `integer\nAt line: 1 column: 10 and ends at line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] < [3, 1]', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] < [3, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: index out of bounds\nAt line: 1 column: 10 and ends at ` +
+                              `line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+
+        it('should return runtime error in console/shell output for expression: [1, 2] < [-3, 1]', () => {
+          service = new InterpreterService();
+          const source = '[1, 2] < [-3, 1]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedErr = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: index out of bounds\nAt line: 1 column: 10 and ends at ` +
+                              `line: 1 column: 11`;
+
+          expect(consoleOut).toEqual(expectedErr);
+          expect(shellOut).toEqual(expectedErr);
+        });
+      });
+    });
+
     describe('variable assignment and access tests', () => {
       describe('variable assignment tests', () => {
         it(`should produce shell output of '1' for expression: var = 1`, () => {
@@ -288,6 +714,16 @@ describe('InterpreterService', () => {
 
           expect(consoleOut).toEqual('');
           expect(shellOut).toEqual('string');
+        });
+
+        it(`should produce shell output of '[1, 2, 3]' for expression: var = [1, 2, 3]`, () => {
+          service = new InterpreterService();
+          const source = 'var = [1, 2, 3]';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, 3]');
         });
 
         it(`should produce shell output of '-27' for expression: var = -((1 + 0.5) / (1 - 0.5)) ^ 3`, () => {
