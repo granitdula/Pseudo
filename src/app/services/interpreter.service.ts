@@ -94,7 +94,7 @@ export class InterpreterService {
       case NodeTypes.WHILELOOP:
         return this.visitWhileNode(node, context);
       case NodeTypes.FUNCTIONDEF:
-        return this.visitFunctionDefinion(node, context);
+        return this.visitFunctionDefinition(node, context);
       case NodeTypes.FUNCTIONCALL:
         return this.visitFunctionCall(node, context);
       default:
@@ -197,13 +197,19 @@ export class InterpreterService {
       if (runtimeResult.getError() !== null) { return runtimeResult; }
     }
 
-    const returnValue: ValueType = runtimeResult.register(functionVal.execute(args));
+    let returnValue: ValueType = runtimeResult.register(functionVal.execute(args));
     if (runtimeResult.getError() !== null) { return runtimeResult; }
+
+    if (returnValue instanceof NumberType || returnValue instanceof StringType ||
+        returnValue instanceof FunctionType || returnValue instanceof ListType) {
+      returnValue = returnValue.copy().setPos(node.token.positionStart,
+                                              node.token.positionEnd).setContext(context);
+    }
 
     return runtimeResult.success(returnValue);
   }
 
-  private visitFunctionDefinion(node: ASTNode, context: Context): RuntimeResult {
+  private visitFunctionDefinition(node: ASTNode, context: Context): RuntimeResult {
     const runtimeResult = new RuntimeResult();
 
     const funcName: string = node.varNameToken !== null ? node.varNameToken.value : null;
@@ -326,8 +332,9 @@ export class InterpreterService {
       return runtimeResult.failure(runtimeError);
     }
 
-    if (value instanceof NumberType) {
-      value = value.copy().setPos(node.token.positionStart, node.token.positionEnd);
+    if (value instanceof NumberType || value instanceof StringType ||
+        value instanceof FunctionType || value instanceof ListType) {
+      value = value.copy().setPos(node.token.positionStart, node.token.positionEnd).setContext(context);
     }
     else { throw new ErrorEvent(`Can't create copy of data type`); }
 
