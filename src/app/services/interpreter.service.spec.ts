@@ -1312,5 +1312,155 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual(expectedError);
       });
     });
+
+    describe('built-in function tests', () => {
+      describe('toString function tests', () => {
+        it('should return correct StringType when passing a StringType', () => {
+          service = new InterpreterService();
+          const source = 'toString("string")';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('string');
+        });
+
+        it('should return correct StringType when passing a NumberType', () => {
+          service = new InterpreterService();
+          const source = 'toString(1)';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('1');
+        });
+
+        it('should return correct StringType when passing a ListType', () => {
+          service = new InterpreterService();
+          const source = 'toString([1, 2, 3])';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('');
+          expect(shellOut).toEqual('[1, 2, 3]');
+        });
+
+        it('should return runtime error when passing two StringType args', () => {
+          service = new InterpreterService();
+          const source = 'toString("two", "args")';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedError = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                              ` Error: toString function expects 1 argument\nAt line: 1 ` +
+                              `column: 1 and ends at line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedError);
+          expect(shellOut).toEqual(expectedError);
+        });
+
+        it('should return runtime error when passing an argument that is a FunctionType', () => {
+          service = new InterpreterService();
+          const source = 'toString(function func() begin 1 end)';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedError = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                                ` Error: can not convert the type of the passed argument to a ` +
+                                `StringType\nAt line: 1 column: 1 and ends at line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedError);
+          expect(shellOut).toEqual(expectedError);
+        });
+      });
+
+      describe('output function tests', () => {
+        it('should output the input StringType on both the console and shell output', () => {
+          service = new InterpreterService();
+          const source = 'output("string")';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('string');
+          expect(shellOut).toEqual('string');
+        });
+
+        it('should output the input StringType with newline char on both the console and shell output', () => {
+          service = new InterpreterService();
+          const source = 'output("string\nHello world!")';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('string\nHello world!');
+          expect(shellOut).toEqual('string\nHello world!');
+        });
+
+        it('should output the input toString result applied to a ListType on both the console and shell output', () => {
+          service = new InterpreterService();
+          const source = 'output(toString([1, 2, 3]))';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          expect(consoleOut).toEqual('[1, 2, 3]');
+          expect(shellOut).toEqual('[1, 2, 3]');
+        });
+
+        it('should return runtime error when passing an argument that is a NumberType', () => {
+          service = new InterpreterService();
+          const source = 'output(1)';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedError = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                                ` Error: output function argument should be a string` +
+                                `\nAt line: 1 column: 1 and ends at line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedError);
+          expect(shellOut).toEqual(expectedError);
+        });
+
+        it('should return runtime error when passing an argument that is a ListType', () => {
+          service = new InterpreterService();
+          const source = 'output(["string", "elements"])';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedError = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                                ` Error: output function argument should be a string` +
+                                `\nAt line: 1 column: 1 and ends at line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedError);
+          expect(shellOut).toEqual(expectedError);
+        });
+
+        it('should return runtime error when passing an argument that is a FunctionType', () => {
+          service = new InterpreterService();
+          const source = 'output(function func() begin 1 end)';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedError = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                                ` Error: output function argument should be a string` +
+                                `\nAt line: 1 column: 1 and ends at line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedError);
+          expect(shellOut).toEqual(expectedError);
+        });
+
+        it('should return runtime error when passing more than one argument', () => {
+          service = new InterpreterService();
+          const source = 'output(1, 2)';
+
+          const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+          const expectedError = `Traceback (most recent call last):\nLine 1, in <pseudo>\nRuntime` +
+                                ` Error: output function expects 1 string argument` +
+                                `\nAt line: 1 column: 1 and ends at line: 1 column: 2`;
+
+          expect(consoleOut).toEqual(expectedError);
+          expect(shellOut).toEqual(expectedError);
+        });
+      });
+    });
   });
 });
