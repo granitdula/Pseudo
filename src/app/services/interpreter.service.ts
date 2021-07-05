@@ -59,11 +59,13 @@ export class InterpreterService {
           consoleOutput = shellOutput = runtimeResult.getError().getErrorMessage();
         }
         else {
-          shellOutput = this.generateShellOutput(runtimeResult);
-
           for (const output of this.outputs) {
             consoleOutput += output + "\n";
           }
+          consoleOutput = consoleOutput.substring(0, consoleOutput.length - 1)
+
+          if (this.outputs.length > 0) { shellOutput = consoleOutput; }
+          else { shellOutput = this.generateShellOutput(runtimeResult); }
         }
       }
     }
@@ -124,7 +126,7 @@ export class InterpreterService {
       shellOutput = runtimeValue.getValue();
     }
     else if (runtimeValue instanceof ListType) {
-      shellOutput = this.createListShellOutput(runtimeValue);
+      shellOutput = this.convertListTypeToStringType(runtimeValue);
     }
     else if (runtimeValue instanceof FunctionType) {
       shellOutput = `function ${runtimeValue.getName()}`;
@@ -134,7 +136,7 @@ export class InterpreterService {
     return shellOutput;
   }
 
-  private createListShellOutput(runtimeValue: ListType): string {
+  private convertListTypeToStringType(runtimeValue: ListType): string {
     let output = '[';
 
     for (let element of runtimeValue.elements) {
@@ -145,7 +147,7 @@ export class InterpreterService {
         output += element.getValue() + ', ';
       }
       else if (element instanceof ListType) {
-        output += this.createListShellOutput(element) + ', ';
+        output += this.convertListTypeToStringType(element) + ', ';
       }
       else if (element instanceof FunctionType) {
         output += `<function ${element.getName()}>, `;
@@ -175,8 +177,80 @@ export class InterpreterService {
     return runtimeResult.success(listValue);
   }
 
+  private runOutputFunction(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    if (node.argNodes.length === 1) {
+      let valueType: ValueType = runtimeResult.register(this.visitNode(node.argNodes[0], context));
+      if (valueType instanceof StringType) {
+        const stringType = <StringType>valueType.copy().setPos(node.token.positionStart,
+                                            node.token.positionEnd).setContext(context);
+        this.outputs.push(stringType.getValue());
+        return runtimeResult.success(stringType);
+      }
+      else {
+        const runtimeError = new RuntimeError('output function argument should be a string',
+                                              node.token.positionStart,
+                                              node.token.positionEnd, context);
+        return runtimeResult.failure(runtimeError);
+      }
+    }
+    else {
+      const runtimeError = new RuntimeError('output function expects 1 string argument',
+                                             node.token.positionStart,
+                                             node.token.positionEnd, context);
+      return runtimeResult.failure(runtimeError);
+    }
+  }
+
+  private runToStringFunction(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+
+    if (node.argNodes.length === 1) {
+      let valueType: ValueType = runtimeResult.register(this.visitNode(node.argNodes[0], context));
+
+      if (valueType instanceof NumberType) {
+        const stringType = new StringType(valueType.getValue().toString());
+        stringType.setPos(node.token.positionStart, node.token.positionEnd).setContext(context);
+        return runtimeResult.success(stringType);
+      }
+      else if (valueType instanceof StringType) {
+        const stringType = <StringType>valueType.copy().setPos(node.token.positionStart,
+                                            node.token.positionEnd).setContext(context);
+        return runtimeResult.success(stringType);
+      }
+      else if (valueType instanceof ListType) {
+        const listString: string = this.convertListTypeToStringType(valueType);
+        const stringType = new StringType(listString);
+        stringType.setPos(node.token.positionStart, node.token.positionEnd).setContext(context);
+        return runtimeResult.success(stringType);
+      }
+      else {
+        const runtimeError = new RuntimeError('can not convert the type of the passed argument' +
+                                              ' to a StringType', node.token.positionStart,
+                                              node.token.positionEnd, context);
+        return runtimeResult.failure(runtimeError);
+      }
+    }
+    else {
+      const runtimeError = new RuntimeError('toString function expects 1 argument',
+                                             node.token.positionStart,
+                                             node.token.positionEnd, context);
+      return runtimeResult.failure(runtimeError);
+    }
+  }
+
   private visitFunctionCall(node: ASTNode, context: Context): RuntimeResult {
     const runtimeResult = new RuntimeResult();
+
+    // NOTE: Probably should refactor this if you want to add more built-in functions in future.
+    if (node.token.value === 'output') {
+      return this.runOutputFunction(node, context);
+    }
+    else if (node.token.value === 'toString') {
+      return this.runToStringFunction(node, context);
+    }
+
     let args: ValueType[] = []; // Nodes of the arguments passed in the called function.
 
     let functionVal: ValueType = runtimeResult.register(this.visitNode(node.nodeToCall,
@@ -213,6 +287,14 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
 
     const funcName: string = node.varNameToken !== null ? node.varNameToken.value : null;
+
+    if (funcName === 'output') {
+      const runtimeError = new RuntimeError('can not re-define a pre-built function like <output>',
+                                            node.token.positionStart, node.token.positionEnd,
+                                            context);
+      return runtimeResult.failure(runtimeError);
+    }
+
     let argNames: string[] = [];
     for (let argNameTok of node.argNameTokens) { argNames.push(argNameTok.value); }
 
