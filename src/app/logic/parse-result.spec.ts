@@ -75,6 +75,34 @@ describe('ParseResult tests', () => {
     });
   });
 
+  describe('tryRegister tests', () => {
+    it('should update reverseToCount and return null when passing in an error result', () => {
+      const posStart = new PositionTracker(4, 1, 5);
+      const posEnd = new PositionTracker(5, 1, 6);
+      const syntaxError = new InvalidSyntaxError(`missing ')'`, posStart, posEnd);
+      const errorParseResult = new ParseResult();
+      errorParseResult.failure(syntaxError);
+
+      const parseResult = new ParseResult();
+      const returnedNode: ASTNode = parseResult.tryRegister(errorParseResult);
+
+      expect(parseResult.getReverseToCount()).toEqual(errorParseResult.getAdvanceCount());
+      expect(returnedNode).toEqual(null);
+    });
+
+    it('should return result of calling register when passing in a normal parse result', () => {
+      const astNode: ASTNode = createASTNode(NodeTypes.NUMBER, NUMBER);
+      let nodeParseResult = new ParseResult();
+      nodeParseResult = nodeParseResult.success(astNode);
+
+      const parseResult = new ParseResult();
+      const returnedNode: ASTNode = parseResult.tryRegister(nodeParseResult);
+
+      expect(parseResult.getReverseToCount()).toEqual(0);
+      expect(returnedNode).toEqual(astNode);
+    });
+  });
+
   describe('registerAdvancement tests', () => {
     it('should increment advanceCount of parse result when registerAdvancement is called', () => {
       const parseResult = new ParseResult();

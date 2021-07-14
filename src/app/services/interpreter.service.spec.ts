@@ -448,8 +448,8 @@ describe('InterpreterService', () => {
 
           const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
-          const expectedErr = `InvalidSyntaxError: Expected a number, identifier, '+', '-', ` +
-                              `'(', '[' or 'NOT'\nAt line: 1 column: 2 and ends at line: 1 column: 3`;
+          const expectedErr = `InvalidSyntaxError: Expected either ']' or a valid expression ` +
+                              `for a list element\nAt line: 1 column: 2 and ends at line: 1 column: 3`;
 
           expect(consoleOut).toEqual(expectedErr);
           expect(shellOut).toEqual(expectedErr);
@@ -1460,6 +1460,53 @@ describe('InterpreterService', () => {
           expect(consoleOut).toEqual(expectedError);
           expect(shellOut).toEqual(expectedError);
         });
+      });
+    });
+
+    // Block code is having multiple lines inside a function or if/elif/else/for/while loops.
+    describe('multi-line code with no block code tests', () => {
+      it('should output to shell a list of outputs for each line statement', () => {
+        service = new InterpreterService();
+        const source = 'function add(x, y) begin x + y end\nif add(3, 2) > 2 then TRUE end\n"string"';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('[<function add>, 1, string]');
+      });
+
+      it('should show correct console output for valid multi-line code with output function used', () => {
+        service = new InterpreterService();
+        const source = 'final = 5\nx = 1\nwhile x < final loop x = x + 1 end\noutput(toString(x))';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('5');
+        expect(shellOut).toEqual('5');
+      });
+
+      it('should show empty output for code filled with empty spaces and newlines', () => {
+        service = new InterpreterService();
+        const source = ' \n  \n\n   \n';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('');
+      });
+
+      it('should show runtime error output for erroneous code', () => {
+        service = new InterpreterService();
+        const source = 'x = 1\ny = 2\nresult = x + z\noutput(toString(result))';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        const expectedError = `Traceback (most recent call last):\nLine 3, in <pseudo>\nRuntime` +
+                              ` Error: z is not defined\nAt line: 3 column: 14 and ends at ` +
+                              `line: 3 column: 15`;
+
+        expect(consoleOut).toEqual(expectedError);
+        expect(shellOut).toEqual(expectedError);
       });
     });
   });

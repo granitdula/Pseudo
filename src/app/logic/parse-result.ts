@@ -10,14 +10,20 @@ export class ParseResult {
   private error: InvalidSyntaxError;
   private node: ASTNode;
   private advanceCount: number;
+  private lastRegisteredAdvanceCount: number;
+
+  public reverseToCount: number;
 
   constructor() {
     this.error = null;
     this.node = null;
     this.advanceCount = 0;
+    this.lastRegisteredAdvanceCount = 0;
+    this.reverseToCount = 0;
   }
 
   public registerAdvancement(): void {
+    this.lastRegisteredAdvanceCount = 1;
     this.advanceCount++;
   }
 
@@ -28,9 +34,19 @@ export class ParseResult {
    * @returns Returns the node of the AST at that parse step.
    */
   public register(result: ParseResult): ASTNode {
+    this.lastRegisteredAdvanceCount = result.advanceCount;
     this.advanceCount += result.advanceCount;
     if (result.getError() !== null) { this.error = result.getError(); }
     return result.getNode();
+  }
+
+  public tryRegister(result: ParseResult): ASTNode {
+    if (result.getError() !== null) {
+      this.reverseToCount = result.getAdvanceCount();
+      return null;
+    }
+
+    return this.register(result);
   }
 
   public success(node: ASTNode): ParseResult {
@@ -40,7 +56,7 @@ export class ParseResult {
 
   public failure(error: InvalidSyntaxError): ParseResult {
     // Prevents overwritting errors whilst traversing up AST.
-    if (this.error === null || this.advanceCount === 0) { this.error = error; }
+    if (this.error === null || this.lastRegisteredAdvanceCount === 0) { this.error = error; }
     return this;
   }
 
@@ -49,4 +65,6 @@ export class ParseResult {
   public getNode(): ASTNode { return this.node; }
 
   public getAdvanceCount(): number { return this.advanceCount; }
+
+  public getReverseToCount(): number { return this.reverseToCount; }
 }

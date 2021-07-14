@@ -38,6 +38,8 @@ export class InterpreterService {
     let runtimeResult: RuntimeResult;
     this.outputs = [];
 
+    if (this.isEmptySourceCode(source)) { return ['', '']; }
+
     let lexerOutput: Array<Token> | Error = this.lexer.lex(source);
 
     if (lexerOutput instanceof Error) {
@@ -65,7 +67,9 @@ export class InterpreterService {
           consoleOutput = consoleOutput.substring(0, consoleOutput.length - 1)
 
           if (this.outputs.length > 0) { shellOutput = consoleOutput; }
-          else { shellOutput = this.generateShellOutput(runtimeResult); }
+          else {
+            shellOutput = this.generateShellOutput(runtimeResult);
+          }
         }
       }
     }
@@ -112,6 +116,15 @@ export class InterpreterService {
     globalSymbolTable.set('PI', new NumberType(Math.PI));
 
     return globalSymbolTable;
+  }
+
+  // Checks if all the source code has is newlines and whitespaces.
+  private isEmptySourceCode(source: string): boolean {
+    for (let char of source) {
+      if (char !== '\n' && char !== ' ') { return false; }
+    }
+
+    return true;
   }
 
   private generateShellOutput(runtimeResult: RuntimeResult): string {

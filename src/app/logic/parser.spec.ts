@@ -30,7 +30,9 @@ describe('Parser tests', () => {
 
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return a single number node result with one decimal number in token list', () => {
@@ -52,7 +54,9 @@ describe('Parser tests', () => {
 
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for unary operation expression: -1', () => {
@@ -83,7 +87,9 @@ describe('Parser tests', () => {
         expected.registerAdvancement();
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for unary operation expression: +1', () => {
@@ -114,7 +120,9 @@ describe('Parser tests', () => {
         expected.registerAdvancement();
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for binary operation expression: 3 + 4', () => {
@@ -153,7 +161,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for binary operation expression: 10 - 9', () => {
@@ -192,7 +202,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for binary operation expression: 8 * 4', () => {
@@ -231,7 +243,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for binary operation expression: 8 / 4', () => {
@@ -270,7 +284,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for binary operation expression: 3 ^ 2', () => {
@@ -309,7 +325,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for expression: ((1 + 2) * (4 - 1))', () => {
@@ -390,7 +408,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 13; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for expression: (1 + 2) / 3', () => {
@@ -449,7 +469,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for expression: 1 + 2 ^ 3 - 4', () => {
@@ -518,7 +540,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for expression: -2 ^ 3', () => {
@@ -565,7 +589,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for expression: (1 + 2) ^ 3 - 4', () => {
@@ -638,7 +664,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for expression: -((1 + 2) * (4 - 1))', () => {
@@ -727,7 +755,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 14; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return parse result with correct missing operation error for expression: 10 200', () => {
@@ -748,17 +778,24 @@ describe('Parser tests', () => {
           nodeType: NodeTypes.NUMBER,
           token: createToken(TokenTypes.NUMBER, posStartNum1, 10)
         };
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 10),
+          elementNodes: [numberNode1]
+        };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
                                              `'>', '<=', '>=', 'AND' or 'OR'`, posStartNum2,
                                               posStartEof);
 
         let expected = new ParseResult();
-        expected.success(numberNode1);
+        expected.success(listNode);
         expected.failure(error);
 
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return parse result with correct missing operation error for expression: (1 + 2) 4', () => {
@@ -797,18 +834,24 @@ describe('Parser tests', () => {
           leftChild: numberNode1,
           rightChild: numberNode2
         };
-
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          elementNodes: [binaryExp]
+        };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
                                              `'>', '<=', '>=', 'AND' or 'OR'`, posStartNum3,
                                               posStartEof);
 
         let expected = new ParseResult();
-        expected.success(binaryExp);
+        expected.success(listNode);
         expected.failure(error);
 
         for (let i = 0; i < 5; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return parse result with correct 'missing ')'' error for expression: ((1 + 2) - 1`, () => {
@@ -845,7 +888,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -872,7 +917,9 @@ describe('Parser tests', () => {
 
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -902,7 +949,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: [1, 2, 3]', () => {
@@ -952,7 +1001,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: [1, 2, "string"]', () => {
@@ -1002,7 +1053,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: [[]]', () => {
@@ -1039,7 +1092,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: [[1, 2], [1, 3]]', () => {
@@ -1117,7 +1172,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 13; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct error in parse result for expression: [1 2]', () => {
@@ -1146,7 +1203,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct error in parse result for expression: [1, 2, 3', () => {
@@ -1180,7 +1239,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -1216,7 +1277,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: variable = (1 * 3) ^ 2', () => {
@@ -1284,7 +1347,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: variable = -((1 * 3) ^ 2)', () => {
@@ -1364,7 +1429,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 12; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: 1 + (x = 10) * 2', () => {
@@ -1432,7 +1499,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: x = "some string"', () => {
@@ -1467,7 +1536,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct error in parse result for expression: x =', () => {
@@ -1493,7 +1564,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct error in parse result for expression: 1 + x = 10 * 2', () => {
@@ -1535,18 +1608,24 @@ describe('Parser tests', () => {
           leftChild: numberNode1,
           rightChild: varAccessNode
         };
-
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          elementNodes: [currentAst]
+        };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
                                              `'>', '<=', '>=', 'AND' or 'OR'`, posStartEquals,
                                              posEndEquals);
 
         let expected = new ParseResult();
-        expected.success(currentAst);
+        expected.success(listNode);
         expected.failure(error);
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -1625,7 +1704,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: x = y', () => {
@@ -1659,7 +1740,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: -variable', () => {
@@ -1691,7 +1774,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct error in parse result for expression: x y', () => {
@@ -1712,17 +1797,24 @@ describe('Parser tests', () => {
           nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x')
         };
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVariable1, 'x'),
+          elementNodes: [xVarAccessNode]
+        };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
                                              `'>', '<=', '>=', 'AND' or 'OR'`, posStartVariable2,
                                              posStartEof);
 
         let expected = new ParseResult();
-        expected.success(xVarAccessNode);
+        expected.success(listNode);
         expected.failure(error);
 
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -1763,7 +1855,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: 10 > 1', () => {
@@ -1802,7 +1896,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: 1 < 2', () => {
@@ -1841,7 +1937,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: 1 >= 1', () => {
@@ -1880,7 +1978,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: 1 <= 1', () => {
@@ -1919,7 +2019,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: TRUE AND FALSE', () => {
@@ -1958,7 +2060,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: TRUE OR FALSE', () => {
@@ -1997,7 +2101,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: NOT TRUE AND FALSE', () => {
@@ -2043,7 +2149,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: var = NOT TRUE AND ((10 > 1) OR (5 < x))', () => {
@@ -2157,7 +2265,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 18; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement (not keywords): true and false', () => {
@@ -2181,17 +2291,24 @@ describe('Parser tests', () => {
           nodeType: NodeTypes.VARACCESS,
           token: createToken(TokenTypes.IDENTIFIER, posStartTrue, 'true')
         };
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartTrue, 'true'),
+          elementNodes: [trueNode]
+        };
         const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', ` +
                                              `'>', '<=', '>=', 'AND' or 'OR'`, posStartAnd,
                                              posEndAnd);
 
         let expected = new ParseResult();
-        expected.success(trueNode);
+        expected.success(listNode);
         expected.failure(error);
 
         expected.registerAdvancement();
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: TRUE AND (var = FALSE)', () => {
@@ -2244,7 +2361,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -2319,7 +2438,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: if 1 > 2 then 1 + 1 elif x == y then 1 end', () => {
@@ -2423,7 +2544,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 15; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement with many elifs and an else at the end', () => {
@@ -2617,7 +2740,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 31; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'then' in parse result for expression: if 1 == 1 1 end`, () => {
@@ -2651,7 +2776,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'then' in parse result for expression: if 1 == 1 then 1 elif 1 > 0 1 + 1 end`, () => {
@@ -2701,7 +2828,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 10; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'end' in parse result for expression: if 1 == 1 then 1`, () => {
@@ -2735,7 +2864,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -2796,7 +2927,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: for x = 1 to 10 step 2 loop 10 end', () => {
@@ -2863,7 +2996,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: while TRUE loop 1 end', () => {
@@ -2907,7 +3042,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 5; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'to' in parse result for expression: for x = 1 10 loop 10 end`, () => {
@@ -2945,7 +3082,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'loop' in parse result for expression: for x = 1 to 10 10 end`, () => {
@@ -2983,7 +3122,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'end' in parse result for expression: for x = 1 to 10 loop 10`, () => {
@@ -3021,7 +3162,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'loop' in parse result for expression: while TRUE 1 end`, () => {
@@ -3051,7 +3194,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'end' in parse result for expression: while TRUE loop 1`, () => {
@@ -3081,7 +3226,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
 
@@ -3127,7 +3274,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: function add(x, y) begin x + y end', () => {
@@ -3192,7 +3341,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 12; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       // // Anonymous function support.
@@ -3256,7 +3407,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: func = function (x, y) begin x + y end', () => {
@@ -3329,7 +3482,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 13; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: func(x, y, z)', () => {
@@ -3386,7 +3541,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: func(10, 1, 2)', () => {
@@ -3443,7 +3600,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: func()', () => {
@@ -3478,7 +3637,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it('should return correct AST for statement: sum = add(x, y)', () => {
@@ -3537,7 +3698,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error expected '(' in parse result for expression: function add x, y) begin x + y end`, () => {
@@ -3580,7 +3743,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 2; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing ',' or ')' in parse result for expression: function add(x y) begin x + y end`, () => {
@@ -3623,7 +3788,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing ',' or ')' in parse result for expression: function add(x, y begin x + y end`, () => {
@@ -3667,7 +3834,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error 'Expected identifier' in parse result for expression: function add(x, ) begin x + y end`, () => {
@@ -3711,7 +3880,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 5; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'begin' in parse result for expression: function add(x, y) x + y end`, () => {
@@ -3755,7 +3926,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 7; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct expression error in parse result for expression: function add(x, y) begin end`, () => {
@@ -3795,7 +3968,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing 'end' in parse result for expression: function add(x, y) begin x + y`, () => {
@@ -3838,7 +4013,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error 'Expected identifier' in parse result for expression: add(x, )`, () => {
@@ -3869,7 +4046,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 4; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing ',' or ')' in parse result for expression: add(x y)`, () => {
@@ -3900,7 +4079,9 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 3; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
       it(`should return correct error missing ',' or ')' in parse result for expression: add(x, y`, () => {
@@ -3931,7 +4112,313 @@ describe('Parser tests', () => {
 
         for (let i = 0; i < 5; i++) { expected.registerAdvancement(); }
 
-        expect(parseResult).toEqual(expected);
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+    });
+
+    // Block code is having multiple lines inside a function or if/elif/else/for/while loops.
+    describe('multi-lined code with no block code tests', () => {
+      it('should create list of outputs for each line for a given multi-line code', () => {
+        // code: function add(x, y) begin x + y end\nif add(3, 2) > 2 then TRUE end\n"string"
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartVarY = new PositionTracker(16, 1, 17);
+        const posStartRightBrack = new PositionTracker(17, 1, 18);
+        const posStartBegin = new PositionTracker(19, 1, 20);
+        const posStartVarX2 = new PositionTracker(25, 1, 26);
+        const posStartPlus = new PositionTracker(27, 1, 28);
+        const posStartVarY2 = new PositionTracker(29, 1, 30);
+        const posStartEnd = new PositionTracker(31, 1, 32);
+        const posStartNewline1 = new PositionTracker(34, 1, 35);
+        const posStartIf = new PositionTracker(35, 2, 1);
+        const posStartFuncCall = new PositionTracker(38, 2, 4);
+        const posStartLeftBrack2 = new PositionTracker(39, 2, 5);
+        const posStartNumber1 = new PositionTracker(40, 2, 6);
+        const posStartComma2 = new PositionTracker(41, 2, 7);
+        const posStartNumber2 = new PositionTracker(43, 2, 9);
+        const posStartRightBrack2 = new PositionTracker(44, 2, 10);
+        const posStartGThan = new PositionTracker(46, 2, 12);
+        const posStartNumber3 = new PositionTracker(48, 2, 14);
+        const posStartThen = new PositionTracker(50, 2, 16);
+        const posStartTrue = new PositionTracker(55, 2, 21);
+        const posStartEnd2 = new PositionTracker(60, 2, 26);
+        const posStartNewline2 = new PositionTracker(63, 2, 29);
+        const posStartString = new PositionTracker(64, 3, 1);
+        const posStartEof = new PositionTracker(72, 3, 9);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncCall, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack2),
+          createToken(TokenTypes.NUMBER, posStartNumber1, 3),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.NUMBER, posStartNumber2, 2),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack2),
+          createToken(TokenTypes.G_THAN, posStartGThan),
+          createToken(TokenTypes.NUMBER, posStartNumber3, 2),
+          createToken(TokenTypes.KEYWORD, posStartThen, 'then'),
+          createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE'),
+          createToken(TokenTypes.KEYWORD, posStartEnd2, 'end'),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.STRING, posStartString, 'string'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const varX2Node: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x')
+        };
+        const varY2Node: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y')
+        };
+        const bodyNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.PLUS, posStartPlus),
+          leftChild: varX2Node,
+          rightChild: varY2Node
+        };
+
+        const functionDefNode: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONDEF,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          varNameToken: createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          argNameTokens: [createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+                          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y')],
+          bodyNode: bodyNode
+        };
+
+        const funcNameNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFuncCall, 'add')
+        };
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNumber1, 3)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNumber2, 2)
+        };
+        const functionCallNode: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONCALL,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFuncCall, 'add'),
+          nodeToCall: funcNameNode,
+          argNodes: [numberNode1, numberNode2]
+        };
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNumber3, 2)
+        };
+        const compareNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.G_THAN, posStartGThan),
+          leftChild: functionCallNode,
+          rightChild: numberNode3
+        };
+
+        const trueNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE')
+        };
+        const ifNode: ASTNode = {
+          nodeType: NodeTypes.IFSTATEMENT,
+          token: createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          cases: [[compareNode, trueNode]],
+          elseCase: null
+        };
+
+        const stringNode: ASTNode = {
+          nodeType: NodeTypes.STRING,
+          token: createToken(TokenTypes.STRING, posStartString, 'string')
+        };
+
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          elementNodes: [functionDefNode, ifNode, stringNode]
+        };
+
+        let expected = new ParseResult();
+        expected.success(listNode);
+
+        for (let i = 0; i < 27; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
+      it('should generate correct parse tree if multi-line code has multiple newlines', () => {
+        // code: x = 1\n\n\ny = 1
+        const posStartVarX = new PositionTracker(0, 1, 1);
+        const posStartEquals1 = new PositionTracker(2, 1, 3);
+        const posStartNum1 = new PositionTracker(4, 1, 5);
+        const posStartNewline1 = new PositionTracker(5, 1, 6);
+        const posStartNewline2 = new PositionTracker(6, 2, 1);
+        const posStartNewline3 = new PositionTracker(7, 3, 1);
+        const posStartVarY = new PositionTracker(8, 4, 1);
+        const posStartEquals2 = new PositionTracker(10, 4, 3);
+        const posStartNum2 = new PositionTracker(12, 4, 5);
+        const posStartEof = new PositionTracker(13, 4, 14);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.NEWLINE, posStartNewline3),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.NUMBER, posStartNum2, 1),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const varXAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          node: numberNode1
+        };
+
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 1)
+        };
+        const varYAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          node: numberNode2
+        };
+
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          elementNodes: [varXAssignNode, varYAssignNode]
+        }
+
+        let expected = new ParseResult();
+        expected.success(listNode);
+
+        for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
+      it('should generate correct error for erroneous line in multi-line code', () => {
+        // code: x = 1\ny = 2\nfinal = x z
+        const posStartVarX = new PositionTracker(0, 1, 1);
+        const posStartEquals1 = new PositionTracker(2, 1, 3);
+        const posStartNum1 = new PositionTracker(4, 1, 5);
+        const posStartNewline1 = new PositionTracker(5, 1, 6);
+        const posStartVarY = new PositionTracker(6, 2, 1);
+        const posStartEquals2 = new PositionTracker(8, 2, 3);
+        const posStartNum2 = new PositionTracker(10, 2, 5);
+        const posStartNewline2 = new PositionTracker(11, 2, 6);
+        const posStartVarFinal = new PositionTracker(12, 3, 1);
+        const posStartEquals3 = new PositionTracker(18, 3, 7);
+        const posStartVarX2 = new PositionTracker(20, 3, 9);
+        const posStartVarZ = new PositionTracker(22, 3, 11);
+        const posStartEof = new PositionTracker(23, 3, 12);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.NUMBER, posStartNum2, 2),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarFinal, 'final'),
+          createToken(TokenTypes.EQUALS, posStartEquals3),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarZ, 'z'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1),
+        };
+        const varXAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          node: numberNode1
+        };
+
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 2),
+        };
+        const varYAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          node: numberNode2
+        };
+
+        const varXAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x')
+        };
+        const varFinalAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarFinal, 'final'),
+          node: varXAccessNode
+        };
+
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          elementNodes: [varXAssignNode, varYAssignNode, varFinalAssignNode]
+        }
+
+        const error = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<', '>',` +
+                                             ` '<=', '>=', 'AND' or 'OR'`, posStartVarZ,
+                                             posStartEof);
+
+        let expected = new ParseResult();
+        expected.success(listNode);
+        expected.failure(error);
+
+        for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
     });
   });

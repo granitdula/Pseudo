@@ -41,6 +41,21 @@ export class Parser {
     return this.currentToken;
   }
 
+  /**
+   * A function that reverses the tokenIdx by a specified amount (opposite to the advance method).
+   */
+  private reverse(stepSize: number): Token {
+    this.tokenIdx -= stepSize;
+    this.updateCurrentToken();
+    return this.currentToken;
+  }
+
+  private updateCurrentToken(): void {
+    if (this.tokenIdx >= 0 && this.tokenIdx < this.tokens.length) {
+      this.currentToken = this.tokens[this.tokenIdx];
+    }
+  }
+
   private binaryOperators(grammerFunc: string, ops: Set<string>,
                           otherGrammarFunc?: string): ParseResult {
     let parseResult = new ParseResult();
@@ -710,8 +725,54 @@ export class Parser {
     return parseResult.success(node);
   }
 
+  private statements(): ParseResult {
+    let parseResult = new ParseResult();
+    let statements: ASTNode[] = [];
+    const startToken: Token = this.currentToken;
+
+    while (this.currentToken.type === TokenTypes.NEWLINE) {
+      parseResult.registerAdvancement();
+      this.advance();
+    }
+
+    let statement: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
+    statements.push(statement);
+
+    let moreStatements = true;
+
+    while (true) {
+      let newLineCount = 0;
+      while (this.currentToken.type === TokenTypes.NEWLINE) {
+        parseResult.registerAdvancement();
+        this.advance();
+        newLineCount++;
+      }
+
+      if (newLineCount === 0) { moreStatements = false; }
+      if (!moreStatements) { break; }
+
+      statement = parseResult.tryRegister(this.expr());
+      if (statement === null) {
+        this.reverse(parseResult.reverseToCount);
+        moreStatements = false;
+        continue
+      }
+
+      statements.push(statement);
+    }
+
+    const listNode: ListNode = {
+      nodeType: NodeTypes.LIST,
+      token: startToken,
+      elementNodes: statements
+    };
+
+    return parseResult.success(listNode);
+  }
+
   public parse(): ParseResult {
-    let parseResult: ParseResult = this.expr();
+    let parseResult: ParseResult = this.statements();
 
     if (parseResult.getError() === null && this.currentToken.type !== TokenTypes.EOF) {
       const syntaxError = new InvalidSyntaxError(`Expected '+', '-', '*', '/', '^', '==', '<',` +
@@ -721,6 +782,12 @@ export class Parser {
       return parseResult.failure(syntaxError);
     }
 
-    return parseResult;
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    const node: ListNode = <ListNode>parseResult.getNode();
+    if (node.elementNodes.length > 1) { return parseResult.success(node); }
+    else {
+      return parseResult.success(node.elementNodes[0]);
+    }
   }
 }
