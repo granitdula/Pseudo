@@ -2827,7 +2827,7 @@ describe('Parser tests', () => {
     });
 
     describe('for/while loop tests', () => {
-      it('should return correct AST for statement: for x = 1 to 10 loop 10 end', () => {
+      it('should return correct AST for statement: for x = 1 to 10 loop 10', () => {
         const posStartFor = new PositionTracker(0, 1, 1);
         const posStartVarX = new PositionTracker(4, 1, 5);
         const posStartEquals = new PositionTracker(6, 1, 7);
@@ -2836,8 +2836,7 @@ describe('Parser tests', () => {
         const posStartNum2 = new PositionTracker(13, 1, 14);
         const posStartLoop = new PositionTracker(16, 1, 17);
         const posStartNum3 = new PositionTracker(21, 1, 22);
-        const posStartEnd = new PositionTracker(24, 1, 25);
-        const posStartEof = new PositionTracker(25, 1, 26);
+        const posStartEof = new PositionTracker(23, 1, 24);
 
         const tokenList: Array<Token> = [
           createToken(TokenTypes.KEYWORD, posStartFor, 'for'),
@@ -2848,7 +2847,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.NUMBER, posStartNum2, 10),
           createToken(TokenTypes.KEYWORD, posStartLoop, 'loop'),
           createToken(TokenTypes.NUMBER, posStartNum3, 10),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -2881,14 +2879,14 @@ describe('Parser tests', () => {
         let expected = new ParseResult();
         expected.success(ast);
 
-        for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
+        for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
         expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
-      it('should return correct AST for statement: for x = 1 to 10 step 2 loop 10 end', () => {
+      it('should return correct AST for statement: for x = 1 to 10 step 2 loop 10', () => {
         const posStartFor = new PositionTracker(0, 1, 1);
         const posStartVarX = new PositionTracker(4, 1, 5);
         const posStartEquals = new PositionTracker(6, 1, 7);
@@ -2899,8 +2897,7 @@ describe('Parser tests', () => {
         const posStartNum3 = new PositionTracker(21, 1, 22);
         const posStartLoop = new PositionTracker(23, 1, 24);
         const posStartNum4 = new PositionTracker(28, 1, 29);
-        const posStartEnd = new PositionTracker(31, 1, 32);
-        const posStartEof = new PositionTracker(34, 1, 35);
+        const posStartEof = new PositionTracker(30, 1, 31);
 
         const tokenList: Array<Token> = [
           createToken(TokenTypes.KEYWORD, posStartFor, 'for'),
@@ -2913,7 +2910,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.NUMBER, posStartNum3, 2),
           createToken(TokenTypes.KEYWORD, posStartLoop, 'loop'),
           createToken(TokenTypes.NUMBER, posStartNum4, 10),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -2950,7 +2946,7 @@ describe('Parser tests', () => {
         let expected = new ParseResult();
         expected.success(ast);
 
-        for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
+        for (let i = 0; i < 10; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
@@ -3003,7 +2999,7 @@ describe('Parser tests', () => {
         expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
-      it(`should return correct error missing 'to' in parse result for expression: for x = 1 10 loop 10 end`, () => {
+      it(`should return correct error missing 'to' in parse result for expression: for x = 1 10 loop 10`, () => {
         const posStartFor = new PositionTracker(0, 1, 1);
         const posStartVarX = new PositionTracker(4, 1, 5);
         const posStartEquals = new PositionTracker(6, 1, 7);
@@ -3012,8 +3008,7 @@ describe('Parser tests', () => {
         const posEndNum2 = new PositionTracker(11, 1, 12);
         const posStartLoop = new PositionTracker(13, 1, 14);
         const posStartNum3 = new PositionTracker(18, 1, 19);
-        const posStartEnd = new PositionTracker(21, 1, 22);
-        const posStartEof = new PositionTracker(24, 1, 25);
+        const posStartEof = new PositionTracker(20, 1, 21);
 
         const tokenList: Array<Token> = [
           createToken(TokenTypes.KEYWORD, posStartFor, 'for'),
@@ -3023,7 +3018,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.NUMBER, posStartNum2, 10),
           createToken(TokenTypes.KEYWORD, posStartLoop, 'loop'),
           createToken(TokenTypes.NUMBER, posStartNum3, 10),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -3043,17 +3037,16 @@ describe('Parser tests', () => {
         expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
-      it(`should return correct error missing 'loop' in parse result for expression: for x = 1 to 10 10 end`, () => {
+      it(`should return correct error missing 'loop' in parse result for expression: for x = 1 to 10 10`, () => {
         const posStartFor = new PositionTracker(0, 1, 1);
         const posStartVarX = new PositionTracker(4, 1, 5);
         const posStartEquals = new PositionTracker(6, 1, 7);
         const posStartNum1 = new PositionTracker(8, 1, 9);
         const posStartTo = new PositionTracker(10, 1, 11);
         const posStartNum2 = new PositionTracker(13, 1, 14);
-        const posStartNum3 = new PositionTracker(15, 1, 16);
-        const posEndNum3 = new PositionTracker(16, 1, 17);
-        const posStartEnd = new PositionTracker(18, 1, 19);
-        const posStartEof = new PositionTracker(21, 1, 22);
+        const posStartNum3 = new PositionTracker(16, 1, 17);
+        const posEndNum3 = new PositionTracker(17, 1, 18);
+        const posStartEof = new PositionTracker(18, 1, 19);
 
         const tokenList: Array<Token> = [
           createToken(TokenTypes.KEYWORD, posStartFor, 'for'),
@@ -3063,7 +3056,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.KEYWORD, posStartTo, 'to'),
           createToken(TokenTypes.NUMBER, posStartNum2, 10),
           createToken(TokenTypes.NUMBER, posStartNum3, 10),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -3077,46 +3069,6 @@ describe('Parser tests', () => {
         expected.failure(error);
 
         for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
-
-        expect(parseResult.getNode()).toEqual(expected.getNode());
-        expect(parseResult.getError()).toEqual(expected.getError());
-        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
-      });
-
-      it(`should return correct error missing 'end' in parse result for expression: for x = 1 to 10 loop 10`, () => {
-        const posStartFor = new PositionTracker(0, 1, 1);
-        const posStartVarX = new PositionTracker(4, 1, 5);
-        const posStartEquals = new PositionTracker(6, 1, 7);
-        const posStartNum1 = new PositionTracker(8, 1, 9);
-        const posStartTo = new PositionTracker(10, 1, 11);
-        const posStartNum2 = new PositionTracker(13, 1, 14);
-        const posStartLoop = new PositionTracker(16, 1, 17);
-        const posStartNum3 = new PositionTracker(21, 1, 22);
-        const posStartEof = new PositionTracker(23, 1, 24);
-        const posEndEof = new PositionTracker(24, 1, 25);
-
-        const tokenList: Array<Token> = [
-          createToken(TokenTypes.KEYWORD, posStartFor, 'for'),
-          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
-          createToken(TokenTypes.EQUALS, posStartEquals),
-          createToken(TokenTypes.NUMBER, posStartNum1, 1),
-          createToken(TokenTypes.KEYWORD, posStartTo, 'to'),
-          createToken(TokenTypes.NUMBER, posStartNum2, 10),
-          createToken(TokenTypes.KEYWORD, posStartLoop, 'loop'),
-          createToken(TokenTypes.NUMBER, posStartNum3, 10),
-          createToken(TokenTypes.EOF, posStartEof)
-        ];
-
-        const parser = new Parser(tokenList);
-        const parseResult: ParseResult = parser.parse();
-
-        const error = new InvalidSyntaxError(`Expected 'end' keyword`, posStartEof,
-                                              posEndEof);
-
-        let expected = new ParseResult();
-        expected.failure(error);
-
-        for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
@@ -4814,6 +4766,87 @@ describe('Parser tests', () => {
         expected.failure(error);
 
         for (let i = 0; i < 18; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
+      it('should return correct AST for block statements inside a for loop', () => {
+        // code: for i = 1 to 5 loop\nx = i\nend
+        const posStartFor = new PositionTracker(0, 1, 1);
+        const posStartI = new PositionTracker(4, 1, 5);
+        const posStartEquals1 = new PositionTracker(6, 1, 7);
+        const posStartNum1 = new PositionTracker(8, 1, 9);
+        const posStartTo = new PositionTracker(10, 1, 11);
+        const posStartNum2 = new PositionTracker(13, 1, 14);
+        const posStartLoop = new PositionTracker(15, 1, 16);
+        const posStartNewline1 = new PositionTracker(19, 1, 20);
+        const posStartVarX = new PositionTracker(20, 2, 1);
+        const posStartEquals2 = new PositionTracker(22, 2, 3);
+        const posStartVarI = new PositionTracker(24, 2, 5);
+        const posStartNewline2 = new PositionTracker(25, 2, 6);
+        const posStartEnd = new PositionTracker(26, 3, 1);
+        const posStartEof = new PositionTracker(29, 3, 4);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFor, 'for'),
+          createToken(TokenTypes.IDENTIFIER, posStartI, 'i'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.KEYWORD, posStartTo, 'to'),
+          createToken(TokenTypes.NUMBER, posStartNum2, 5),
+          createToken(TokenTypes.KEYWORD, posStartLoop, 'loop'),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarI, 'i'),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const varIAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarI, 'i'),
+        }
+        const varXAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          node: varIAccessNode
+        };
+
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          elementNodes: [varXAssignNode]
+        };
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        };
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 5)
+        };
+        const forNode: ASTNode = {
+          nodeType: NodeTypes.FORLOOP,
+          token: createToken(TokenTypes.KEYWORD, posStartFor, 'for'),
+          varNameToken: createToken(TokenTypes.IDENTIFIER, posStartI, 'i'),
+          startValueNode: numberNode1,
+          endValueNode: numberNode2,
+          stepValueNode: null,
+          bodyNode: listNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(forNode);
+
+        for (let i = 0; i < 13; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());

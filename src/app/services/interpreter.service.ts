@@ -371,10 +371,10 @@ export class InterpreterService {
     let i: number = startValNum;
     let rangeCondition: ((currVal: number, endVal: number) => boolean);
     if (stepValNum >= 0) {
-      rangeCondition = (currVal: number, endVal: number) => { return i < endValNum; }
+      rangeCondition = (currVal: number, endVal: number) => { return i <= endValNum; }
     }
     else {
-      rangeCondition = (currVal: number, endVal: number) => { return i > endValNum; }
+      rangeCondition = (currVal: number, endVal: number) => { return i >= endValNum; }
     }
 
     while (rangeCondition(i, endValNum)) {

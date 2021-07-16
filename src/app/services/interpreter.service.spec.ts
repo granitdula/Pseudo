@@ -1139,9 +1139,9 @@ describe('InterpreterService', () => {
     });
 
     describe('for and while loop tests', () => {
-      it('should produce an empty shell/console output for expression: for i = 1 to 10 loop 1 end', () => {
+      it('should produce an empty shell/console output for expression: for i = 1 to 10 loop 1', () => {
         service = new InterpreterService();
-        const source = 'for i = 1 to 10 loop 1 end';
+        const source = 'for i = 1 to 10 loop 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1149,9 +1149,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual('');
       });
 
-      it('should produce an empty shell/console output for expression: for i = 1 to 10 step 2 loop 1 end', () => {
+      it('should produce an empty shell/console output for expression: for i = 1 to 10 step 2 loop 1', () => {
         service = new InterpreterService();
-        const source = 'for i = 1 to 10 step 2 loop 1 end';
+        const source = 'for i = 1 to 10 step 2 loop 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1159,9 +1159,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual('');
       });
 
-      it('should produce an empty shell/console output for expression: for i = 10 to 0 step -1 loop 1 end', () => {
+      it('should produce an empty shell/console output for expression: for i = 10 to 0 step -1 loop 1', () => {
         service = new InterpreterService();
-        const source = 'for i = 10 to 0 step -1 loop 1 end';
+        const source = 'for i = 10 to 0 step -1 loop 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1180,9 +1180,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual('');
       });
 
-      it(`should produce a missing '=' error shell/console output for expression: for i 1 to 10 loop 1 end`, () => {
+      it(`should produce a missing '=' error shell/console output for expression: for i 1 to 10 loop 1`, () => {
         service = new InterpreterService();
-        const source = 'for i 1 to 10 loop 1 end';
+        const source = 'for i 1 to 10 loop 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1193,9 +1193,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual(expectedErr);
       });
 
-      it(`should produce a missing 'to' error shell/console output for expression: for i = 1 10 loop 1 end`, () => {
+      it(`should produce a missing 'to' error shell/console output for expression: for i = 1 10 loop 1`, () => {
         service = new InterpreterService();
-        const source = 'for i = 1 10 loop 1 end';
+        const source = 'for i = 1 10 loop 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1206,27 +1206,14 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual(expectedErr);
       });
 
-      it(`should produce a missing 'loop' error shell/console output for expression: for i = 1 to 10 1 end`, () => {
+      it(`should produce a missing 'loop' error shell/console output for expression: for i = 1 to 10 1`, () => {
         service = new InterpreterService();
-        const source = 'for i = 1 to 10 1 end';
+        const source = 'for i = 1 to 10 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
         const expectedErr = `InvalidSyntaxError: Expected 'loop' keyword\nAt line: 1 column: 17 ` +
                             `and ends at line: 1 column: 18`;
-
-        expect(consoleOut).toEqual(expectedErr);
-        expect(shellOut).toEqual(expectedErr);
-      });
-
-      it(`should produce a missing 'end' error shell/console output for expression: for i = 1 to 10 loop 1`, () => {
-        service = new InterpreterService();
-        const source = 'for i = 1 to 10 loop 1';
-
-        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
-
-        const expectedErr = `InvalidSyntaxError: Expected 'end' keyword\nAt line: 1 column: 23 ` +
-                            `and ends at line: 1 column: 24`;
 
         expect(consoleOut).toEqual(expectedErr);
         expect(shellOut).toEqual(expectedErr);
@@ -1539,6 +1526,16 @@ describe('InterpreterService', () => {
 
         expect(consoleOut).toEqual(expectedError);
         expect(shellOut).toEqual(expectedError);
+      });
+
+      it('should output correct variable value inside the block statement in the for statement', () => {
+        service = new InterpreterService();
+        const source = 'for i = 1 to 5 loop\nx = i + 1\noutput(toString(x))\nend';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('2\n3\n4\n5\n6');
+        expect(shellOut).toEqual('2\n3\n4\n5\n6');
       });
     });
   });

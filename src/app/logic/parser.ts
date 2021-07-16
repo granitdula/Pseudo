@@ -326,20 +326,41 @@ export class Parser {
     }
 
     parseResult.registerAdvancement();
-    this.advance();
+    this.currentToken = this.advance();
 
-    const body: ASTNode = parseResult.register(this.expr());
-    if (parseResult.getError() !== null) { return parseResult; }
+    // Block statement within for loop.
+    if (this.currentToken.type === TokenTypes.NEWLINE) {
+      parseResult.registerAdvancement();
+      this.currentToken = this.advance();
 
-    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
-      const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
-                                                  this.currentToken.positionStart,
-                                                  this.currentToken.positionEnd);
-      return parseResult.failure(syntaxError);
+      const body: ASTNode = parseResult.register(this.statements());
+      if (parseResult.getError() !== null) { return parseResult; }
+
+      if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
+        const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
+                                                    this.currentToken.positionStart,
+                                                    this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+
+      parseResult.registerAdvancement();
+      this.advance();
+
+      const forNode: ForNode = {
+        nodeType: NodeTypes.FORLOOP,
+        token: forToken,
+        varNameToken: varNameToken,
+        startValueNode: startValue,
+        endValueNode: endValue,
+        stepValueNode: stepValue,
+        bodyNode: body
+      };
+      return parseResult.success(forNode);
     }
 
-    parseResult.registerAdvancement();
-    this.advance();
+    // Single line for loop.
+    const body: ASTNode = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) { return parseResult; }
 
     const forNode: ForNode = {
       nodeType: NodeTypes.FORLOOP,
