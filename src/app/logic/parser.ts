@@ -355,14 +355,109 @@ export class Parser {
 
   private ifExpr(): ParseResult {
     let parseResult = new ParseResult();
-    const cases: Array<[ASTNode, ASTNode]> = [];
-    let elseCase: ASTNode = null;
     const ifToken: Token = this.currentToken;
+    const resultWithCases: ASTNode = parseResult.register(this.ifExprCases());
+
+    if (parseResult.getError() !== null) { return parseResult; }
+
+    const cases: Array<[ASTNode, ASTNode]> = resultWithCases.cases;
+    const elseCase: ASTNode = resultWithCases.elseCase;
+
+    const ifNode: IfNode = {
+      nodeType: NodeTypes.IFSTATEMENT,
+      token: ifToken,
+      cases: cases,
+      elseCase: elseCase
+    };
+
+    return parseResult.success(ifNode);
+  }
+
+  private elifExpr(): ParseResult { return this.ifExprCases(); }
+
+  private elseExpr(): ParseResult {
+    let parseResult = new ParseResult();
+    const ifToken: Token = this.currentToken;
+    let elseCase: ASTNode = null;
+
+    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'else') {
+      parseResult.registerAdvancement();
+      this.currentToken = this.advance();
+
+      // There are block statements in the else statement.
+      if (this.currentToken.type === TokenTypes.NEWLINE) {
+        parseResult.registerAdvancement();
+        this.currentToken = this.advance();
+
+        elseCase = parseResult.register(this.statements());
+        if (parseResult.getError() !== null) { return parseResult; }
+
+        if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end') {
+          parseResult.registerAdvancement();
+          this.advance();
+        }
+        else {
+          const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
+                                                      this.currentToken.positionStart,
+                                                      this.currentToken.positionEnd);
+          return parseResult.failure(syntaxError);
+        }
+      }
+      // Else its a single lined else statement.
+      else {
+        elseCase = parseResult.register(this.expr());
+        if (parseResult.getError() !== null) { return parseResult; }
+      }
+    }
+
+    const ifNode: IfNode = {
+      nodeType: NodeTypes.IFSTATEMENT,
+      token: ifToken,
+      cases: [],
+      elseCase: elseCase
+    };
+
+    return parseResult.success(ifNode);
+  }
+
+  private elifOrElseExpr(): ParseResult {
+    let parseResult = new ParseResult();
+    const ifToken: Token = this.currentToken;
+    let cases = [];
+    let elseCase = null;
+
+    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'elif') {
+      const caseResult: ASTNode = parseResult.register(this.elifExpr());
+      if (parseResult.getError() !== null) { return parseResult; }
+      cases = caseResult.cases;
+      elseCase = caseResult.elseCase;
+    }
+    else {
+      const caseResult: ASTNode = parseResult.register(this.elseExpr());
+      if (parseResult.getError() !== null) { return parseResult; }
+      elseCase = caseResult.elseCase;
+    }
+
+    const ifNode: IfNode = {
+      nodeType: NodeTypes.IFSTATEMENT,
+      token: ifToken,
+      cases: cases,
+      elseCase: elseCase
+    };
+
+    return parseResult.success(ifNode);
+  }
+
+  private ifExprCases(): ParseResult {
+    let parseResult = new ParseResult();
+    let ifToken: Token = this.currentToken;
+    let cases: Array<[ASTNode, ASTNode]> = [];
+    let elseCase: ASTNode = null;
 
     parseResult.registerAdvancement();
     this.advance();
 
-    const condition: ASTNode = parseResult.register(this.expr());
+    const condition = parseResult.register(this.expr());
     if (parseResult.getError() !== null) { return parseResult; }
 
     if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'then')) {
@@ -373,54 +468,45 @@ export class Parser {
     }
 
     parseResult.registerAdvancement();
-    this.advance();
+    this.currentToken = this.advance();
 
-    const expr = parseResult.register(this.expr());
-    if (parseResult.getError() !== null) { return parseResult; }
-
-    cases.push([condition, expr]);
-
-    while (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'elif') {
+    // There are block statements in this if/elif statement.
+    if (this.currentToken.type === TokenTypes.NEWLINE) {
       parseResult.registerAdvancement();
-      this.advance();
+      this.currentToken = this.advance();
 
-      const condition: ASTNode = parseResult.register(this.expr());
+      const statements = parseResult.register(this.statements());
       if (parseResult.getError() !== null) { return parseResult; }
+      cases.push([condition, statements]);
 
-      if (!(this.currentToken.type === TokenTypes.KEYWORD &&
-          this.currentToken.value === 'then')) {
-        const syntaxError = new InvalidSyntaxError(`Expected 'then' keyword`,
-                                                   this.currentToken.positionStart,
-                                                   this.currentToken.positionEnd);
-        return parseResult.failure(syntaxError);
+      if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end') {
+        parseResult.registerAdvancement();
+        this.advance();
       }
+      else {
+        const allCaseResults: ASTNode = parseResult.register(this.elifOrElseExpr());
+        if (parseResult.getError() !== null) { return parseResult; }
 
-      parseResult.registerAdvancement();
-      this.advance();
+        const newCases: Array<[ASTNode, ASTNode]> = allCaseResults.cases;
+        elseCase = allCaseResults.elseCase;
 
+        cases.push(...newCases);
+      }
+    }
+    // Else its a single lined if/elif statement.
+    else {
       const expr = parseResult.register(this.expr());
       if (parseResult.getError() !== null) { return parseResult; }
-
       cases.push([condition, expr]);
-    }
 
-    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'else') {
-      parseResult.registerAdvancement();
-      this.advance();
-
-      elseCase = parseResult.register(this.expr());
+      const allCaseResults: ASTNode = parseResult.register(this.elifOrElseExpr());
       if (parseResult.getError() !== null) { return parseResult; }
-    }
 
-    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
-      const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
-                                                   this.currentToken.positionStart,
-                                                   this.currentToken.positionEnd);
-      return parseResult.failure(syntaxError);
-    }
+      const newCases: Array<[ASTNode, ASTNode]> = allCaseResults.cases;
+      elseCase = allCaseResults.elseCase;
 
-    parseResult.registerAdvancement();
-    this.advance();
+      cases.push(...newCases);
+    }
 
     const ifNode: IfNode = {
       nodeType: NodeTypes.IFSTATEMENT,
@@ -428,6 +514,7 @@ export class Parser {
       cases: cases,
       elseCase: elseCase
     };
+
     return parseResult.success(ifNode);
   }
 

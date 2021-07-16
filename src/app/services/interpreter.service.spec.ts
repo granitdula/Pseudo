@@ -1071,9 +1071,9 @@ describe('InterpreterService', () => {
     });
 
     describe('if, elif and else statement tests', () => {
-      it(`should produce a shell output of '2' for expression: if PI > 3 then 1 + 1 end`, () => {
+      it(`should produce a shell output of '2' for expression: if PI > 3 then 1 + 1`, () => {
         service = new InterpreterService();
-        const source = 'if PI > 3 then 1 + 1 end';
+        const source = 'if PI > 3 then 1 + 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1081,9 +1081,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual('2');
       });
 
-      it(`should produce a shell output of '100' for expression: if PI == 3 then 1 + 1 else 100 end`, () => {
+      it(`should produce a shell output of '100' for expression: if PI == 3 then 1 + 1 else 100`, () => {
         service = new InterpreterService();
-        const source = 'if PI == 3 then 1 + 1 else 100 end';
+        const source = 'if PI == 3 then 1 + 1 else 100';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1091,9 +1091,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual('100');
       });
 
-      it(`should produce a shell output of '1' for expression: if FALSE then 5 elif TRUE then 1 else 100 end`, () => {
+      it(`should produce a shell output of '1' for expression: if FALSE then 5 elif TRUE then 1 else 100`, () => {
         service = new InterpreterService();
-        const source = 'if FALSE then 5 elif TRUE then 1 else 100 end';
+        const source = 'if FALSE then 5 elif TRUE then 1 else 100';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1101,9 +1101,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual('1');
       });
 
-      it(`should produce a shell output of '0' for expression: if FALSE then 5 elif FALSE then 1 elif TRUE then 0 else 100 end`, () => {
+      it(`should produce a shell output of '0' for expression: if FALSE then 5 elif FALSE then 1 elif TRUE then 0 else 100`, () => {
         service = new InterpreterService();
-        const source = 'if FALSE then 5 elif FALSE then 1 elif TRUE then 0 else 100 end';
+        const source = 'if FALSE then 5 elif FALSE then 1 elif TRUE then 0 else 100';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1111,9 +1111,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual('0');
       });
 
-      it(`should produce a console/shell syntax error missing 'then' keyword for expression: if TRUE 5 end`, () => {
+      it(`should produce a console/shell syntax error missing 'then' keyword for expression: if TRUE 5`, () => {
         service = new InterpreterService();
-        const source = 'if TRUE 5 end';
+        const source = 'if TRUE 5';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1124,22 +1124,9 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual(expectedErr);
       });
 
-      it(`should produce a console/shell syntax error missing 'end' keyword for expression: if TRUE then 5`, () => {
+      it(`should produce a console/shell syntax error missing 'then' keyword for expression: if FALSE then 5 elif TRUE 1`, () => {
         service = new InterpreterService();
-        const source = 'if TRUE then 5';
-
-        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
-
-        const expectedErr = `InvalidSyntaxError: Expected 'end' keyword\nAt line: 1 column:` +
-                            ` 15 and ends at line: 1 column: 16`;
-
-        expect(consoleOut).toEqual(expectedErr);
-        expect(shellOut).toEqual(expectedErr);
-      });
-
-      it(`should produce a console/shell syntax error missing 'then' keyword for expression: if FALSE then 5 elif TRUE 1 end`, () => {
-        service = new InterpreterService();
-        const source = 'if FALSE then 5 elif TRUE 1 end';
+        const source = 'if FALSE then 5 elif TRUE 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1467,7 +1454,7 @@ describe('InterpreterService', () => {
     describe('multi-line code with no block code tests', () => {
       it('should output to shell a list of outputs for each line statement', () => {
         service = new InterpreterService();
-        const source = 'function add(x, y) begin x + y end\nif add(3, 2) > 2 then TRUE end\n"string"';
+        const source = 'function add(x, y) begin x + y end\nif add(3, 2) > 2 then TRUE\n"string"';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1504,6 +1491,51 @@ describe('InterpreterService', () => {
         const expectedError = `Traceback (most recent call last):\nLine 3, in <pseudo>\nRuntime` +
                               ` Error: z is not defined\nAt line: 3 column: 14 and ends at ` +
                               `line: 3 column: 15`;
+
+        expect(consoleOut).toEqual(expectedError);
+        expect(shellOut).toEqual(expectedError);
+      });
+    });
+
+    describe('multi-line code with block code tests', () => {
+      it('should output correct variable value inside the block statement in the if statement', () => {
+        service = new InterpreterService();
+        const source = 'if 1 > 0 then\nx = 0\ny = 1\nend\noutput(toString(y))';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('1');
+        expect(shellOut).toEqual('1');
+      });
+
+      it('should output correct variable value inside the block statement in the else statement', () => {
+        service = new InterpreterService();
+        const source = 'if 1 < 0 then\nx = 0\ny = 1\nelse\nx = 100\nend';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('[100]');
+      });
+
+      it('should output correct variable value inside the block statement in the elif statement', () => {
+        service = new InterpreterService();
+        const source = 'if 1 < 0 then\nx = 0\ny = 1\nelif 2 < 3 then\noutput("success")\nelse\nx = 100\nend';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('success');
+        expect(shellOut).toEqual('success');
+      });
+
+      it(`should output syntax error for block if, elif and else statement missing 'end' keyword`, () => {
+        service = new InterpreterService();
+        const source = 'if 1 < 0 then\nx = 0\ny = 1\nelif 2 < 3 then\noutput("success")\nelse\nx = 100';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        const expectedError = `InvalidSyntaxError: Expected 'end' keyword\nAt line: 7 column:` +
+                              ` 8 and ends at line: 7 column: 9`;
 
         expect(consoleOut).toEqual(expectedError);
         expect(shellOut).toEqual(expectedError);

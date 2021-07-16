@@ -2368,7 +2368,7 @@ describe('Parser tests', () => {
     });
 
     describe('if, elif and else statement tests', () => {
-      it('should return correct AST for statement: if 1 > 2 then 1 + 1 end', () => {
+      it('should return correct AST for statement: if 1 > 2 then 1 + 1', () => {
         const posStartIf = new PositionTracker(0, 1, 1);
         const posStartNum1 = new PositionTracker(3, 1, 4);
         const posStartGThan = new PositionTracker(5, 1, 6);
@@ -2377,7 +2377,6 @@ describe('Parser tests', () => {
         const posStartNum3 = new PositionTracker(14, 1, 15);
         const posStartPlus = new PositionTracker(16, 1, 17);
         const posStartNum4 = new PositionTracker(18, 1, 19);
-        const posStartEnd = new PositionTracker(20, 1, 21);
         const posStartEof = new PositionTracker(23, 1, 24);
 
         const tokenList: Array<Token> = [
@@ -2389,7 +2388,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.NUMBER, posStartNum3, 1),
           createToken(TokenTypes.PLUS, posStartPlus),
           createToken(TokenTypes.NUMBER, posStartNum4, 1),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -2436,14 +2434,14 @@ describe('Parser tests', () => {
         let expected = new ParseResult();
         expected.success(ast);
 
-        for (let i = 0; i < 9; i++) { expected.registerAdvancement(); }
+        for (let i = 0; i < 8; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
         expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
-      it('should return correct AST for statement: if 1 > 2 then 1 + 1 elif x == y then 1 end', () => {
+      it('should return correct AST for statement: if 1 > 2 then 1 + 1 elif x == y then 1', () => {
         const posStartIf = new PositionTracker(0, 1, 1);
         const posStartNum1 = new PositionTracker(3, 1, 4);
         const posStartGThan = new PositionTracker(5, 1, 6);
@@ -2458,7 +2456,6 @@ describe('Parser tests', () => {
         const posStartVarY = new PositionTracker(30, 1, 31);
         const posStartThen2 = new PositionTracker(32, 1, 33);
         const posStartNum5 = new PositionTracker(37, 1, 38);
-        const posStartEnd = new PositionTracker(39, 1, 40);
         const posStartEof = new PositionTracker(42, 1, 43);
 
         const tokenList: Array<Token> = [
@@ -2476,7 +2473,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
           createToken(TokenTypes.KEYWORD, posStartThen2, 'then'),
           createToken(TokenTypes.NUMBER, posStartNum5, 1),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -2542,7 +2538,7 @@ describe('Parser tests', () => {
         let expected = new ParseResult();
         expected.success(ast);
 
-        for (let i = 0; i < 15; i++) { expected.registerAdvancement(); }
+        for (let i = 0; i < 14; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
@@ -2550,7 +2546,7 @@ describe('Parser tests', () => {
       });
 
       it('should return correct AST for statement with many elifs and an else at the end', () => {
-        // Expression: if 1 > 2 then 1 + 1 elif x == y then 1 elif 1 < 2 then 2 elif x >= y then 0 else 1 + 1 end
+        // Expression: if 1 > 2 then 1 + 1 elif x == y then 1 elif 1 < 2 then 2 elif x >= y then 0 else 1 + 1
         const posStartIf = new PositionTracker(0, 1, 1);
         const posStartNum1 = new PositionTracker(3, 1, 4);
         const posStartGThan = new PositionTracker(5, 1, 6);
@@ -2581,7 +2577,6 @@ describe('Parser tests', () => {
         const posStartNum10 = new PositionTracker(81, 1, 82);
         const posStartPlus2 = new PositionTracker(83, 1, 84);
         const posStartNum11 = new PositionTracker(85, 1, 86);
-        const posStartEnd = new PositionTracker(87, 1, 88);
         const posStartEof = new PositionTracker(90, 1, 91);
 
         const tokenList: Array<Token> = [
@@ -2615,7 +2610,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.NUMBER, posStartNum10, 1),
           createToken(TokenTypes.PLUS, posStartPlus2),
           createToken(TokenTypes.NUMBER, posStartNum11, 1),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -2738,14 +2732,14 @@ describe('Parser tests', () => {
         let expected = new ParseResult();
         expected.success(ast);
 
-        for (let i = 0; i < 31; i++) { expected.registerAdvancement(); }
+        for (let i = 0; i < 30; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
         expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
-      it(`should return correct error missing 'then' in parse result for expression: if 1 == 1 1 end`, () => {
+      it(`should return correct error missing 'then' in parse result for expression: if 1 == 1 1`, () => {
         const posStartIf = new PositionTracker(0, 1, 1);
         const posStartNum1 = new PositionTracker(3, 1, 4);
         const posStartEquality = new PositionTracker(5, 1, 6);
@@ -2781,7 +2775,7 @@ describe('Parser tests', () => {
         expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
-      it(`should return correct error missing 'then' in parse result for expression: if 1 == 1 then 1 elif 1 > 0 1 + 1 end`, () => {
+      it(`should return correct error missing 'then' in parse result for expression: if 1 == 1 then 1 elif 1 > 0 1 + 1`, () => {
         const posStartIf = new PositionTracker(0, 1, 1);
         const posStartNum1 = new PositionTracker(3, 1, 4);
         const posStartEquality = new PositionTracker(5, 1, 6);
@@ -2796,7 +2790,6 @@ describe('Parser tests', () => {
         const posEndNum6 = new PositionTracker(29, 1, 30);
         const posStartPlus = new PositionTracker(30, 1, 31);
         const posStartNum7 = new PositionTracker(32, 1, 33);
-        const posStartEnd = new PositionTracker(34, 1, 35);
         const posStartEof = new PositionTracker(37, 1, 38);
 
         const tokenList: Array<Token> = [
@@ -2813,7 +2806,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.NUMBER, posStartNum6, 1),
           createToken(TokenTypes.PLUS, posStartPlus),
           createToken(TokenTypes.NUMBER, posStartNum7, 1),
-          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
           createToken(TokenTypes.EOF, posStartEof)
         ];
 
@@ -2827,42 +2819,6 @@ describe('Parser tests', () => {
         expected.failure(error);
 
         for (let i = 0; i < 10; i++) { expected.registerAdvancement(); }
-
-        expect(parseResult.getNode()).toEqual(expected.getNode());
-        expect(parseResult.getError()).toEqual(expected.getError());
-        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
-      });
-
-      it(`should return correct error missing 'end' in parse result for expression: if 1 == 1 then 1`, () => {
-        const posStartIf = new PositionTracker(0, 1, 1);
-        const posStartNum1 = new PositionTracker(3, 1, 4);
-        const posStartEquality = new PositionTracker(5, 1, 6);
-        const posStartNum2 = new PositionTracker(8, 1, 9);
-        const posStartThen = new PositionTracker(10, 1, 11);
-        const posStartNum3 = new PositionTracker(15, 1, 16);
-        const posStartEof = new PositionTracker(16, 1, 17);
-        const posEndEof = new PositionTracker(17, 1, 18);
-
-        const tokenList: Array<Token> = [
-          createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
-          createToken(TokenTypes.NUMBER, posStartNum1, 1),
-          createToken(TokenTypes.EQUALITY, posStartEquality),
-          createToken(TokenTypes.NUMBER, posStartNum2, 1),
-          createToken(TokenTypes.KEYWORD, posStartThen, 'then'),
-          createToken(TokenTypes.NUMBER, posStartNum3, 1),
-          createToken(TokenTypes.EOF, posStartEof)
-        ];
-
-        const parser = new Parser(tokenList);
-        const parseResult: ParseResult = parser.parse();
-
-        const error = new InvalidSyntaxError(`Expected 'end' keyword`, posStartEof,
-                                              posEndEof);
-
-        let expected = new ParseResult();
-        expected.failure(error);
-
-        for (let i = 0; i < 6; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
@@ -4121,7 +4077,7 @@ describe('Parser tests', () => {
     // Block code is having multiple lines inside a function or if/elif/else/for/while loops.
     describe('multi-lined code with no block code tests', () => {
       it('should create list of outputs for each line for a given multi-line code', () => {
-        // code: function add(x, y) begin x + y end\nif add(3, 2) > 2 then TRUE end\n"string"
+        // code: function add(x, y) begin x + y end\nif add(3, 2) > 2 then TRUE\n"string"
         const posStartFunction = new PositionTracker(0, 1, 1);
         const posStartFuncName = new PositionTracker(9, 1, 10);
         const posStartLeftBrack = new PositionTracker(12, 1, 13);
@@ -4146,7 +4102,6 @@ describe('Parser tests', () => {
         const posStartNumber3 = new PositionTracker(48, 2, 14);
         const posStartThen = new PositionTracker(50, 2, 16);
         const posStartTrue = new PositionTracker(55, 2, 21);
-        const posStartEnd2 = new PositionTracker(60, 2, 26);
         const posStartNewline2 = new PositionTracker(63, 2, 29);
         const posStartString = new PositionTracker(64, 3, 1);
         const posStartEof = new PositionTracker(72, 3, 9);
@@ -4176,7 +4131,6 @@ describe('Parser tests', () => {
           createToken(TokenTypes.NUMBER, posStartNumber3, 2),
           createToken(TokenTypes.KEYWORD, posStartThen, 'then'),
           createToken(TokenTypes.KEYWORD, posStartTrue, 'TRUE'),
-          createToken(TokenTypes.KEYWORD, posStartEnd2, 'end'),
           createToken(TokenTypes.NEWLINE, posStartNewline2),
           createToken(TokenTypes.STRING, posStartString, 'string'),
           createToken(TokenTypes.EOF, posStartEof)
@@ -4263,7 +4217,7 @@ describe('Parser tests', () => {
         let expected = new ParseResult();
         expected.success(listNode);
 
-        for (let i = 0; i < 27; i++) { expected.registerAdvancement(); }
+        for (let i = 0; i < 26; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
@@ -4415,6 +4369,451 @@ describe('Parser tests', () => {
         expected.failure(error);
 
         for (let i = 0; i < 11; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+    });
+
+    describe('multi-lined code with block code tests', () => {
+      it('should produce correct AST for if statement with block code', () => {
+        // code: if 1 > 0 then\nx = 0\ny = 1\nend
+        const posStartIf = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(3, 1, 4);
+        const posStartGThan = new PositionTracker(5, 1, 6);
+        const posStartNum2 = new PositionTracker(7, 1, 8);
+        const posStartThen = new PositionTracker(9, 1, 10);
+        const posStartNewline1 = new PositionTracker(13, 1, 14);
+        const posStartVarX = new PositionTracker(14, 2, 1);
+        const posStartEquals1 = new PositionTracker(16, 2, 3);
+        const posStartNum3 = new PositionTracker(18, 2, 5);
+        const posStartNewline2 = new PositionTracker(19, 2, 6);
+        const posStartVarY = new PositionTracker(20, 3, 1);
+        const posStartEquals2 = new PositionTracker(22, 3, 3);
+        const posStartNum4 = new PositionTracker(24, 3, 5);
+        const posStartNewline3 = new PositionTracker(25, 3, 6);
+        const posStartEnd = new PositionTracker(26, 4, 1);
+        const posStartEof = new PositionTracker(29, 4, 4);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.G_THAN, posStartGThan),
+          createToken(TokenTypes.NUMBER, posStartNum2, 0),
+          createToken(TokenTypes.KEYWORD, posStartThen, 'then'),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.NUMBER, posStartNum3, 0),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.NUMBER, posStartNum4, 1),
+          createToken(TokenTypes.NEWLINE, posStartNewline3),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1),
+        }
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 0),
+        }
+        const compareNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.G_THAN, posStartGThan),
+          leftChild: numberNode1,
+          rightChild: numberNode2
+        };
+
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 0),
+        };
+        const varXAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          node: numberNode3
+        }
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 1),
+        };
+        const varYAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          node: numberNode4
+        }
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          elementNodes: [varXAssignNode, varYAssignNode]
+        };
+        const ifNode: ASTNode = {
+          nodeType: NodeTypes.IFSTATEMENT,
+          token: createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          cases: [[compareNode, listNode]],
+          elseCase: null
+        };
+
+        let expected = new ParseResult();
+        expected.success(ifNode);
+
+        for (let i = 0; i < 15; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
+      it('should produce correct AST for if and else statements with block code', () => {
+        // code: if 1 < 0 then\nx = 0\ny = 1\nelse\nx = 100\nend
+        const posStartIf = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(3, 1, 4);
+        const posStartLThan = new PositionTracker(5, 1, 6);
+        const posStartNum2 = new PositionTracker(7, 1, 8);
+        const posStartThen = new PositionTracker(9, 1, 10);
+        const posStartNewline1 = new PositionTracker(13, 1, 14);
+        const posStartVarX = new PositionTracker(14, 2, 1);
+        const posStartEquals1 = new PositionTracker(16, 2, 3);
+        const posStartNum3 = new PositionTracker(18, 2, 5);
+        const posStartNewline2 = new PositionTracker(19, 2, 6);
+        const posStartVarY = new PositionTracker(20, 3, 1);
+        const posStartEquals2 = new PositionTracker(22, 3, 3);
+        const posStartNum4 = new PositionTracker(24, 3, 5);
+        const posStartNewline3 = new PositionTracker(25, 3, 6);
+        const posStartElse = new PositionTracker(26, 4, 1);
+        const posStartNewline4 = new PositionTracker(30, 4, 5);
+        const posStartVarX2 = new PositionTracker(31, 5, 1);
+        const posStartEquals3 = new PositionTracker(33, 5, 3);
+        const posStartNum5 = new PositionTracker(35, 5, 5);
+        const posStartNewline5 = new PositionTracker(38, 5, 8);
+        const posStartEnd = new PositionTracker(39, 6, 1);
+        const posStartEof = new PositionTracker(42, 6, 4);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.L_THAN, posStartLThan),
+          createToken(TokenTypes.NUMBER, posStartNum2, 0),
+          createToken(TokenTypes.KEYWORD, posStartThen, 'then'),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.NUMBER, posStartNum3, 0),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.NUMBER, posStartNum4, 1),
+          createToken(TokenTypes.NEWLINE, posStartNewline3),
+          createToken(TokenTypes.KEYWORD, posStartElse, 'else'),
+          createToken(TokenTypes.NEWLINE, posStartNewline4),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals3),
+          createToken(TokenTypes.NUMBER, posStartNum5, 100),
+          createToken(TokenTypes.NEWLINE, posStartNewline5),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        }
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 0)
+        }
+        const compareNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.L_THAN, posStartLThan),
+          leftChild: numberNode1,
+          rightChild: numberNode2,
+        };
+
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 0)
+        };
+        const varXAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          node: numberNode3
+        };
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 1)
+        };
+        const varYAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          node: numberNode4
+        };
+        const ifListNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          elementNodes: [varXAssignNode, varYAssignNode]
+        };
+
+        const numberNode5: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum5, 100)
+        };
+        const varX2AssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          node: numberNode5
+        };
+        const elseListNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          elementNodes: [varX2AssignNode]
+        };
+        const ifNode: ASTNode = {
+          nodeType: NodeTypes.IFSTATEMENT,
+          token: createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          cases: [[compareNode, ifListNode]],
+          elseCase: elseListNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ifNode);
+
+        for (let i = 0; i < 21; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
+      it('should produce correct AST for if, elif and else statements with block code', () => {
+        // code: if 1 < 0 then\nx = 0\ny = 1\nelif 2 < 3 then\n1\nelse\nx = 100\nend
+        const posStartIf = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(3, 1, 4);
+        const posStartLThan = new PositionTracker(5, 1, 6);
+        const posStartNum2 = new PositionTracker(7, 1, 8);
+        const posStartThen = new PositionTracker(9, 1, 10);
+        const posStartNewline1 = new PositionTracker(13, 1, 14);
+        const posStartVarX = new PositionTracker(14, 2, 1);
+        const posStartEquals1 = new PositionTracker(16, 2, 3);
+        const posStartNum3 = new PositionTracker(18, 2, 5);
+        const posStartNewline2 = new PositionTracker(19, 2, 6);
+        const posStartVarY = new PositionTracker(20, 3, 1);
+        const posStartEquals2 = new PositionTracker(22, 3, 3);
+        const posStartNum4 = new PositionTracker(24, 3, 5);
+        const posStartNewline3 = new PositionTracker(25, 3, 6);
+        const posStartElif = new PositionTracker(26, 4, 1);
+        const posStartNum5 = new PositionTracker(31, 4, 6);
+        const posStartLThan2 = new PositionTracker(33, 4, 8);
+        const posStartNum6 = new PositionTracker(35, 4, 10);
+        const posStartThen2 = new PositionTracker(37, 4, 12);
+        const posStartNewline4 = new PositionTracker(41, 4, 16);
+        const posStartNum7 = new PositionTracker(42, 5, 1);
+        const posStartNewline5 = new PositionTracker(43, 5, 2);
+        const posStartElse = new PositionTracker(44, 6, 1);
+        const posStartNewline6 = new PositionTracker(48, 6, 5);
+        const posStartVarX2 = new PositionTracker(49, 7, 1);
+        const posStartEquals3 = new PositionTracker(51, 7, 3);
+        const posStartNum8 = new PositionTracker(53, 7, 5);
+        const posStartNewline7 = new PositionTracker(56, 7, 8);
+        const posStartEnd = new PositionTracker(57, 8, 1);
+        const posStartEof = new PositionTracker(60, 8, 4);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.L_THAN, posStartLThan),
+          createToken(TokenTypes.NUMBER, posStartNum2, 0),
+          createToken(TokenTypes.KEYWORD, posStartThen, 'then'),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.NUMBER, posStartNum3, 0),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.NUMBER, posStartNum4, 1),
+          createToken(TokenTypes.NEWLINE, posStartNewline3),
+          createToken(TokenTypes.KEYWORD, posStartElif, 'elif'),
+          createToken(TokenTypes.NUMBER, posStartNum5, 2),
+          createToken(TokenTypes.L_THAN, posStartLThan2),
+          createToken(TokenTypes.NUMBER, posStartNum6, 3),
+          createToken(TokenTypes.KEYWORD, posStartThen2, 'then'),
+          createToken(TokenTypes.NEWLINE, posStartNewline4),
+          createToken(TokenTypes.NUMBER, posStartNum7, 1),
+          createToken(TokenTypes.NEWLINE, posStartNewline5),
+          createToken(TokenTypes.KEYWORD, posStartElse, 'else'),
+          createToken(TokenTypes.NEWLINE, posStartNewline6),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals3),
+          createToken(TokenTypes.NUMBER, posStartNum8, 100),
+          createToken(TokenTypes.NEWLINE, posStartNewline7),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode5: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum5, 2)
+        }
+        const numberNode6: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum6, 3)
+        }
+        const elifCompareNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.L_THAN, posStartLThan2),
+          leftChild: numberNode5,
+          rightChild: numberNode6,
+        };
+
+        const numberNode7: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum7, 1)
+        };
+        const elifListNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.NUMBER, posStartNum7, 1),
+          elementNodes: [numberNode7]
+        };
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 1)
+        }
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 0)
+        }
+        const ifCompareNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.L_THAN, posStartLThan),
+          leftChild: numberNode1,
+          rightChild: numberNode2,
+        };
+
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 0)
+        };
+        const varXAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          node: numberNode3
+        };
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 1)
+        };
+        const varYAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          node: numberNode4
+        };
+        const ifListNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          elementNodes: [varXAssignNode, varYAssignNode]
+        };
+
+        const numberNode8: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum8, 100)
+        };
+        const varX2AssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          node: numberNode8
+        };
+        const elseListNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          elementNodes: [varX2AssignNode]
+        };
+        const ifNode: ASTNode = {
+          nodeType: NodeTypes.IFSTATEMENT,
+          token: createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          cases: [[ifCompareNode, ifListNode], [elifCompareNode, elifListNode]],
+          elseCase: elseListNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ifNode);
+
+        for (let i = 0; i < 29; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
+      it(`should produce error for if and else statements with block code and no 'end' keyword`, () => {
+        // code: if 1 < 0 then\nx = 0\ny = 1\nelse\n100\n
+        const posStartIf = new PositionTracker(0, 1, 1);
+        const posStartNum1 = new PositionTracker(3, 1, 4);
+        const posStartLThan = new PositionTracker(5, 1, 6);
+        const posStartNum2 = new PositionTracker(7, 1, 8);
+        const posStartThen = new PositionTracker(9, 1, 10);
+        const posStartNewline1 = new PositionTracker(13, 1, 14);
+        const posStartVarX = new PositionTracker(14, 2, 1);
+        const posStartEquals1 = new PositionTracker(16, 2, 3);
+        const posStartNum3 = new PositionTracker(18, 2, 5);
+        const posStartNewline2 = new PositionTracker(19, 2, 6);
+        const posStartVarY = new PositionTracker(20, 3, 1);
+        const posStartEquals2 = new PositionTracker(22, 3, 3);
+        const posStartNum4 = new PositionTracker(24, 3, 5);
+        const posStartNewline3 = new PositionTracker(25, 3, 6);
+        const posStartElse = new PositionTracker(26, 4, 1);
+        const posStartNewline4 = new PositionTracker(30, 4, 5);
+        const posStartNum5 = new PositionTracker(35, 5, 5);
+        const posStartNewline5 = new PositionTracker(38, 5, 8);
+        const posStartEof = new PositionTracker(39, 6, 1);
+        const posEndEof = new PositionTracker(40, 6, 2);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartIf, 'if'),
+          createToken(TokenTypes.NUMBER, posStartNum1, 1),
+          createToken(TokenTypes.L_THAN, posStartLThan),
+          createToken(TokenTypes.NUMBER, posStartNum2, 0),
+          createToken(TokenTypes.KEYWORD, posStartThen, 'then'),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.NUMBER, posStartNum3, 0),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.NUMBER, posStartNum4, 1),
+          createToken(TokenTypes.NEWLINE, posStartNewline3),
+          createToken(TokenTypes.KEYWORD, posStartElse, 'else'),
+          createToken(TokenTypes.NEWLINE, posStartNewline4),
+          createToken(TokenTypes.NUMBER, posStartNum5, 100),
+          createToken(TokenTypes.NEWLINE, posStartNewline5),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const error = new InvalidSyntaxError(`Expected 'end' keyword`, posStartEof, posEndEof);
+
+        let expected = new ParseResult();
+        expected.failure(error);
+
+        for (let i = 0; i < 18; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());
