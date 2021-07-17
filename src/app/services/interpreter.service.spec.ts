@@ -1170,9 +1170,9 @@ describe('InterpreterService', () => {
       });
 
       // // NOTE: Has to be a false condition to prevent infinite loop during testing.
-      it('should produce an empty shell/console output for expression: while FALSE loop 1 end', () => {
+      it('should produce an empty shell/console output for expression: while FALSE loop 1', () => {
         service = new InterpreterService();
-        const source = 'while FALSE loop 1 end';
+        const source = 'while FALSE loop 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1219,27 +1219,14 @@ describe('InterpreterService', () => {
         expect(shellOut).toEqual(expectedErr);
       });
 
-      it(`should produce a missing 'loop' error shell/console output for expression: while FALSE 1 end`, () => {
+      it(`should produce a missing 'loop' error shell/console output for expression: while FALSE 1`, () => {
         service = new InterpreterService();
-        const source = 'while FALSE 1 end';
+        const source = 'while FALSE 1';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
         const expectedErr = `InvalidSyntaxError: Expected 'loop' keyword\nAt line: 1 column: 13 ` +
                             `and ends at line: 1 column: 14`;
-
-        expect(consoleOut).toEqual(expectedErr);
-        expect(shellOut).toEqual(expectedErr);
-      });
-
-      it(`should produce a missing 'end' error shell/console output for expression: while FALSE loop 1`, () => {
-        service = new InterpreterService();
-        const source = 'while FALSE loop 1';
-
-        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
-
-        const expectedErr = `InvalidSyntaxError: Expected 'end' keyword\nAt line: 1 column: 19 ` +
-                            `and ends at line: 1 column: 20`;
 
         expect(consoleOut).toEqual(expectedErr);
         expect(shellOut).toEqual(expectedErr);
@@ -1451,7 +1438,7 @@ describe('InterpreterService', () => {
 
       it('should show correct console output for valid multi-line code with output function used', () => {
         service = new InterpreterService();
-        const source = 'final = 5\nx = 1\nwhile x < final loop x = x + 1 end\noutput(toString(x))';
+        const source = 'final = 5\nx = 1\nwhile x < final loop x = x + 1\noutput(toString(x))';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1536,6 +1523,16 @@ describe('InterpreterService', () => {
 
         expect(consoleOut).toEqual('2\n3\n4\n5\n6');
         expect(shellOut).toEqual('2\n3\n4\n5\n6');
+      });
+
+      it('should output correct variable value inside the block statement in the while statement', () => {
+        service = new InterpreterService();
+        const source = 'x = 0\nfinal = 2\nwhile x < final loop\nx = x + 1\nend\noutput(toString(x))';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('2');
+        expect(shellOut).toEqual('2');
       });
     });
   });

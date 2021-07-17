@@ -238,20 +238,37 @@ export class Parser {
     }
 
     parseResult.registerAdvancement();
-    this.advance();
+    this.currentToken = this.advance();
+
+    // Block statement within while loop.
+    if (this.currentToken.type === TokenTypes.NEWLINE) {
+      parseResult.registerAdvancement();
+      this.currentToken = this.advance();
+
+      const bodyValue: ASTNode = parseResult.register(this.statements());
+      if (parseResult.getError() !== null) { return parseResult; }
+
+      if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
+        const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
+                                                    this.currentToken.positionStart,
+                                                    this.currentToken.positionEnd);
+        return parseResult.failure(syntaxError);
+      }
+
+      parseResult.registerAdvancement();
+      this.advance();
+
+      const whileNode: WhileNode = {
+        nodeType: NodeTypes.WHILELOOP,
+        token: whileToken,
+        conditionNode: conditionValue,
+        bodyNode: bodyValue
+      };
+      return parseResult.success(whileNode);
+    }
 
     const bodyValue: ASTNode = parseResult.register(this.expr());
     if (parseResult.getError() !== null) { return parseResult; }
-
-    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {
-      const syntaxError = new InvalidSyntaxError(`Expected 'end' keyword`,
-                                                  this.currentToken.positionStart,
-                                                  this.currentToken.positionEnd);
-      return parseResult.failure(syntaxError);
-    }
-
-    parseResult.registerAdvancement();
-    this.advance();
 
     const whileNode: WhileNode = {
       nodeType: NodeTypes.WHILELOOP,
