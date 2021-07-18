@@ -29,6 +29,7 @@ export class InterpreterService {
 
   constructor() {
     this.lexer = new Lexer();
+    this.outputs = [];
   }
 
   public evaluate(source: string): [string, string] {
@@ -284,7 +285,7 @@ export class InterpreterService {
       if (runtimeResult.getError() !== null) { return runtimeResult; }
     }
 
-    let returnValue: ValueType = runtimeResult.register(functionVal.execute(args));
+    let returnValue: ValueType = runtimeResult.register(functionVal.execute(args, this));
     if (runtimeResult.getError() !== null) { return runtimeResult; }
 
     if (returnValue instanceof NumberType || returnValue instanceof StringType ||

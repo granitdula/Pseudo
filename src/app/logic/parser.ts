@@ -187,8 +187,25 @@ export class Parser {
     parseResult.registerAdvancement();
     this.currentToken = this.advance();
 
-    if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'begin')) {
-      const syntaxError = new InvalidSyntaxError(`Expected 'begin' keyword`,
+    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'begin') {
+      parseResult.registerAdvancement();
+      this.currentToken = this.advance();
+
+      const bodyNode: ASTNode = parseResult.register(this.expr());
+      if (parseResult.getError() !== null) { return parseResult; }
+
+      const functionDefNode: FunctionDefNode = {
+        nodeType: NodeTypes.FUNCTIONDEF,
+        token: functionToken,
+        varNameToken: varNameToken,
+        argNameTokens: argNameTokens,
+        bodyNode: bodyNode
+      };
+      return parseResult.success(functionDefNode);
+    }
+
+    if (this.currentToken.type !== TokenTypes.NEWLINE) {
+      const syntaxError = new InvalidSyntaxError(`Expected 'begin' keyword or newline character`,
                                                   this.currentToken.positionStart,
                                                   this.currentToken.positionEnd);
       return parseResult.failure(syntaxError);
@@ -197,7 +214,7 @@ export class Parser {
     parseResult.registerAdvancement();
     this.currentToken = this.advance();
 
-    const bodyNode: ASTNode = parseResult.register(this.expr());
+    const bodyNode: ASTNode = parseResult.register(this.statements());
     if (parseResult.getError() !== null) { return parseResult; }
 
     if (!(this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'end')) {

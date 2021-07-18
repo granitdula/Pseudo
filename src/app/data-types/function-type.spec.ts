@@ -8,6 +8,7 @@ import * as NodeTypes from '../constants/node-type.constants';
 import * as TokenTypes from '../constants/token-type.constants';
 import {createToken} from '../utils/token-functions';
 import { SymbolTable } from '../logic/symbol-table';
+import { InterpreterService } from '../services/interpreter.service';
 
 describe('FunctionType tests', () => {
   describe('execute tests', () => {
@@ -47,7 +48,8 @@ describe('FunctionType tests', () => {
       functionType.getContext().symbolTable.set('x', number1);
       functionType.getContext().symbolTable.set('y', number2);
 
-      const value: NumberType = <NumberType>functionType.execute([number1, number2]).getValue();
+      const interpreter = new InterpreterService();
+      const value: NumberType = <NumberType>functionType.execute([number1, number2], interpreter).getValue();
       expect(value.getValue()).toEqual(3);
     });
 
@@ -87,7 +89,8 @@ describe('FunctionType tests', () => {
       functionType.getContext().symbolTable.set('x', number1);
       functionType.getContext().symbolTable.set('y', number2);
 
-      const result: RuntimeResult = functionType.execute([number1]);
+      const interpreter = new InterpreterService();
+      const result: RuntimeResult = functionType.execute([number1], interpreter);
 
       const expectedErrorMessage = `Traceback (most recent call last):\nLine 1, in add\nRuntime` +
                                    ` Error: 1 arguments were passed into add. Expected 2\n` +
@@ -133,7 +136,8 @@ describe('FunctionType tests', () => {
       functionType.getContext().symbolTable.set('x', number1);
       functionType.getContext().symbolTable.set('y', number2);
 
-      const result: RuntimeResult = functionType.execute([number1, number2, number3]);
+      const interpreter = new InterpreterService();
+      const result: RuntimeResult = functionType.execute([number1, number2, number3], interpreter);
 
       const expectedErrorMessage = `Traceback (most recent call last):\nLine 1, in add\nRuntime` +
                                    ` Error: 3 arguments were passed into add. Expected 2\n` +

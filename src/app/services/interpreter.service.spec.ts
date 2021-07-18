@@ -290,9 +290,9 @@ describe('InterpreterService', () => {
           expect(shellOut).toEqual('[1, 2, string]');
         });
 
-        it(`should return empty console output with shell output '[1, <function x>]' for expression: [1, function x() begin 1 end]`, () => {
+        it(`should return empty console output with shell output '[1, <function x>]' for expression: [1, function x() begin 1]`, () => {
           service = new InterpreterService();
-          const source = '[1, function x() begin 1 end]';
+          const source = '[1, function x() begin 1]';
 
           const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1236,7 +1236,7 @@ describe('InterpreterService', () => {
     describe('function definition and calls tests', () => {
       it('should return function value by its name, when defined, in the shell output', () => {
         service = new InterpreterService();
-        const source = 'function add(x, y) begin x + y end';
+        const source = 'function add(x, y) begin x + y';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1246,7 +1246,7 @@ describe('InterpreterService', () => {
 
       it('should return function value by its name <anonymous>, when defined, in the shell output', () => {
         service = new InterpreterService();
-        const source = 'function (x, y) begin x + y end';
+        const source = 'function (x, y) begin x + y';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1322,7 +1322,7 @@ describe('InterpreterService', () => {
 
         it('should return runtime error when passing an argument that is a FunctionType', () => {
           service = new InterpreterService();
-          const source = 'toString(function func() begin 1 end)';
+          const source = 'toString(function func() begin 1)';
 
           const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1396,7 +1396,7 @@ describe('InterpreterService', () => {
 
         it('should return runtime error when passing an argument that is a FunctionType', () => {
           service = new InterpreterService();
-          const source = 'output(function func() begin 1 end)';
+          const source = 'output(function func() begin 1)';
 
           const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1428,7 +1428,7 @@ describe('InterpreterService', () => {
     describe('multi-line code with no block code tests', () => {
       it('should output to shell a list of outputs for each line statement', () => {
         service = new InterpreterService();
-        const source = 'function add(x, y) begin x + y end\nif add(3, 2) > 2 then TRUE\n"string"';
+        const source = 'function add(x, y) begin x + y\nif add(3, 2) > 2 then TRUE\n"string"';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1533,6 +1533,17 @@ describe('InterpreterService', () => {
 
         expect(consoleOut).toEqual('2');
         expect(shellOut).toEqual('2');
+      });
+
+      it('should output correct variable values inside the block statement in the function', () => {
+        service = new InterpreterService();
+        const source = 'function doubleXTripleY(x, y)\nx = x * 2\ny = y * 3\noutput(toString(x))' +
+                       '\noutput(toString(y))\nend\ndoubleXTripleY(10, 20)';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('20\n60');
+        expect(shellOut).toEqual('20\n60');
       });
     });
   });
