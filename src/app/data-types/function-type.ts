@@ -14,9 +14,8 @@ export class FunctionType extends ValueType {
     this.name = name === undefined ? '<anonymous>' : name;
   }
 
-  public execute(args: ValueType[]): RuntimeResult {
+  public execute(args: ValueType[], interpreter: InterpreterService): RuntimeResult {
     let runtimeResult = new RuntimeResult();
-    const interpreter = new InterpreterService();
     let newContext = new Context(this.name, this.context, this.posStart);
 
     newContext.symbolTable = new SymbolTable(newContext.getParent().symbolTable);
