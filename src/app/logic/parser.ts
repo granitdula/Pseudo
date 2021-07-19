@@ -284,7 +284,7 @@ export class Parser {
       return parseResult.success(whileNode);
     }
 
-    const bodyValue: ASTNode = parseResult.register(this.expr());
+    const bodyValue: ASTNode = parseResult.register(this.statement());
     if (parseResult.getError() !== null) { return parseResult; }
 
     const whileNode: WhileNode = {
@@ -393,7 +393,7 @@ export class Parser {
     }
 
     // Single line for loop.
-    const body: ASTNode = parseResult.register(this.expr());
+    const body: ASTNode = parseResult.register(this.statement());
     if (parseResult.getError() !== null) { return parseResult; }
 
     const forNode: ForNode = {
@@ -460,7 +460,7 @@ export class Parser {
       }
       // Else its a single lined else statement.
       else {
-        elseCase = parseResult.register(this.expr());
+        elseCase = parseResult.register(this.statement());
         if (parseResult.getError() !== null) { return parseResult; }
       }
     }
@@ -550,7 +550,7 @@ export class Parser {
     }
     // Else its a single lined if/elif statement.
     else {
-      const expr = parseResult.register(this.expr());
+      const expr = parseResult.register(this.statement());
       if (parseResult.getError() !== null) { return parseResult; }
       cases.push([condition, expr]);
 
@@ -867,6 +867,37 @@ export class Parser {
     return parseResult.success(node);
   }
 
+  private statement(): ParseResult {
+    let parseResult = new ParseResult();
+    const startToken: Token = this.currentToken;
+
+    if (this.currentToken.type === TokenTypes.KEYWORD && this.currentToken.value === 'return') {
+      parseResult.registerAdvancement();
+      this.advance();
+
+      const expr = parseResult.tryRegister(this.expr());
+      if (expr === null) { this.reverse(parseResult.reverseToCount); }
+
+      const returnNode: ASTNode = {
+        nodeType: NodeTypes.RETURN,
+        token: startToken,
+        nodeToReturn: expr
+      };
+      return parseResult.success(returnNode);
+    }
+
+    const expr = parseResult.register(this.expr());
+    if (parseResult.getError() !== null) {
+      const syntaxError = new InvalidSyntaxError(`Expected a 'return', 'if', 'for', 'while',` +
+                                                ` 'function', number, identifier, '+', '-', ` +
+                                                `'(', '[' or 'NOT'`, this.currentToken.positionStart,
+                                                this.currentToken.positionEnd);
+      return parseResult.failure(syntaxError);
+    }
+
+    return parseResult.success(expr);
+  }
+
   private statements(): ParseResult {
     let parseResult = new ParseResult();
     let statements: ASTNode[] = [];
@@ -877,7 +908,7 @@ export class Parser {
       this.advance();
     }
 
-    let statement: ASTNode = parseResult.register(this.expr());
+    let statement: ASTNode = parseResult.register(this.statement());
     if (parseResult.getError() !== null) { return parseResult; }
     statements.push(statement);
 
@@ -894,7 +925,7 @@ export class Parser {
       if (newLineCount === 0) { moreStatements = false; }
       if (!moreStatements) { break; }
 
-      statement = parseResult.tryRegister(this.expr());
+      statement = parseResult.tryRegister(this.statement());
       if (statement === null) {
         this.reverse(parseResult.reverseToCount);
         moreStatements = false;
