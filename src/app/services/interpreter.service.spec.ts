@@ -1428,7 +1428,7 @@ describe('InterpreterService', () => {
     describe('multi-line code with no block code tests', () => {
       it('should output to shell a list of outputs for each line statement', () => {
         service = new InterpreterService();
-        const source = 'function add(x, y) begin x + y\nif add(3, 2) > 2 then TRUE\n"string"';
+        const source = 'function add(x, y) begin return x + y\nif add(3, 2) > 2 then TRUE\n"string"';
 
         const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
 
@@ -1544,6 +1544,16 @@ describe('InterpreterService', () => {
 
         expect(consoleOut).toEqual('20\n60');
         expect(shellOut).toEqual('20\n60');
+      });
+
+      it('should output correct variable values inside the block statement in the function', () => {
+        service = new InterpreterService();
+        const source = 'function sum(x, y)\ntotal = x + y\nreturn total\nend\nsum(10, 50)';
+
+        const [consoleOut, shellOut]: [string, string] = service.evaluate(source);
+
+        expect(consoleOut).toEqual('');
+        expect(shellOut).toEqual('[<function sum>, 60]');
       });
     });
   });

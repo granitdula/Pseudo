@@ -49,6 +49,7 @@ export class InterpreterService {
     else {
       this.parser = new Parser(lexerOutput);
       let parseResult: ParseResult = this.parser.parse();
+      console.log(parseResult);
 
       if (parseResult.getError() !== null) {
         consoleOutput = shellOutput = parseResult.getError().getErrorMessage();
@@ -104,6 +105,8 @@ export class InterpreterService {
         return this.visitFunctionDefinition(node, context);
       case NodeTypes.FUNCTIONCALL:
         return this.visitFunctionCall(node, context);
+      case NodeTypes.RETURN:
+        return this.visitReturnNode(node, context);
       default:
         this.noVisitNode();
         break;
@@ -183,7 +186,7 @@ export class InterpreterService {
 
     for (let elementNode of node.elementNodes) {
       elements.push(runtimeResult.register(this.visitNode(elementNode, context)));
-      if (runtimeResult.getError() !== null) { return runtimeResult; }
+      if (runtimeResult.shouldReturn()) { return runtimeResult; }
     }
 
     const listValue = new ListType(elements);
@@ -275,18 +278,18 @@ export class InterpreterService {
                                             context);
       return runtimeResult.failure(runtimeError);
     }
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     // To reference the position of the function call, rather than function definition.
     functionVal = functionVal.copy().setPos(node.token.positionStart, node.token.positionEnd);
 
     for (let argNode of node.argNodes) {
       args.push(runtimeResult.register(this.visitNode(argNode, context)));
-      if (runtimeResult.getError() !== null) { return runtimeResult; }
+      if (runtimeResult.shouldReturn()) { return runtimeResult; }
     }
 
     let returnValue: ValueType = runtimeResult.register(functionVal.execute(args, this));
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     if (returnValue instanceof NumberType || returnValue instanceof StringType ||
         returnValue instanceof FunctionType || returnValue instanceof ListType) {
@@ -321,17 +324,30 @@ export class InterpreterService {
     return runtimeResult.success(functionVal);
   }
 
+  private visitReturnNode(node: ASTNode, context: Context): RuntimeResult {
+    const runtimeResult = new RuntimeResult();
+    let value: ValueType;
+
+    if (node.nodeToReturn !== null) {
+      value = runtimeResult.register(this.visitNode(node.nodeToReturn, context));
+      if (runtimeResult.shouldReturn()) { return runtimeResult; }
+    }
+    else { value = null; }
+
+    return runtimeResult.returnSuccess(value);
+  }
+
   private visitWhileNode(node: ASTNode, context: Context): RuntimeResult {
     const runtimeResult = new RuntimeResult();
 
     while (true) {
       const conditionValue: ValueType = runtimeResult.register(this.visitNode(node.conditionNode, context));
-      if (runtimeResult.getError() !== null) { return runtimeResult; }
+      if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
       if (!conditionValue.isTrue()) { break; }
 
       runtimeResult.register(this.visitNode(node.bodyNode, context));
-      if (runtimeResult.getError() !== null) { return runtimeResult; }
+      if (runtimeResult.shouldReturn()) { return runtimeResult; }
     }
 
     // Nothing is returned to the shell output as a single line statement.
@@ -342,15 +358,15 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
 
     const startValue: ValueType = runtimeResult.register(this.visitNode(node.startValueNode, context));
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     const endValue: ValueType = runtimeResult.register(this.visitNode(node.endValueNode, context));
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     let stepValue: ValueType = new NumberType(1);
     if (node.stepValueNode !== null) {
       stepValue = runtimeResult.register(this.visitNode(node.stepValueNode, context));
-      if (runtimeResult.getError() !== null) { return runtimeResult; }
+      if (runtimeResult.shouldReturn()) { return runtimeResult; }
     }
 
     let startValNum: number;
@@ -383,7 +399,7 @@ export class InterpreterService {
       i += stepValNum;
 
       runtimeResult.register(this.visitNode(node.bodyNode, context));
-      if (runtimeResult.getError() !== null) { return runtimeResult; }
+      if (runtimeResult.shouldReturn()) { return runtimeResult; }
     }
 
     // Nothing is returned to the shell output as a single line statement.
@@ -395,11 +411,11 @@ export class InterpreterService {
 
     for (let [condNode, exprNode] of node.cases) {
       const conditionValue: ValueType = runtimeResult.register(this.visitNode(condNode, context));
-      if(runtimeResult.getError() !== null) { return runtimeResult; }
+      if(runtimeResult.shouldReturn()) { return runtimeResult; }
 
       if (conditionValue.isTrue()) {
         const exprValue: ValueType = runtimeResult.register(this.visitNode(exprNode, context));
-        if(runtimeResult.getError() !== null) { return runtimeResult; }
+        if(runtimeResult.shouldReturn()) { return runtimeResult; }
 
         return runtimeResult.success(exprValue);
       }
@@ -407,7 +423,7 @@ export class InterpreterService {
 
     if (node.elseCase !== null) {
       const elseValue: ValueType = runtimeResult.register(this.visitNode(node.elseCase, context));
-      if(runtimeResult.getError() !== null) { return runtimeResult; }
+      if(runtimeResult.shouldReturn()) { return runtimeResult; }
 
       return runtimeResult.success(elseValue);
     }
@@ -443,7 +459,7 @@ export class InterpreterService {
     const varName: string = node.token.value;
     const value: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.node, context));
 
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     context.symbolTable.set(varName, value);
     return runtimeResult.success(value);
@@ -453,9 +469,9 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
 
     const left: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.leftChild, context));
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
     const right: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.rightChild, context));
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     let error: RuntimeError = null;
     let result: ValueType;
@@ -510,7 +526,7 @@ export class InterpreterService {
     const runtimeResult = new RuntimeResult();
     let number: ValueType = runtimeResult.register(this.visitNode(<ASTNode>node.node,
                                                                               context));
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     let error: RuntimeError = null;
 

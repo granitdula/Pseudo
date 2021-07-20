@@ -191,7 +191,7 @@ export class Parser {
       parseResult.registerAdvancement();
       this.currentToken = this.advance();
 
-      const bodyNode: ASTNode = parseResult.register(this.expr());
+      const bodyNode: ASTNode = parseResult.register(this.statement());
       if (parseResult.getError() !== null) { return parseResult; }
 
       const functionDefNode: FunctionDefNode = {
