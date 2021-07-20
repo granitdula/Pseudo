@@ -3214,6 +3214,78 @@ describe('Parser tests', () => {
         expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
       });
 
+      it('should return correct AST for statement: function add(x, y) begin return x + y', () => {
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack = new PositionTracker(12, 1, 13);
+        const posStartVarX = new PositionTracker(13, 1, 14);
+        const posStartComma = new PositionTracker(14, 1, 15);
+        const posStartVarY = new PositionTracker(16, 1, 17);
+        const posStartRightBrack = new PositionTracker(17, 1, 18);
+        const posStartBegin = new PositionTracker(19, 1, 20);
+        const posStartReturn = new PositionTracker(25, 1, 26);
+        const posStartVarX2 = new PositionTracker(32, 1, 33);
+        const posStartPlus = new PositionTracker(34, 1, 35);
+        const posStartVarY2 = new PositionTracker(36, 1, 37);
+        const posStartEof = new PositionTracker(37, 1, 38);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack),
+          createToken(TokenTypes.KEYWORD, posStartBegin, 'begin'),
+          createToken(TokenTypes.KEYWORD, posStartReturn, 'return'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const varXNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x')
+        };
+        const varYNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y')
+        };
+        const plusNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.PLUS, posStartPlus),
+          leftChild: varXNode,
+          rightChild: varYNode
+        };
+        const bodyNode: ASTNode = {
+          nodeType: NodeTypes.RETURN,
+          token: createToken(TokenTypes.KEYWORD, posStartReturn, 'return'),
+          nodeToReturn: plusNode
+        };
+        const ast: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONDEF,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          varNameToken: createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'add'),
+          argNameTokens: [createToken(TokenTypes.IDENTIFIER, posStartVarX, 'x'),
+                          createToken(TokenTypes.IDENTIFIER, posStartVarY, 'y')],
+          bodyNode: bodyNode
+        };
+
+        let expected = new ParseResult();
+        expected.success(ast);
+
+        for (let i = 0; i < 12; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
       // // Anonymous function support.
       it('should return correct AST for statement: function (x, y) begin x + y', () => {
         const posStartFunction = new PositionTracker(0, 1, 1);
@@ -3812,8 +3884,9 @@ describe('Parser tests', () => {
         const parser = new Parser(tokenList);
         const parseResult: ParseResult = parser.parse();
 
-        const error = new InvalidSyntaxError(`Expected a number, identifier, '+', '-', '(', '['` +
-                                             ` or 'NOT'`, posStartEof, posEndEof);
+        const error = new InvalidSyntaxError(`Expected a 'return', 'if', 'for', 'while',` +
+                                             ` 'function', number, identifier, '+', '-', ` +
+                                             `'(', '[' or 'NOT'`, posStartEof, posEndEof);
 
         let expected = new ParseResult();
         expected.failure(error);
@@ -5089,6 +5162,196 @@ describe('Parser tests', () => {
         expected.success(listNode);
 
         for (let i = 0; i < 38; i++) { expected.registerAdvancement(); }
+
+        expect(parseResult.getNode()).toEqual(expected.getNode());
+        expect(parseResult.getError()).toEqual(expected.getError());
+        expect(parseResult.getAdvanceCount()).toEqual(expected.getAdvanceCount());
+      });
+
+      it('should produce correct AST for functions with block code and return statement', () => {
+        // Note: The tested source used would give a runtime error if executed by the interpreter
+        // since the output functions are not given string arguments.
+
+        // code: function doubleXTripleYSum(x, y)\nx = x * 2\ny = y * 3\nreturn x + y\nend\ndoubleXTripleYSum(10, 20)
+        const posStartFunction = new PositionTracker(0, 1, 1);
+        const posStartFuncName = new PositionTracker(9, 1, 10);
+        const posStartLeftBrack1 = new PositionTracker(26, 1, 27);
+        const posStartVarX1 = new PositionTracker(27, 1, 28);
+        const posStartComma1 = new PositionTracker(28, 1, 29);
+        const posStartVarY1 = new PositionTracker(30, 1, 31);
+        const posStartRightBrack1 = new PositionTracker(31, 1, 32);
+        const posStartNewline1 = new PositionTracker(32, 1, 33);
+        const posStartVarX2 = new PositionTracker(33, 2, 1);
+        const posStartEquals1 = new PositionTracker(35, 2, 3);
+        const posStartVarX3 = new PositionTracker(37, 2, 5);
+        const posStartMultiply1 = new PositionTracker(39, 2, 7);
+        const posStartNum1 = new PositionTracker(41, 2, 9);
+        const posStartNewline2 = new PositionTracker(42, 2, 10);
+        const posStartVarY2 = new PositionTracker(43, 3, 1);
+        const posStartEquals2 = new PositionTracker(45, 3, 3);
+        const posStartVarY3 = new PositionTracker(47, 3, 5);
+        const posStartMultiply2 = new PositionTracker(49, 3, 7);
+        const posStartNum2 = new PositionTracker(51, 3, 9);
+        const posStartNewline3 = new PositionTracker(52, 3, 10);
+        const posStartReturn = new PositionTracker(53, 4, 1);
+        const posStartVarX4 = new PositionTracker(60, 4, 8);
+        const posStartPlus = new PositionTracker(62, 4, 10);
+        const posStartVarY4 = new PositionTracker(64, 4, 12);
+        const posStartNewline4 = new PositionTracker(65, 4, 13);
+        const posStartEnd = new PositionTracker(66, 5, 1);
+        const posStartNewline5 = new PositionTracker(69, 5, 4);
+        const posStartFuncCall = new PositionTracker(70, 6, 1);
+        const posStartLeftBrack2 = new PositionTracker(87, 6, 18);
+        const posStartNum3 = new PositionTracker(88, 6, 19);
+        const posStartComma2 = new PositionTracker(89, 6, 20);
+        const posStartNum4 = new PositionTracker(91, 6, 22);
+        const posStartRightBrack2 = new PositionTracker(92, 6, 23);
+        const posStartEof = new PositionTracker(93, 6, 24);
+
+        const tokenList: Array<Token> = [
+          createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'doubleXTripleYSum'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX1, 'x'),
+          createToken(TokenTypes.COMMA, posStartComma1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY1, 'y'),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack1),
+          createToken(TokenTypes.NEWLINE, posStartNewline1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          createToken(TokenTypes.EQUALS, posStartEquals1),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX3, 'x'),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply1),
+          createToken(TokenTypes.NUMBER, posStartNum1, 2),
+          createToken(TokenTypes.NEWLINE, posStartNewline2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          createToken(TokenTypes.EQUALS, posStartEquals2),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY3, 'y'),
+          createToken(TokenTypes.MULTIPLY, posStartMultiply2),
+          createToken(TokenTypes.NUMBER, posStartNum2, 3),
+          createToken(TokenTypes.NEWLINE, posStartNewline3),
+          createToken(TokenTypes.KEYWORD, posStartReturn, 'return'),
+          createToken(TokenTypes.IDENTIFIER, posStartVarX4, 'x'),
+          createToken(TokenTypes.PLUS, posStartPlus),
+          createToken(TokenTypes.IDENTIFIER, posStartVarY4, 'y'),
+          createToken(TokenTypes.NEWLINE, posStartNewline4),
+          createToken(TokenTypes.KEYWORD, posStartEnd, 'end'),
+          createToken(TokenTypes.NEWLINE, posStartNewline5),
+          createToken(TokenTypes.IDENTIFIER, posStartFuncCall, 'doubleXTripleYSum'),
+          createToken(TokenTypes.L_BRACKET, posStartLeftBrack2),
+          createToken(TokenTypes.NUMBER, posStartNum3, 10),
+          createToken(TokenTypes.COMMA, posStartComma2),
+          createToken(TokenTypes.NUMBER, posStartNum4, 20),
+          createToken(TokenTypes.R_BRACKET, posStartRightBrack2),
+          createToken(TokenTypes.EOF, posStartEof)
+        ];
+
+        const parser = new Parser(tokenList);
+        const parseResult: ParseResult = parser.parse();
+
+        const numberNode1: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum1, 2)
+        };
+        const varXAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX3, 'x')
+        };
+        const multiplyNode1: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply1),
+          leftChild: varXAccessNode,
+          rightChild: numberNode1
+        };
+        const varXAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          node: multiplyNode1
+        };
+
+        const numberNode2: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum2, 3)
+        };
+        const varYAccessNode: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY3, 'y')
+        };
+        const multiplyNode2: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.MULTIPLY, posStartMultiply2),
+          leftChild: varYAccessNode,
+          rightChild: numberNode2
+        };
+        const varYAssignNode: ASTNode = {
+          nodeType: NodeTypes.VARASSIGN,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY2, 'y'),
+          node: multiplyNode2
+        };
+
+        const varXAccessNode2: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX4, 'x')
+        };
+        const varYAccessNode2: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarY4, 'y')
+        };
+        const addNode: ASTNode = {
+          nodeType: NodeTypes.BINARYOP,
+          token: createToken(TokenTypes.PLUS, posStartPlus),
+          leftChild: varXAccessNode2,
+          rightChild: varYAccessNode2
+        };
+        const returnNode: ASTNode = {
+          nodeType: NodeTypes.RETURN,
+          token: createToken(TokenTypes.KEYWORD, posStartReturn, 'return'),
+          nodeToReturn: addNode
+        };
+
+        const bodyNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.IDENTIFIER, posStartVarX2, 'x'),
+          elementNodes: [varXAssignNode, varYAssignNode, returnNode]
+        };
+        const functionDefNode: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONDEF,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          varNameToken: createToken(TokenTypes.IDENTIFIER, posStartFuncName, 'doubleXTripleYSum'),
+          argNameTokens: [
+            createToken(TokenTypes.IDENTIFIER, posStartVarX1, 'x'),
+            createToken(TokenTypes.IDENTIFIER, posStartVarY1, 'y'),
+          ],
+          bodyNode: bodyNode
+        };
+
+        const numberNode3: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum3, 10)
+        }
+        const numberNode4: ASTNode = {
+          nodeType: NodeTypes.NUMBER,
+          token: createToken(TokenTypes.NUMBER, posStartNum4, 20)
+        }
+        const funcNameNode3: ASTNode = {
+          nodeType: NodeTypes.VARACCESS,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFuncCall, 'doubleXTripleYSum')
+        };
+        const funcCallNode: ASTNode = {
+          nodeType: NodeTypes.FUNCTIONCALL,
+          token: createToken(TokenTypes.IDENTIFIER, posStartFuncCall, 'doubleXTripleYSum'),
+          nodeToCall: funcNameNode3,
+          argNodes: [numberNode3, numberNode4]
+        }
+        const listNode: ASTNode = {
+          nodeType: NodeTypes.LIST,
+          token: createToken(TokenTypes.KEYWORD, posStartFunction, 'function'),
+          elementNodes: [functionDefNode, funcCallNode]
+        };
+
+        let expected = new ParseResult();
+        expected.success(listNode);
+
+        for (let i = 0; i < 33; i++) { expected.registerAdvancement(); }
 
         expect(parseResult.getNode()).toEqual(expected.getNode());
         expect(parseResult.getError()).toEqual(expected.getError());

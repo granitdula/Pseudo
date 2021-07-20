@@ -9,6 +9,7 @@ import * as TokenTypes from '../constants/token-type.constants';
 import {createToken} from '../utils/token-functions';
 import { SymbolTable } from '../logic/symbol-table';
 import { InterpreterService } from '../services/interpreter.service';
+import { ValueType } from './value-type';
 
 describe('FunctionType tests', () => {
   describe('execute tests', () => {
@@ -49,8 +50,8 @@ describe('FunctionType tests', () => {
       functionType.getContext().symbolTable.set('y', number2);
 
       const interpreter = new InterpreterService();
-      const value: NumberType = <NumberType>functionType.execute([number1, number2], interpreter).getValue();
-      expect(value.getValue()).toEqual(3);
+      const value: ValueType = functionType.execute([number1, number2], interpreter).getFuncReturnValue();
+      expect(value).toEqual(null);
     });
 
     it('should return runtime result error for to few arguments', () => {

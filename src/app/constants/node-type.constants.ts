@@ -10,3 +10,4 @@ export const FORLOOP = 'ForNode';
 export const WHILELOOP = 'WhileNode';
 export const FUNCTIONDEF = 'FunctionDefNode';
 export const FUNCTIONCALL = 'FunctionCallNode';
+export const RETURN = 'ReturnNode';

@@ -796,7 +796,7 @@ describe('Lexer tests', () => {
             [TokenTypes.IDENTIFIER, posTracker4, 'x'], [TokenTypes.COMMA, posTracker5],
             [TokenTypes.IDENTIFIER, posTracker6, 'y'], [TokenTypes.R_BRACKET, posTracker7],
             [TokenTypes.KEYWORD, posTracker8, 'begin'], [TokenTypes.NEWLINE, posTracker9],
-            [TokenTypes.IDENTIFIER, posTracker10, 'return'],
+            [TokenTypes.KEYWORD, posTracker10, 'return'],
             [TokenTypes.IDENTIFIER, posTracker11, 'x'], [TokenTypes.PLUS, posTracker12],
             [TokenTypes.IDENTIFIER, posTracker13, 'y'], [TokenTypes.NEWLINE, posTracker14],
             [TokenTypes.KEYWORD, posTracker15, 'end'], [TokenTypes.NEWLINE, posTracker16]

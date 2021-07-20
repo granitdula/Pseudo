@@ -21,7 +21,7 @@ export class FunctionType extends ValueType {
     newContext.symbolTable = new SymbolTable(newContext.getParent().symbolTable);
 
     runtimeResult = this.checkArgLengths(args);
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    if (runtimeResult.shouldReturn()) { return runtimeResult; }
 
     for (let i = 0; i < args.length; i++) {
       const argName: string = this.argNames[i];
@@ -31,10 +31,15 @@ export class FunctionType extends ValueType {
       newContext.symbolTable.set(argName, argValue);
     }
 
-    const value: ValueType = runtimeResult.register(interpreter.visitNode(this.bodyNode, newContext));
-    if (runtimeResult.getError() !== null) { return runtimeResult; }
+    runtimeResult.register(interpreter.visitNode(this.bodyNode, newContext));
+    if (runtimeResult.shouldReturn() && runtimeResult.getFuncReturnValue() === null) {
+      return runtimeResult;
+    }
 
-    return runtimeResult.success(value);
+    const returnValue = runtimeResult.getFuncReturnValue() !== null ?
+                        runtimeResult.getFuncReturnValue() : null;
+
+    return runtimeResult.success(returnValue);
   }
 
   public copy(): FunctionType {
