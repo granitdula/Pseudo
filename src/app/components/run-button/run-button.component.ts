@@ -15,10 +15,7 @@ export class RunButtonComponent {
   @HostListener('click')
   onClick() {
     let source = this.consoleTextService.getInput();
-    source = source.replace(/^(&nbsp;|<br>)+/, '');
-    console.log(source);
     let [consOut, shellOut] = this.interpreter.evaluate(source);
-    console.log('CLICKED!');
 
     // Replaces all newline characters with <br> tags.
     consOut = consOut.replace(/(?:\r\n|\r|\n)/g, '<br>');

@@ -49,7 +49,6 @@ export class InterpreterService {
     else {
       this.parser = new Parser(lexerOutput);
       let parseResult: ParseResult = this.parser.parse();
-      console.log(parseResult);
 
       if (parseResult.getError() !== null) {
         consoleOutput = shellOutput = parseResult.getError().getErrorMessage();
