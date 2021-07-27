@@ -1,3 +1,4 @@
+import { ConsoleTextService } from './../../services/console-text.service';
 import { WindowSizeService } from './../../services/window-size.service';
 import { Component, ElementRef, ViewChild, OnInit, HostBinding } from '@angular/core';
 
@@ -14,13 +15,21 @@ export class CodeEditorComponent implements OnInit {
   @ViewChild('inputRegion') inputRegion: ElementRef<HTMLElement>;
   @HostBinding('style.width.%') private width: number;
 
-  constructor(private windowSizeService: WindowSizeService) {}
+  constructor(private windowSizeService: WindowSizeService,
+              private consoleTextService: ConsoleTextService) {}
 
   ngOnInit() {
     this.windowSizeService.editorCast.subscribe(editorWidth => this.width = editorWidth);
   }
 
-  public updateLineNumber(): void {
+  public onTextInput(): void {
+    this.updateLineNumber();
+
+    const text: string = this.inputRegion.nativeElement.innerText;
+    this.consoleTextService.setInput(text);
+  }
+
+  private updateLineNumber(): void {
 
     const text: string = this.inputRegion.nativeElement.innerText;
     const linesArr: string[] = text.split('\n');

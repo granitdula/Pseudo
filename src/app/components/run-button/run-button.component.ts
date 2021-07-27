@@ -1,3 +1,4 @@
+import { ConsoleTextService } from './../../services/console-text.service';
 import { Component, HostListener } from '@angular/core';
 import { InterpreterService } from 'src/app/services/interpreter.service';
 
@@ -8,10 +9,17 @@ import { InterpreterService } from 'src/app/services/interpreter.service';
 })
 export class RunButtonComponent {
 
-  constructor(private interpreter: InterpreterService) {}
+  constructor(private interpreter: InterpreterService,
+              private consoleTextService: ConsoleTextService) {}
 
   @HostListener('click')
   onClick() {
-    console.log('CLICKED!');
+    let source = this.consoleTextService.getInput();
+    let [consOut, shellOut] = this.interpreter.evaluate(source);
+
+    // Replaces all newline characters with <br> tags.
+    consOut = consOut.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+    this.consoleTextService.setOutput(consOut);
   }
 }

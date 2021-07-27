@@ -15,7 +15,7 @@ export class Lexer {
   }
 
   public lex(source: string): Array<Token> | Error {
-
+    this.positionTracker = new PositionTracker(0, 1, 1);
     let tokens: Array<Token> = [];
 
     while (source.length !== 0 && this.positionTracker.getIndex() < source.length) {
