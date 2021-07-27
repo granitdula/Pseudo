@@ -187,7 +187,7 @@ describe('CodeEditorComponent', () => {
         const inputRegion = codeEditorElement.querySelector('div.input-region');
 
         inputRegion.innerHTML = '<div><br></div><div><br></div>';
-        component.updateLineNumber();
+        component.onTextInput();
 
         const expected: number[] = [1, 2];
 
@@ -205,7 +205,7 @@ describe('CodeEditorComponent', () => {
                                  <div>Line 4</div>
                                  <div>Line 5</div>`;
 
-        component.updateLineNumber();
+        component.onTextInput();
 
         const expected: number[] = [1, 2, 3, 4, 5];
 
@@ -219,7 +219,7 @@ describe('CodeEditorComponent', () => {
 
         inputRegion.innerHTML = `Line 1<div>Line 2</div><div>Line 3</div>`;
 
-        component.updateLineNumber();
+        component.onTextInput();
 
         const expected: number[] = [1, 2, 3];
 
@@ -233,7 +233,7 @@ describe('CodeEditorComponent', () => {
 
         inputRegion.innerHTML = `<div>Line 1</div><div>Line 2</div><div><br></div>`;
 
-        component.updateLineNumber();
+        component.onTextInput();
 
         const expected: number[] = [1, 2, 3];
 

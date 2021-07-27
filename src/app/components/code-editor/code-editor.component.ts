@@ -20,7 +20,11 @@ export class CodeEditorComponent implements OnInit {
     this.windowSizeService.editorCast.subscribe(editorWidth => this.width = editorWidth);
   }
 
-  public updateLineNumber(): void {
+  public onTextInput(): void {
+    this.updateLineNumber();
+  }
+
+  private updateLineNumber(): void {
 
     const text: string = this.inputRegion.nativeElement.innerText;
     const linesArr: string[] = text.split('\n');
